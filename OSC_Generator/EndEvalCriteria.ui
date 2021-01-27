@@ -1,0 +1,1536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>End Evaluation KPIs</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="useDefault">
+     <property name="text">
+      <string>Use default post-scenario evaluation KPIs</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOn</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>608</width>
+        <height>1174</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGroupBox" name="runningStopGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Running Stop Test</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="runningStop_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="runningStop_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_RunningStopTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="runningStop_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningStop_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningStop_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningStop_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="runningStop_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="runningStop_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningStop_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="runningStop_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="runningStop_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="runningStop_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="runningRedGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Running Red Light Test</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="runningRed_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="runningRed_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_RunningRedLightTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="runningRed_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningRed_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningRed_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningRed_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="runningRed_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="runningRed_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="runningRed_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="runningRed_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="runningRed_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="runningRed_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="wrongLaneGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Wrong Lane Test</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="wrongLane_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="wrongLane_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_WrongLaneTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="wrongLane_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="wrongLane_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="wrongLane_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="wrongLane_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="wrongLane_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="wrongLane_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="wrongLane_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="wrongLane_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="wrongLane_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="wrongLane_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="onSidewalkGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>On Sidewalk Test</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="onSidewalk_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="onSidewalk_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_OnSidewalkTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="onSidewalk_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="onSidewalk_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="onSidewalk_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="onSidewalk_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="onSidewalk_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="onSidewalk_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="onSidewalk_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="onSidewalk_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="onSidewalk_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="onSidewalk_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="keepLaneGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Keep Lane Test</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="keepLane_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="keepLane_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_KeepLaneTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="keepLane_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="keepLane_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="keepLane_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="keepLane_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="keepLane_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="keepLane_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="keepLane_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="keepLane_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="keepLane_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="keepLane_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="collisionGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Collision Test</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="collision_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="collision_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_CollisionTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="collision_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="collision_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="collision_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="collision_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="collision_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="collision_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="collision_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="collision_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="collision_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="collision_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="drivenDistanceGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>160</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Driven Distance Test</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <widget class="QLabel" name="drivenDistance_Delay_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Delay</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="drivenDistance_CondName">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>30</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>criteria_DrivenDistanceTest</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="drivenDistance_Delay">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>60</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="drivenDistance_CondName_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Name</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="drivenDistance_CondEdge_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>60</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Condition Edge</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="drivenDistance_ParamRef_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>90</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Parameter Ref</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="drivenDistance_CondEdge">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>60</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>rising</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>falling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>risingOrFalling</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>none</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLineEdit" name="drivenDistance_ParamRef">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>90</y>
+            <width>440</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>distance_success</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="drivenDistance_Rule_Label">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Rule</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="drivenDistance_Rule">
+          <property name="geometry">
+           <rect>
+            <x>420</x>
+            <y>120</y>
+            <width>160</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>lessThan</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>equalTo</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greaterThan</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="drivenDistance_Value_Label">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>120</y>
+            <width>121</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="drivenDistance_Value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>120</y>
+            <width>140</width>
+            <height>25</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>200</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

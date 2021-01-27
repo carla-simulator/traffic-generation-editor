@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_weather.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_vehicle.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_pedestrian.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_endEval.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_playPause.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_maneuver.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_code.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_static.png</file>
+    </qresource>
+    <qresource prefix="/plugins/OSC_Generator" >
+        <file>icon_refresh.png</file>
+    </qresource>
+</RCC>

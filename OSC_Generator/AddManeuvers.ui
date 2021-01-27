@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OSCGenerator_AddManeuversDockWidget</class>
+ <widget class="QDockWidget" name="OSCGenerator_AddManeuversDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>426</width>
+    <height>527</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>426</width>
+    <height>355</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Add Maneuvers</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="10" column="0" colspan="3">
+     <widget class="QPushButton" name="addManeuver_Button">
+      <property name="text">
+       <string>Insert</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="3">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="entityManeuvers">
+       <attribute name="title">
+        <string>Entity Maneuvers</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>384</width>
+             <height>377</height>
+            </rect>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="1" column="0">
+             <widget class="QLabel" name="entitySelection_Label">
+              <property name="text">
+               <string>Entity</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="2">
+             <widget class="QGroupBox" name="waypointGroup">
+              <property name="title">
+               <string>Waypoints</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_3">
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="waypointOrientation">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>90</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="waypointOrientation_Label">
+                 <property name="text">
+                  <string>Orientation</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QCheckBox" name="waypointOrientation_useLane">
+                 <property name="text">
+                  <string>Use lane heading</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="waypointStrategy_Label">
+                 <property name="text">
+                  <string>Strategy</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="waypointStrategy">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>fastest</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>shortest</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>leastIntersections</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>random</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="entityManeuverType_Label">
+              <property name="text">
+               <string>Maneuver</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="entityManeuverType">
+              <item>
+               <property name="text">
+                <string>Waypoint</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Longitudinal</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Lateral</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="2">
+             <widget class="QGroupBox" name="actorMoveGroup">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="title">
+               <string>Actor Move on Condition</string>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="3" column="0">
+                <widget class="QLabel" name="actor_TargetSpeed_Label">
+                 <property name="text">
+                  <string>Target Speed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLineEdit" name="actor_TargetSpeed"/>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="ActorMove_refEntitySelection">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="ActorMove_refEntitySelection_Label">
+                 <property name="text">
+                  <string>Ref Entity</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="actor_RelDistType_Label">
+                 <property name="text">
+                  <string>Distance Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QComboBox" name="actor_RelDistType">
+                 <item>
+                  <property name="text">
+                   <string>cartesianDistance</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>longitudinal</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>lateral</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLineEdit" name="actor_Distance"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="actor_Distance_Label">
+                 <property name="text">
+                  <string>Distance</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="entitySelection">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="QPushButton" name="refreshEntity_Button">
+              <property name="minimumSize">
+               <size>
+                <width>16</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="cursor">
+               <cursorShape>ArrowCursor</cursorShape>
+              </property>
+              <property name="toolTip">
+               <string>Refreshes stuff</string>
+              </property>
+              <property name="toolTipDuration">
+               <number>2</number>
+              </property>
+              <property name="text">
+               <string>Refresh entity list</string>
+              </property>
+              <property name="icon">
+               <iconset>
+                <normaloff>icon_refresh.png</normaloff>icon_refresh.png</iconset>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+              <property name="default">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="globalActs">
+       <attribute name="title">
+        <string>Global Actions</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_12">
+        <item row="0" column="0">
+         <widget class="QLabel" name="globalActType_Label">
+          <property name="text">
+           <string>Action Type</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="globalActType">
+          <item>
+           <property name="text">
+            <string>InfrastructureAction</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QGroupBox" name="infraActGroup">
+          <property name="title">
+           <string>Traffic Signal Action</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="4" column="1">
+            <widget class="QComboBox" name="trafficLightState">
+             <item>
+              <property name="text">
+               <string>green</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>yellow</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>red</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="trafficLightID_Label">
+             <property name="text">
+              <string>Traffic Light ID</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QComboBox" name="trafficLightID"/>
+           </item>
+           <item row="0" column="0" colspan="2">
+            <widget class="QPushButton" name="toggleTrafficLightLabels_Button">
+             <property name="text">
+              <string>Toggle traffic light labels</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="trafficLightState_Label">
+             <property name="text">
+              <string>Traffic Light State</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QPushButton" name="refreshTrafficLights_Button">
+             <property name="text">
+              <string>Refresh traffic light IDs</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="triggers">
+       <attribute name="title">
+        <string>Triggers</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_2">
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>-254</y>
+             <width>370</width>
+             <height>1156</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QGroupBox" name="StartTriggerGroup">
+              <property name="title">
+               <string>Start Triggers</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <item row="0" column="1">
+                <widget class="QComboBox" name="ConditionType">
+                 <item>
+                  <property name="text">
+                   <string>by Entity</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>by Value</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QGroupBox" name="EntityConditionGroup">
+                 <property name="title">
+                  <string>By Entity Condition</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="Entity_Rule_Label">
+                    <property name="text">
+                     <string>Rule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="Entity_Value_Label">
+                    <property name="text">
+                     <string>Value</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QComboBox" name="Entity_Rule">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>lessThan</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>equalTo</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>greaterThan</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="Entity_RelDistType_Label">
+                    <property name="text">
+                     <string>Rel Dist Type</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="1">
+                   <widget class="QCheckBox" name="Entity_AlongRoute">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Along Route</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QComboBox" name="EntityCond">
+                    <property name="editable">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>EndOfRoadCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>CollisionCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>OffroadCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TimeHeadwayCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TimeToCollisionCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>AccelerationCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>StandStillCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>SpeedCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>RelativeSpeedCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TraveledDistanceCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>ReachPositionCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>DistanceCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>RelativeDistanceCondition</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QLabel" name="EntityCond_Label">
+                    <property name="text">
+                     <string>Entity Condition</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="refEntitySelection_Label">
+                    <property name="text">
+                     <string>Ref Entity</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QComboBox" name="Entity_RelDistType">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>cartesianDistance</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>longitudinal</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>lateral</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QComboBox" name="refEntitySelection">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="editable">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QLineEdit" name="Entity_Duration">
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QLineEdit" name="Entity_Value">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="1">
+                   <widget class="QCheckBox" name="Entity_Freespace">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Freespace</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="Entity_Duration_Label">
+                    <property name="text">
+                     <string>Duration</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0" colspan="2">
+                   <widget class="QGroupBox" name="Entity_PositionGroup">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Position Type</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_11">
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="entityPositionY_Label">
+                       <property name="text">
+                        <string>Coordinate Y</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLabel" name="entityPositionX">
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QLabel" name="entityPositionY">
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QSpinBox" name="entityTolerance">
+                       <property name="value">
+                        <number>10</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="Entity_PositionType_Label">
+                       <property name="text">
+                        <string>Position</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="entityHeading_Label">
+                       <property name="text">
+                        <string>Heading</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0" colspan="2">
+                      <widget class="QPushButton" name="entityChoosePosition_Button">
+                       <property name="text">
+                        <string>Choose position</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0" colspan="2">
+                      <widget class="QComboBox" name="Entity_PositionType">
+                       <item>
+                        <property name="text">
+                         <string>WorldPosition</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="entityPositionX_Label">
+                       <property name="text">
+                        <string>Coordinate X</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QLabel" name="entityHeading">
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="entityTolerance_Label">
+                       <property name="text">
+                        <string>Tolerance</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="ConditionType_Label">
+                 <property name="text">
+                  <string>Condition</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QGroupBox" name="ValueConditionGroup">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="title">
+                  <string>By Value Condition</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_6">
+                  <item row="6" column="1">
+                   <widget class="QLineEdit" name="Value_Value">
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLineEdit" name="Value_Name">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QLabel" name="ValueCond_Label">
+                    <property name="text">
+                     <string>Value Condition</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLineEdit" name="Value_ParamRef"/>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QComboBox" name="ValueCond">
+                    <property name="editable">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>ParameterCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TimeOfDayCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>SimulationTimeCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>StoryboardElementStateCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>UserDefinedValueCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TrafficSignalCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TrafficSignalControllerCondition</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="Value_ParamRef_Label">
+                    <property name="text">
+                     <string>Param Ref</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="Value_Name_Label">
+                    <property name="text">
+                     <string>Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="Value_DateTime_Label">
+                    <property name="text">
+                     <string>Date Time</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QLineEdit" name="Value_State">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="Value_Value_Label">
+                    <property name="text">
+                     <string>Value</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QDateTimeEdit" name="Value_DateTime">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="dateTime">
+                     <datetime>
+                      <hour>2</hour>
+                      <minute>0</minute>
+                      <second>0</second>
+                      <year>2020</year>
+                      <month>10</month>
+                      <day>23</day>
+                     </datetime>
+                    </property>
+                    <property name="date">
+                     <date>
+                      <year>2020</year>
+                      <month>10</month>
+                      <day>23</day>
+                     </date>
+                    </property>
+                    <property name="time">
+                     <time>
+                      <hour>2</hour>
+                      <minute>0</minute>
+                      <second>0</second>
+                     </time>
+                    </property>
+                    <property name="displayFormat">
+                     <string>yyyy-MM-ddThh:mm:ss</string>
+                    </property>
+                    <property name="timeSpec">
+                     <enum>Qt::UTC</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QComboBox" name="Value_Rule">
+                    <item>
+                     <property name="text">
+                      <string>lessThan</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>equalTo</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>greaterThan</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="Value_Rule_Label">
+                    <property name="text">
+                     <string>Rule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="Value_State_Label">
+                    <property name="text">
+                     <string>State</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0" colspan="2">
+                   <widget class="QGroupBox" name="TrafficSignalGroup">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Traffic Signal Controller</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_9">
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="TrafficSignal_Phase_Label">
+                       <property name="text">
+                        <string>Phase</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="TrafficSignal_ControllerRef"/>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="TrafficSignal_Phase"/>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="TrafficSignal_ControllerRef_Label">
+                       <property name="text">
+                        <string>Controller Ref</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="9" column="0" colspan="2">
+                   <widget class="QGroupBox" name="StoryboardGroup">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Storyboard Element</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_7">
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="Storyboard_State_Label">
+                       <property name="text">
+                        <string>State</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="Storyboard_Type_Label">
+                       <property name="text">
+                        <string>Type</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="Storyboard_Element_Label">
+                       <property name="text">
+                        <string>Element</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QComboBox" name="Storyboard_Type">
+                       <item>
+                        <property name="text">
+                         <string>story</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>act</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>maneuver</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>event</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>action</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>maneuverGroup</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLineEdit" name="Storyboard_Element"/>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QComboBox" name="Storyboard_State">
+                       <item>
+                        <property name="text">
+                         <string>completeState</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>runningState</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>standbyState</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>startTransition</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>endTransition</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>stopTransition</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>skipTransition</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QComboBox" name="maneuverType">
+      <item>
+       <property name="text">
+        <string>Entity Maneuvers</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Global Actions</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="maneuverType_Label">
+      <property name="text">
+       <string>Maneuver Type</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

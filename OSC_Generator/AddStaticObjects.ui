@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OSCGenerator_AddStaticObjectsDockWidget</class>
+ <widget class="QDockWidget" name="OSCGenerator_AddStaticObjectsDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>376</width>
+    <height>280</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add Static Objects</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="5" column="0">
+     <widget class="QLabel" name="propsPhysics_Label">
+      <property name="text">
+       <string>Physics</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QCheckBox" name="propsPhysics">
+      <property name="text">
+       <string>Physics on</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QComboBox" name="propsObjectType">
+      <item>
+       <property name="text">
+        <string>none</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>obstacle</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>pole</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>tree</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>vegetation</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>barrier</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>building</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>parkingSpace</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>patch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>railing</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trafficIsland</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>crosswalk</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>streetLamp</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>gantry</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>soundBarrier</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>wind</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>roadMark</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QCheckBox" name="propsOrientation_useLane">
+      <property name="text">
+       <string>Use lane heading</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QLineEdit" name="propsOrientation">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>90</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="propsOrientation_Label">
+      <property name="text">
+       <string>Orientation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="propsMass_Label">
+      <property name="text">
+       <string>Mass</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="propsSelection_Label">
+      <property name="text">
+       <string>Static Object</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QPushButton" name="propsLabels">
+      <property name="text">
+       <string>Labels</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QLineEdit" name="propsMass">
+      <property name="text">
+       <string>10</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="propsObjectType_Label">
+      <property name="text">
+       <string>Object Type</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QComboBox" name="propsSelection">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="currentText">
+       <string>streetbarrier</string>
+      </property>
+      <property name="currentIndex">
+       <number>69</number>
+      </property>
+      <item>
+       <property name="text">
+        <string>advertisement</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>atm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>barbeque</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>barrel</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>bench01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>bench02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>bench03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>bikehelmet</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>bikeparking</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>bin</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>box01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>box02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>box03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>briefcase</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>brokentile01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>brokentile02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>brokentile03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>brokentile04</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>busstop</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>chainbarrier</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>chainbarrierend</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>clothcontainer</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>clothesline</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>colacan</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>constructioncone</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>container</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>creasedbox01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>creasedbox02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>creasedbox03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>dirtdebris01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>dirtdebris02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>dirtdebris03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>doghouse</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>fountain</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>garbage01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>garbage02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>garbage03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>garbage04</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>garbage05</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>garbage06</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>gardenlamp</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>glasscontainer</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>gnome</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>guitarcase</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ironplank</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>kiosk_01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>mailbox</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>maptable</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>mobile</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>motorhelment</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>pergola</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot04</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot05</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot06</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot07</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plantpot08</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plasticbag</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plasticchair</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>plastictable</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>platformgarbage01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>purse</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>shop01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>shoppingbag</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>shoppingcart</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>shoppingtrolley</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>slide</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>streetbarrier</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>streetfountain</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>streetsign</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>streetsign01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>streetsign04</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>swing</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>swingcouch</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>table</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trafficcone02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trafficwarning</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trampoline</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trashbag</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trashcan01</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trashcan02</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trashcan03</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trashcan04</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>trashcan05</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>travelcase</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>vendingmachine</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>wateringcan</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="6" column="2">
+     <widget class="QPushButton" name="addPropsButton">
+      <property name="text">
+       <string>Insert</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

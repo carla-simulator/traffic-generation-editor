@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OSCGenerator_AddPedestriansDockWidget</class>
+ <widget class="QDockWidget" name="OSCGenerator_AddPedestriansDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>376</width>
+    <height>280</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add Pedestrians</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="2">
+     <widget class="QComboBox" name="walkerSelection">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>Walker 0001</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0002</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0003</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0004</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0005</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0006</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0007</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0008</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0009</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0010</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0011</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0012</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0013</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0014</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Walker 0015</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="5" column="2">
+     <widget class="QLineEdit" name="walkerInitSpeed">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QLineEdit" name="walkerOrientation">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>90</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="walkerInitSpeed_Label">
+      <property name="text">
+       <string>Init Speed</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="walkerSelection_Label">
+      <property name="text">
+       <string>Pedestrian</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QCheckBox" name="walkerUseRandom">
+      <property name="text">
+       <string>Use random pedestrian</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="walkerOrientation_Label">
+      <property name="text">
+       <string>Orientation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QPushButton" name="walkerLabels">
+      <property name="text">
+       <string>Labels</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="2">
+     <widget class="QPushButton" name="addWalkerButton">
+      <property name="text">
+       <string>Insert</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <widget class="QCheckBox" name="walkerOrientation_useLane">
+      <property name="text">
+       <string>Use lane heading</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
