@@ -3,23 +3,27 @@
 ### Prerequisites
 - Python 3.6
 - [QGIS 3](https://www.qgis.org/)
-- [Carla AD Map plugin with Python bindings](https://github.com/carla-simulator/map)
+- [CARLA AD Map plugin version 2.4.2 and above](https://github.com/carla-simulator/map/releases)
 - [defusedxml package](https://pypi.org/project/defusedxml/)
 
 ## Installation
-1. Clone Scenario Runner
-2. Create a symlink folder at `~/.local/share/QGIS/QGIS3/profiles/default/python/plugins` to `OSCGenerator/OSC_Generator`
-  ```bash
-  ln -s /path/to/srunner/OSCGenerator/OSC_Generator ~/.local/share/QGIS/QGIS3/profiles/default/python/plugins
-  ```
-3. Run QGIS 3
-4. Enable plugin from plugins menu (`Plugins > Manage and Install Plugins`)
-5. Enjoy!
+1. Download the repo as a zip file in GitHub (`Code > Download ZIP`).
+2. Run QGIS 3.
+3. Install plugin from plugins menu (`Plugins > Manage and Install Plugins > Install from ZIP`), choose the zip file that was previously downloaded.
    
+   _Note: If [CARLA AD Map plugin](https://github.com/carla-simulator/map/releases) has not been installed before, same steps can be used to install the ZIP package._
+
+![Install from ZIP](Docs/OSCGenerator_InstallZIP.png)
+
+4. Change to `Installed` tab and make sure `OSC Generator` is enabled.
+5. Enjoy!
+  
 ## Features
 - Place entiites onto loaded OpenDRIVE map (through AD Map plugin)
 - Add maneuvers to entities
   - Current support for waypoints only
+- Add global maneuvers
+  - Current support for traffic light actions only
 - Set initial environment variables (cloud state, time of day, precipitation)
 
 ## Support List
@@ -96,6 +100,7 @@ Icon | Description
 <img src="icons/icon_weather.png" alt="Edit environment" width="50"/> | Edit environment
 <img src="icons/icon_vehicle.png" alt="git commAdd vehicles" width="50"/> | Add vehicles
 <img src="icons/icon_pedestrian.png" alt="Add pedestrians" width="50"/> | Add pedestrians
+<img src="icons/icon_static.png" alt="Add static objects" width="50"/> | Add static objects
 <img src="icons/icon_maneuver.png" alt="Add maneuvers" width="50"/> | Add maneuvers
 <img src="icons/icon_endEval.png" alt="Add end evaluation KPIs" width="50"/> | Add end evaluation KPIs (Specific for Scenario Runner)
 <img src="icons/icon_code.png" alt="Export OpenSCENARIO" width="50"/> | Export OpenSCENARIO file
@@ -178,3 +183,14 @@ _Note: It is important to set up the start triggers first before inserting the m
    1. To set up `ReachPositionCondition`, click on `Choose position`.
    2. Click on a point on the map.
    3. The coordinates of the click point will be updated in the UI.
+
+### Removing Maneuvers and Waypoints
+1. In `Layers` right click on layer and select `Open Attribute Table`.
+   
+  ![Attributes Table](Docs/OSCGenerator_AttributesTable_Maneuvers.png)
+
+2. Click on the pencil icon on top left to enable editing.
+3. Highlight the row containing the maneuver / waypoint for deletion.
+4. Click on trash can to delete entity.
+5. Click on pencil icon to disable editing.
+6. When prompted to save changes, choose 'Yes'.

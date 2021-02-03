@@ -16,7 +16,7 @@ from qgis.PyQt.QtCore import QVariant
 from qgis.utils import iface
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'EndEvalCriteria.ui'))
+    os.path.dirname(__file__), 'end_eval_criteria_dialog.ui'))
 
 class EndEvalCriteriaDialog(QtWidgets.QDialog, FORM_CLASS):
     """
@@ -26,10 +26,10 @@ class EndEvalCriteriaDialog(QtWidgets.QDialog, FORM_CLASS):
         """Initialization of class and Qt UI element connect signals"""
         super(EndEvalCriteriaDialog, self).__init__(parent)
         self.setupUi(self)
-        self.useDefault.stateChanged.connect(self.DefaultTriggers)
-        self.dataProvider = None
+        self.useDefault.stateChanged.connect(self.default_triggers)
+        self._data_provider = None
 
-    def DefaultTriggers(self):
+    def default_triggers(self):
         """Toggles default triggers"""
         if self.useDefault.isChecked():
             self.collisionGroup.setDisabled(True)
@@ -56,123 +56,125 @@ class EndEvalCriteriaDialog(QtWidgets.QDialog, FORM_CLASS):
             self.runningStopGroup.setEnabled(True)
             self.wrongLaneGroup.setEnabled(True)
 
-    def SaveStopTriggers(self):
+    def save_end_eval_kpis(self):
         """Executes ingestion of dialog form data into QGIS layer"""
-        self.CreateLayer()
+        self.layer_setup()
         layer = QgsProject.instance().mapLayersByName("End Evaluation KPIs")[0]
-        self.dataProvider = layer.dataProvider()
-        currFeat = [feat.id() for feat in layer.getFeatures()]
-        self.dataProvider.deleteFeatures(currFeat)
+        self._data_provider = layer.dataProvider()
+        # Clear existing attributes
+        current_features = [feat.id() for feat in layer.getFeatures()]
+        self._data_provider.deleteFeatures(current_features)
         iface.setActiveLayer(layer)
 
-        self.GetCollision()
-        self.GetDrivenDistance()
-        self.GetKeepLane()
-        self.GetOnSidewalk()
-        self.GetRunningRed()
-        self.GetRunningStop()
-        self.GetWrongLane()
+        self.get_collision()
+        self.get_driven_distance()
+        self.get_keep_lane()
+        self.get_on_sidewalk()
+        self.get_running_red()
+        self.get_running_stop()
+        self.get_wrong_lane()
 
-    def GetCollision(self):
+    def get_collision(self):
         """Sets attribute for collision check"""
         if self.collisionGroup.isChecked():
-            condName = self.collision_CondName.text()
+            cond_name = self.collision_CondName.text()
             delay = self.collision_Delay.text()
-            condEdge = self.collision_CondEdge.currentText()
-            paramRef = self.collision_ParamRef.text()
+            cond_edge = self.collision_CondEdge.currentText()
+            param_ref = self.collision_ParamRef.text()
             value = self.collision_Value.text()
             rule = self.collision_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def GetDrivenDistance(self):
+    def get_driven_distance(self):
         """Sets attribute for driven distance"""
         if self.drivenDistanceGroup.isChecked():
-            condName = self.drivenDistance_CondName.text()
+            cond_name = self.drivenDistance_CondName.text()
             delay = self.drivenDistance_Delay.text()
-            condEdge = self.drivenDistance_CondEdge.currentText()
-            paramRef = self.drivenDistance_ParamRef.text()
+            cond_edge = self.drivenDistance_CondEdge.currentText()
+            param_ref = self.drivenDistance_ParamRef.text()
             value = self.drivenDistance_Value.text()
             rule = self.drivenDistance_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def GetKeepLane(self):
+    def get_keep_lane(self):
         """Sets attribute for keeping lane"""
         if self.keepLaneGroup.isChecked():
-            condName = self.keepLane_CondName.text()
+            cond_name = self.keepLane_CondName.text()
             delay = self.keepLane_Delay.text()
-            condEdge = self.keepLane_CondEdge.currentText()
-            paramRef = self.keepLane_ParamRef.text()
+            cond_edge = self.keepLane_CondEdge.currentText()
+            param_ref = self.keepLane_ParamRef.text()
             value = self.keepLane_Value.text()
             rule = self.keepLane_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def GetOnSidewalk(self):
+    def get_on_sidewalk(self):
         """Sets attribute for sidewalk check"""
         if self.onSidewalkGroup.isChecked():
-            condName = self.onSidewalk_CondName.text()
+            cond_name = self.onSidewalk_CondName.text()
             delay = self.onSidewalk_Delay.text()
-            condEdge = self.onSidewalk_CondEdge.currentText()
-            paramRef = self.onSidewalk_ParamRef.text()
+            cond_edge = self.onSidewalk_CondEdge.currentText()
+            param_ref = self.onSidewalk_ParamRef.text()
             value = self.onSidewalk_Value.text()
             rule = self.onSidewalk_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def GetRunningRed(self):
+    def get_running_red(self):
         """Sets attribute for running red light check"""
         if self.runningRedGroup.isChecked():
-            condName = self.runningRed_CondName.text()
+            cond_name = self.runningRed_CondName.text()
             delay = self.runningRed_Delay.text()
-            condEdge = self.runningRed_CondEdge.currentText()
-            paramRef = self.runningRed_ParamRef.text()
+            cond_edge = self.runningRed_CondEdge.currentText()
+            param_ref = self.runningRed_ParamRef.text()
             value = self.runningRed_Value.text()
             rule = self.runningRed_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def GetRunningStop(self):
+    def get_running_stop(self):
         """Sets attribute for running stop signs check"""
         if self.runningStopGroup.isChecked():
-            condName = self.runningStop_CondName.text()
+            cond_name = self.runningStop_CondName.text()
             delay = self.runningStop_Delay.text()
-            condEdge = self.runningStop_CondEdge.currentText()
-            paramRef = self.runningStop_ParamRef.text()
+            cond_edge = self.runningStop_CondEdge.currentText()
+            param_ref = self.runningStop_ParamRef.text()
             value = self.runningStop_Value.text()
             rule = self.runningStop_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def GetWrongLane(self):
+    def get_wrong_lane(self):
         """Sets attribute for wrong lane check"""
         if self.wrongLaneGroup.isChecked():
-            condName = self.wrongLane_CondName.text()
+            cond_name = self.wrongLane_CondName.text()
             delay = self.wrongLane_Delay.text()
-            condEdge = self.wrongLane_CondEdge.currentText()
-            paramRef = self.wrongLane_ParamRef.text()
+            cond_edge = self.wrongLane_CondEdge.currentText()
+            param_ref = self.wrongLane_ParamRef.text()
             value = self.wrongLane_Value.text()
             rule = self.wrongLane_Rule.currentText()
-            self.WriteAttributes(condName, delay, condEdge, paramRef, value, rule)
+            self.write_attributes(cond_name, delay, cond_edge, param_ref, value, rule)
 
-    def CreateLayer(self):
+    def layer_setup(self):
         """Create no geometry layer in QGIS to save End Evaluation KPIs."""
-        rootLayer = QgsProject.instance().layerTreeRoot()
-        OSCLayer = rootLayer.findGroup("OpenSCENARIO")
+        root_layer = QgsProject.instance().layerTreeRoot()
+        osc_layer = root_layer.findGroup("OpenSCENARIO")
         if not QgsProject.instance().mapLayersByName("End Evaluation KPIs"):
-            stopTriggersLayer = QgsVectorLayer("None", "End Evaluation KPIs", "memory")
-            QgsProject.instance().addMapLayer(stopTriggersLayer, False)
-            OSCLayer.addLayer(stopTriggersLayer)
+            env_eval_layer = QgsVectorLayer("None", "End Evaluation KPIs", "memory")
+            QgsProject.instance().addMapLayer(env_eval_layer, False)
+            osc_layer.addLayer(env_eval_layer)
             # Setup layer attributes
-            dataAttributes = [QgsField("Condition Name", QVariant.String),
-                              QgsField("Delay", QVariant.Double),
-                              QgsField("Condition Edge", QVariant.String),
-                              QgsField("Parameter Ref", QVariant.String),
-                              QgsField("Value", QVariant.Double),
-                              QgsField("Rule", QVariant.String)]
-            self.dataProvider = stopTriggersLayer.dataProvider()
-            self.dataProvider.addAttributes(dataAttributes)
-            stopTriggersLayer.updateFields()
+            data_attributes = [QgsField("Condition Name", QVariant.String),
+                               QgsField("Delay", QVariant.Double),
+                               QgsField("Condition Edge", QVariant.String),
+                               QgsField("Parameter Ref", QVariant.String),
+                               QgsField("Value", QVariant.Double),
+                               QgsField("Rule", QVariant.String)]
+            self._data_provider = env_eval_layer.dataProvider()
+            self._data_provider.addAttributes(data_attributes)
+            env_eval_layer.updateFields()
             # UI Information
-            iface.messageBar().pushMessage("Info", "End evaluation KPIs layer added", level=Qgis.Info)
-            QgsMessageLog.logMessage("End evaluation KPIs layer added", level=Qgis.Info)
+            message = "End evaluation KPIs layer added"
+            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
 
-    def WriteAttributes(self, condName, delay, condEdge, paramRef, value, rule):
+    def write_attributes(self, cond_name, delay, cond_edge, param_ref, value, rule):
         """
         Writes stop trigger attributes into QGIS attributes table.
 
@@ -185,5 +187,6 @@ class EndEvalCriteriaDialog(QtWidgets.QDialog, FORM_CLASS):
             rule: [str] Comparator for value (lessThan, equalTo, greaterThan)
         """
         feature = QgsFeature()
-        feature.setAttributes([condName, float(delay), condEdge, paramRef, float(value), rule])
-        self.dataProvider.addFeature(feature)
+        feature.setAttributes([cond_name, float(delay), cond_edge,
+                               param_ref, float(value), rule])
+        self._data_provider.addFeature(feature)

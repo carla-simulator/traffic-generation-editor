@@ -89,7 +89,7 @@
     <widget class="QLineEdit" name="selectPath"/>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="mapSelection_Label">
      <property name="text">
       <string>Road Network</string>
      </property>

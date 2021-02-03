@@ -19,13 +19,13 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsProject
 
 # pylint: disable=relative-beyond-top-level
-from .AddVehicles import AddVehiclesDockWidget
-from .AddPedestrians import AddPedestriansDockWidget
-from .AddStaticObjects import AddPropsDockWidget
-from .ExportXOSC import ExportXOSCDialog
-from .EditEnvironment import EditEnvironmentDockWidget
-from .EndEvalCriteria import EndEvalCriteriaDialog
-from .AddManeuvers import AddManeuversDockWidget
+from .add_vehicles import AddVehiclesDockWidget
+from .add_pedestrians import AddPedestriansDockWidget
+from .add_static_objects import AddPropsDockWidget
+from .export_xosc import ExportXOSCDialog
+from .edit_environment import EditEnvironmentDockWidget
+from .end_eval_criteria import EndEvalCriteriaDialog
+from .add_maneuvers import AddManeuversDockWidget
 from .resources import *
 
 class OSC_Generator:
@@ -72,6 +72,7 @@ class OSC_Generator:
         self._dockwidget_props = None
         self._dockwidget_environment = None
         self._dockwidget_maneuvers = None
+        self._root_layer = QgsProject.instance().layerTreeRoot()
 
 
     # noinspection PyMethodMayBeStatic
@@ -252,9 +253,8 @@ class OSC_Generator:
         Creates OpenSCENARIO layer group if it does not exist.
         """
         # Add temporary scratch layer to QGIS (if not yet created)
-        rootLayer = QgsProject.instance().layerTreeRoot()
-        if rootLayer.findGroup("OpenSCENARIO") is None:
-            rootLayer.addGroup("OpenSCENARIO")
+        if self._root_layer.findGroup("OpenSCENARIO") is None:
+            self._root_layer.addGroup("OpenSCENARIO")
 
         # Load plugins
         if not self._plugin_is_active_vehicles:
@@ -279,9 +279,8 @@ class OSC_Generator:
         Creates OpenSCENARIO layer group if it does not exist.
         """
         # Add temporary scratch layer to QGIS (if not yet created)
-        rootLayer = QgsProject.instance().layerTreeRoot()
-        if rootLayer.findGroup("OpenSCENARIO") is None:
-            rootLayer.addGroup("OpenSCENARIO")
+        if self._root_layer.findGroup("OpenSCENARIO") is None:
+            self._root_layer.addGroup("OpenSCENARIO")
 
         # Load plugin
         if not self._plugin_is_active_pedestrians:
@@ -300,9 +299,9 @@ class OSC_Generator:
         """
         dlg = ExportXOSCDialog()
         dlg.show()
-        returnValue = dlg.exec_()
-        if returnValue:
-            ExportXOSCDialog.SaveFile(dlg)
+        return_value = dlg.exec_()
+        if return_value:
+            ExportXOSCDialog.save_file(dlg)
 
     def edit_environment(self):
         """
@@ -310,9 +309,8 @@ class OSC_Generator:
         Creates OpenSCENARIO layer group if it does not exist.
         """
         # Add temporary scratch layer to QGIS (if not yet created)
-        rootLayer = QgsProject.instance().layerTreeRoot()
-        if rootLayer.findGroup("OpenSCENARIO") is None:
-            rootLayer.addGroup("OpenSCENARIO")
+        if self._root_layer.findGroup("OpenSCENARIO") is None:
+            self._root_layer.addGroup("OpenSCENARIO")
 
         # Load plugin
         if not self._plugin_is_active_environment:
@@ -331,9 +329,8 @@ class OSC_Generator:
         Creates OpenSCENARIO layer group if it does not exist.
         """
         # Add temporary scratch layer to QGIS (if not yet created)
-        rootLayer = QgsProject.instance().layerTreeRoot()
-        if rootLayer.findGroup("OpenSCENARIO") is None:
-            rootLayer.addGroup("OpenSCENARIO")
+        if self._root_layer.findGroup("OpenSCENARIO") is None:
+            self._root_layer.addGroup("OpenSCENARIO")
 
         # Load plugin
         if not self._plugin_is_active_maneuvers:
@@ -352,9 +349,8 @@ class OSC_Generator:
         Creates OpenSCENARIO layer group if it does not exist.
         """
         # Add temporary scratch layer to QGIS (if not yet created)
-        rootLayer = QgsProject.instance().layerTreeRoot()
-        if rootLayer.findGroup("OpenSCENARIO") is None:
-            rootLayer.addGroup("OpenSCENARIO")
+        if self._root_layer.findGroup("OpenSCENARIO") is None:
+            self._root_layer.addGroup("OpenSCENARIO")
 
         # Load plugin
         if not self._plugin_is_active_props:
@@ -373,6 +369,6 @@ class OSC_Generator:
         """
         dlg = EndEvalCriteriaDialog()
         dlg.show()
-        returnValue = dlg.exec_()
-        if returnValue:
-            EndEvalCriteriaDialog.SaveStopTriggers(dlg)
+        return_value = dlg.exec_()
+        if return_value:
+            EndEvalCriteriaDialog.save_end_eval_kpis(dlg)
