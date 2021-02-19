@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CameraDockWidget</class>
+ <widget class="QDockWidget" name="CameraDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add Camera</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Select height for bird eye camera: </string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QComboBox" name="cameraheight">
+      <item>
+       <property name="text">
+        <string>10 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>20 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>30 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>40 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>50 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>60 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>70 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>80 meters</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>90 meters</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Choose spawn mode:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="AddCameraposition">
+      <property name="text">
+       <string>Insert camera manually</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QPushButton" name="AddCamerabutton">
+      <property name="text">
+       <string>Auto Insert Camera</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

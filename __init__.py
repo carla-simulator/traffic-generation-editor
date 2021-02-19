@@ -18,5 +18,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .osc_generator import OSC_Generator
+    from .carla_scenario_editor import OSC_Generator
     return OSC_Generator(iface)

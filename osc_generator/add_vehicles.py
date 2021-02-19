@@ -37,7 +37,6 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # UI element signals
         self.AddVehicleButton.pressed.connect(self.insert_vehicle)
         self.vehicleOrientation_useLane.stateChanged.connect(self.override_orientation)
-        self.vehicleIsHero.stateChanged.connect(self.ego_agent_selection)
         self.agentSelection.currentTextChanged.connect(self.agent_camera_selection)
         self.vehicleLabels.pressed.connect(self.toggle_labels)
 
@@ -160,15 +159,6 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.vehicleOrientation.setDisabled(True)
         else:
             self.vehicleOrientation.setEnabled(True)
-
-    def ego_agent_selection(self):
-        """
-        Toggles agent selection group depending on whether vehicle is ego.
-        """
-        if self.vehicleIsHero.isChecked():
-            self.agentGroup.setEnabled(True)
-        else:
-            self.agentGroup.setDisabled(True)
 
     def agent_camera_selection(self):
         """

@@ -6,29 +6,44 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
-    <height>527</height>
+    <width>419</width>
+    <height>613</height>
    </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>426</width>
-    <height>355</height>
-   </size>
   </property>
   <property name="windowTitle">
    <string>Add Maneuvers</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="10" column="0" colspan="3">
+    <item row="3" column="0" colspan="2">
      <widget class="QPushButton" name="addManeuver_Button">
       <property name="text">
        <string>Insert</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="3">
+    <item row="0" column="0">
+     <widget class="QLabel" name="maneuverType_Label">
+      <property name="text">
+       <string>Maneuver Type</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="maneuverType">
+      <item>
+       <property name="text">
+        <string>Entity Maneuvers</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Global Actions</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
        <bool>true</bool>
@@ -41,8 +56,15 @@
         <string>Entity Maneuvers</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
-        <item row="0" column="0">
-         <widget class="QScrollArea" name="scrollArea">
+        <item row="1" column="1">
+         <widget class="QLabel" name="entitySelection_Label">
+          <property name="text">
+           <string>Entity</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="2">
+         <widget class="QScrollArea" name="entity_ScrollArea">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -51,22 +73,15 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>384</width>
-             <height>377</height>
+             <width>376</width>
+             <height>992</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
-            <item row="1" column="0">
-             <widget class="QLabel" name="entitySelection_Label">
-              <property name="text">
-               <string>Entity</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0" colspan="2">
+            <item row="3" column="0" colspan="2">
              <widget class="QGroupBox" name="waypointGroup">
               <property name="title">
-               <string>Waypoints</string>
+               <string>Waypoint Maneuvers</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
                <item row="0" column="1">
@@ -136,157 +151,640 @@
               </layout>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="entityManeuverType_Label">
-              <property name="text">
-               <string>Maneuver</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QComboBox" name="entityManeuverType">
-              <item>
-               <property name="text">
-                <string>Waypoint</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Longitudinal</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Lateral</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="5" column="0" colspan="2">
-             <widget class="QGroupBox" name="actorMoveGroup">
+            <item row="6" column="0">
+             <widget class="QGroupBox" name="lateralGroup">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="title">
-               <string>Actor Move on Condition</string>
+               <string>Lateral Maneuvers</string>
               </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_2">
-               <item row="3" column="0">
-                <widget class="QLabel" name="actor_TargetSpeed_Label">
+              <layout class="QGridLayout" name="gridLayout_14">
+               <item row="7" column="1" colspan="2">
+                <widget class="QLineEdit" name="lateral_LaneTargetValue">
                  <property name="text">
-                  <string>Target Speed</string>
+                  <string>0</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="actor_TargetSpeed"/>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="ActorMove_refEntitySelection">
-                 <property name="editable">
+               <item row="14" column="1">
+                <widget class="QLineEdit" name="lateral_MaxAccel">
+                 <property name="enabled">
                   <bool>false</bool>
                  </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
                 </widget>
                </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="ActorMove_refEntitySelection_Label">
+               <item row="5" column="0">
+                <widget class="QLabel" name="lateral_DynamicsDim_Label">
+                 <property name="text">
+                  <string>Dynamics Dimension</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="lateral_RefEntity_Label">
                  <property name="text">
                   <string>Ref Entity</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="actor_RelDistType_Label">
+               <item row="15" column="1">
+                <widget class="QLineEdit" name="lateral_MaxDecel">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
-                  <string>Distance Type</string>
+                  <string>0</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="actor_RelDistType">
+               <item row="16" column="1">
+                <widget class="QLineEdit" name="lateral_MaxSpeed">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="2">
+                <widget class="QLabel" name="lateral_MaxDecel_UnitLabel">
+                 <property name="text">
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="2">
+                <widget class="QLabel" name="lateral_MaxLatAccel_UnitLabel">
+                 <property name="text">
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="lateral_MaxAccel_Label">
+                 <property name="text">
+                  <string>Max Acceleration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="lateral_Type_Label">
+                 <property name="text">
+                  <string>Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="lateral_DynamicsShape_Label">
+                 <property name="text">
+                  <string>Dynamics Shape</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1" colspan="2">
+                <widget class="QComboBox" name="lateral_DynamicsDim">
                  <item>
                   <property name="text">
-                   <string>cartesianDistance</string>
+                   <string>rate</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>longitudinal</string>
+                   <string>time</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>lateral</string>
+                   <string>distance</string>
                   </property>
                  </item>
                 </widget>
                </item>
-               <item row="2" column="1">
-                <widget class="QLineEdit" name="actor_Distance"/>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="actor_Distance_Label">
+               <item row="16" column="2">
+                <widget class="QLabel" name="lateral_MaxSpeed_UnitLabel">
                  <property name="text">
-                  <string>Distance</string>
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="2">
+                <widget class="QComboBox" name="lateral_RefEntity">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1" colspan="2">
+                <widget class="QComboBox" name="lateral_Type">
+                 <item>
+                  <property name="text">
+                   <string>LaneChangeAction</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LaneOffsetAction</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LateralDistanceAction</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="QLineEdit" name="lateral_MaxLatAccel">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="lateral_DynamicsValue_2">
+                 <property name="text">
+                  <string>Dynamics Value</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="16" column="0">
+                <widget class="QLabel" name="lateral_MaxSpeed_Label">
+                 <property name="text">
+                  <string>Max Speed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1" colspan="2">
+                <widget class="QComboBox" name="lateral_DynamicsShape">
+                 <item>
+                  <property name="text">
+                   <string>linear</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>cubic</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>sinusoidal</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>step</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="lateral_LaneTargetValue_Label">
+                 <property name="text">
+                  <string>Lane Target Value</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="0">
+                <widget class="QLabel" name="lateral_MaxLatAccel_Label">
+                 <property name="text">
+                  <string>Max Lateral Accel</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="2">
+                <widget class="QLabel" name="lateral_MaxAccel_UnitLabel">
+                 <property name="text">
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="lateral_MaxDecel_Label">
+                 <property name="text">
+                  <string>Max Deceleration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1" colspan="2">
+                <widget class="QLineEdit" name="lateral_DynamicsValue">
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="lateral_LaneTarget">
+                 <item>
+                  <property name="text">
+                   <string>RelativeTargetLane</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>AbsoluteTargetLane</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="lateral_LaneTarget_Label">
+                 <property name="text">
+                  <string>Lane Target</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0" colspan="3">
+                <widget class="QLabel" name="lateral_DynamicConstraints_Label">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <italic>true</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Dynamic Constraints</string>
                  </property>
                 </widget>
                </item>
               </layout>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QComboBox" name="entitySelection">
+            <item row="5" column="0" colspan="2">
+             <widget class="QGroupBox" name="longitudinalGroup">
               <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="editable">
                <bool>false</bool>
               </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="QPushButton" name="refreshEntity_Button">
-              <property name="minimumSize">
-               <size>
-                <width>16</width>
-                <height>16</height>
-               </size>
-              </property>
-              <property name="cursor">
-               <cursorShape>ArrowCursor</cursorShape>
-              </property>
-              <property name="toolTip">
-               <string>Refreshes stuff</string>
-              </property>
-              <property name="toolTipDuration">
-               <number>2</number>
-              </property>
-              <property name="text">
-               <string>Refresh entity list</string>
-              </property>
-              <property name="icon">
-               <iconset>
-                <normaloff>icon_refresh.png</normaloff>icon_refresh.png</iconset>
+              <property name="title">
+               <string>Longitudinal Maneuvers</string>
               </property>
               <property name="checkable">
                <bool>false</bool>
               </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-              <property name="default">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="2" column="0">
+                <widget class="QLabel" name="long_RefEntity_Label">
+                 <property name="text">
+                  <string>Ref Entity</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="long_TargetSpeedValue_Label">
+                 <property name="text">
+                  <string>Target Speed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="2">
+                <widget class="QLabel" name="long_MaxAccel_UnitLabel">
+                 <property name="text">
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="2">
+                <widget class="QLabel" name="long_MaxDecel_UnitLabel">
+                 <property name="text">
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <widget class="QLineEdit" name="long_TargetSpeedValue">
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1" colspan="2">
+                <widget class="QComboBox" name="long_DynamicsDim">
+                 <item>
+                  <property name="text">
+                   <string>rate</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>time</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>distance</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="2">
+                <widget class="QComboBox" name="long_RefEntity">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="long_DynamicsDim_Label">
+                 <property name="text">
+                  <string>Dynamics Dimension</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="long_DynamicsShape_Label">
+                 <property name="text">
+                  <string>Dynamics Shape</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="long_Type_Label">
+                 <property name="text">
+                  <string>Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="1">
+                <widget class="QLineEdit" name="long_MaxSpeed">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="0" colspan="3">
+                <widget class="QLabel" name="long_DynamicConstraints_Label">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <italic>true</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Dynamic Constraints</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1" colspan="2">
+                <widget class="QComboBox" name="long_Type">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>SpeedAction</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>LongitudinalDistanceAction</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="long_TargetType_Label">
+                 <property name="text">
+                  <string>Target Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="0">
+                <widget class="QLabel" name="long_MaxSpeed_Label">
+                 <property name="text">
+                  <string>Max Speed</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <widget class="QLabel" name="long_TargetSpeedValue_UnitLabel">
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m/s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="15" column="0">
+                <widget class="QLabel" name="long_MaxDecel_Label">
+                 <property name="text">
+                  <string>Max Deceleration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="long_DynamicsValue_Label">
+                 <property name="text">
+                  <string>Dynamics Value</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1" colspan="2">
+                <widget class="QComboBox" name="long_TargetType">
+                 <item>
+                  <property name="text">
+                   <string>delta</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>factor</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QComboBox" name="long_SpeedTarget">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>RelativeTargetSpeed</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>AbsoluteTargetSpeed</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="7" column="1" colspan="2">
+                <widget class="QLineEdit" name="long_DynamicsValue">
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="1" colspan="2">
+                <widget class="QCheckBox" name="long_Continuous">
+                 <property name="text">
+                  <string>Continuous</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="0">
+                <widget class="QLabel" name="long_MaxAccel_Label">
+                 <property name="text">
+                  <string>Max Acceleration</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1" colspan="2">
+                <widget class="QComboBox" name="long_DynamicsShape">
+                 <item>
+                  <property name="text">
+                   <string>linear</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>cubic</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>sinusoidal</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>step</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="15" column="1">
+                <widget class="QLineEdit" name="long_MaxDecel">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="22" column="2">
+                <widget class="QLabel" name="long_MaxSpeed_UnitLabel">
+                 <property name="text">
+                  <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="14" column="1">
+                <widget class="QLineEdit" name="long_MaxAccel">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="long_SpeedTarget_Label">
+                 <property name="text">
+                  <string>Speed Target</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1" colspan="2">
+                <widget class="QCheckBox" name="long_Freespace">
+                 <property name="text">
+                  <string>Freespace</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
           </widget>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QPushButton" name="refreshEntity_Button">
+          <property name="cursor">
+           <cursorShape>ArrowCursor</cursorShape>
+          </property>
+          <property name="toolTip">
+           <string>Refreshes stuff</string>
+          </property>
+          <property name="toolTipDuration">
+           <number>2</number>
+          </property>
+          <property name="text">
+           <string>Refresh entity list</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>icon_refresh.png</normaloff>icon_refresh.png</iconset>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+          <property name="default">
+           <bool>false</bool>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="entitySelection">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="entityManeuverType_Label">
+          <property name="text">
+           <string>Maneuver Type</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QComboBox" name="entityManeuverType">
+          <item>
+           <property name="text">
+            <string>Waypoint</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Longitudinal</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Lateral</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -390,8 +888,8 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-254</y>
-             <width>370</width>
+             <y>0</y>
+             <width>363</width>
              <height>1156</height>
             </rect>
            </property>
@@ -403,7 +901,7 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
                <item row="0" column="1">
-                <widget class="QComboBox" name="ConditionType">
+                <widget class="QComboBox" name="conditionType">
                  <item>
                   <property name="text">
                    <string>by Entity</string>
@@ -476,7 +974,7 @@
                    </widget>
                   </item>
                   <item row="1" column="0" colspan="2">
-                   <widget class="QComboBox" name="EntityCond">
+                   <widget class="QComboBox" name="entityCond">
                     <property name="editable">
                      <bool>false</bool>
                     </property>
@@ -548,7 +1046,7 @@
                    </widget>
                   </item>
                   <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="EntityCond_Label">
+                   <widget class="QLabel" name="entityCond_Label">
                     <property name="text">
                      <string>Entity Condition</string>
                     </property>
@@ -584,7 +1082,7 @@
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QComboBox" name="refEntitySelection">
+                   <widget class="QComboBox" name="entityTrig_RefEntity">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -722,7 +1220,7 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="ConditionType_Label">
+                <widget class="QLabel" name="conditionType_Label">
                  <property name="text">
                   <string>Condition</string>
                  </property>
@@ -752,7 +1250,7 @@
                    </widget>
                   </item>
                   <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="ValueCond_Label">
+                   <widget class="QLabel" name="valueCond_Label">
                     <property name="text">
                      <string>Value Condition</string>
                     </property>
@@ -762,7 +1260,7 @@
                    <widget class="QLineEdit" name="Value_ParamRef"/>
                   </item>
                   <item row="1" column="0" colspan="2">
-                   <widget class="QComboBox" name="ValueCond">
+                   <widget class="QComboBox" name="valueCond">
                     <property name="editable">
                      <bool>false</bool>
                     </property>
@@ -845,24 +1343,24 @@
                     </property>
                     <property name="dateTime">
                      <datetime>
-                      <hour>2</hour>
+                      <hour>22</hour>
                       <minute>0</minute>
                       <second>0</second>
                       <year>2020</year>
                       <month>10</month>
-                      <day>23</day>
+                      <day>22</day>
                      </datetime>
                     </property>
                     <property name="date">
                      <date>
                       <year>2020</year>
                       <month>10</month>
-                      <day>23</day>
+                      <day>22</day>
                      </date>
                     </property>
                     <property name="time">
                      <time>
-                      <hour>2</hour>
+                      <hour>22</hour>
                       <minute>0</minute>
                       <second>0</second>
                      </time>
@@ -1061,27 +1559,6 @@
         </item>
        </layout>
       </widget>
-     </widget>
-    </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QComboBox" name="maneuverType">
-      <item>
-       <property name="text">
-        <string>Entity Maneuvers</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Global Actions</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="maneuverType_Label">
-      <property name="text">
-       <string>Maneuver Type</string>
-      </property>
      </widget>
     </item>
    </layout>

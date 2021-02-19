@@ -96,7 +96,7 @@ class GenerateXML():
         header = etree.SubElement(root, "FileHeader")
         header.set("revMajor", "1")
         header.set("revMinor", "0")
-        header.set("date", datetime.today().strftime("%Y-%m-%d"))
+        header.set("date", datetime.today().strftime("%Y-%m-%dT%H:%M:%S"))
         header.set("description", "Generated OpenSCENARIO File")
         header.set("author", "Wen Jie")
 
@@ -295,7 +295,7 @@ class GenerateXML():
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
                 self.entity_teleport_action(entity, orientation, pos_x, pos_y)
-                self.ego_entity_controller(entity, str(feature["id"]), agent, agent_camera)
+                self.vehicle_controller(entity, str(feature["id"]), agent, agent_camera, is_ego=True)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
 
@@ -312,6 +312,7 @@ class GenerateXML():
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
                 self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.vehicle_controller(entity, str(feature["id"]), agent, agent_camera, is_ego=False)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
 
@@ -363,17 +364,22 @@ class GenerateXML():
         teleport_worldpos.set("z", "0.2")
         teleport_worldpos.set("h", str(orientation))
 
-    def ego_entity_controller(self, entity, veh_id, agent, agent_camera):
+    def vehicle_controller(self, entity, veh_id, agent, agent_camera, is_ego):
         """
-        Writes ControllerAction OpenSCENARIO tags for ego vehicles
+        Writes ControllerAction OpenSCENARIO tags for vehicles
 
         Args:
             entity: [XML element]
             ved_id: [int] used to link agent to entity
             agent: [string] to set controller agent
             agent_camera: [bool] enable/disable attach_camera for simple_vehicle_control
+            is_ego: [bool] used to determine prefix for controller name
         """
-        controller_id = "HeroAgent_" + veh_id
+        if is_ego:
+            controller_id = f"HeroAgent_{veh_id}"
+        else:
+            controller_id = f"VehicleAgent_{veh_id}"
+
         private_act = etree.SubElement(entity, "PrivateAction")
         controller_act = etree.SubElement(private_act, "ControllerAction")
         controller_assign = etree.SubElement(controller_act, "AssignControllerAction")
@@ -497,48 +503,61 @@ class GenerateXML():
                 QgsMessageLog.logMessage(error_message, level=Qgis.Warning)
                 self._warning_message.append(f"Warning: {error_message}")
             else:
+                # Find unique entities and group together
+                unique_entities = set()
                 for feature in layer.getFeatures():
-                    man_id = feature["id"]
                     entity = feature["Entity"]
-                    man_type = feature["Maneuver Type"]
-                    entity_man_type = feature["Entity: Maneuver Type"]
-                    global_act_type = feature["Global: Act Type"]
+                    unique_entities.add(entity)
 
+                for entity in unique_entities:
                     man_group = etree.SubElement(act, "ManeuverGroup")
                     man_group.set("maximumExecutionCount", "1")
-                    man_group_name = "Maneuver Group for " + feature["Entity"]
+                    man_group_name = f"Maneuver group for {entity}"
                     man_group.set("name", man_group_name)
 
-                    actors = etree.SubElement(man_group, "Actors")
-                    actors.set("selectTriggeringEntities", "false")
-                    actors_entity_ref = etree.SubElement(actors, "EntityRef")
-                    actors_entity_ref.set("entityRef", entity)
+                    query = f"\"Entity\" is '{entity}'"
+                    request = QgsFeatureRequest().setFilterExpression(query)
+                    for feature in layer.getFeatures(request):
+                        man_id = feature["id"]
+                        entity = feature["Entity"]
+                        man_type = feature["Maneuver Type"]
+                        entity_man_type = feature["Entity: Maneuver Type"]
+                        global_act_type = feature["Global: Act Type"]
 
-                    maneuver = etree.SubElement(man_group, "Maneuver")
-                    maneuver_name = "Maneuver ID " + str(feature["id"])
-                    maneuver.set("name", maneuver_name)
-                    event = etree.SubElement(maneuver, "Event")
-                    event_name = "Event Maneuver ID " + str(feature["id"])
-                    event.set("name", event_name)
-                    event.set("priority", "overwrite")
+                        actors = etree.SubElement(man_group, "Actors")
+                        actors.set("selectTriggeringEntities", "false")
+                        actors_entity_ref = etree.SubElement(actors, "EntityRef")
+                        actors_entity_ref.set("entityRef", entity)
 
-                    if man_type == "Entity Maneuvers":
-                        if entity_man_type == "Waypoint":
-                            self.get_waypoints(man_id, event)
+                        maneuver = etree.SubElement(man_group, "Maneuver")
+                        maneuver_name = "Maneuver ID " + str(feature["id"])
+                        maneuver.set("name", maneuver_name)
+                        event = etree.SubElement(maneuver, "Event")
+                        event_name = "Event Maneuver ID " + str(feature["id"])
+                        event.set("name", event_name)
+                        event.set("priority", "overwrite")
 
-                    elif man_type == "Global Actions":
-                        if global_act_type == "InfrastructureAction":
-                            action = etree.SubElement(event, "Action")
-                            action.set("name", "Traffic Light Maneuver ID " + str(feature["id"]))
-                            global_action = etree.SubElement(action, "GlobalAction")
-                            infra_action = etree.SubElement(global_action, "InfrastructureAction")
-                            traffic_signal_action = etree.SubElement(infra_action, "TrafficSignalAction")
-                            traffic_signal_state = etree.SubElement(traffic_signal_action, "TrafficSignalStateAction")
-                            traffic_id = "id=" + str(feature["Infra: Traffic Light ID"])
-                            traffic_signal_state.set("name", traffic_id)
-                            traffic_signal_state.set("state", feature["Infra: Traffic Light State"])
+                        if man_type == "Entity Maneuvers":
+                            if entity_man_type == "Waypoint":
+                                self.get_waypoints(man_id, event)
+                            elif entity_man_type == "Longitudinal":
+                                self.get_longitudinal_maneuvers(man_id, event)
+                            elif entity_man_type == "Lateral":
+                                self.get_lateral_maneuvers(man_id, event)
 
-                    self.get_maneuver_start_trigger(feature, event)
+                        elif man_type == "Global Actions":
+                            if global_act_type == "InfrastructureAction":
+                                action = etree.SubElement(event, "Action")
+                                action.set("name", "Traffic Light Maneuver ID " + str(feature["id"]))
+                                global_action = etree.SubElement(action, "GlobalAction")
+                                infra_action = etree.SubElement(global_action, "InfrastructureAction")
+                                traffic_signal_action = etree.SubElement(infra_action, "TrafficSignalAction")
+                                traffic_signal_state = etree.SubElement(traffic_signal_action, "TrafficSignalStateAction")
+                                traffic_id = "id=" + str(feature["Infra: Traffic Light ID"])
+                                traffic_signal_state.set("name", traffic_id)
+                                traffic_signal_state.set("state", feature["Infra: Traffic Light State"])
+
+                        self.get_maneuver_start_trigger(feature, event)
         else:
             # No maneuvers defined by user
             man_group = etree.SubElement(act, "ManeuverGroup")
@@ -645,7 +664,8 @@ class GenerateXML():
             event: [XML element]
         """
         action = etree.SubElement(event, "Action")
-        action.set("name", "OSC Generated Action")
+        action_name = f"Action for Manuever ID {maneuver_id}"
+        action.set("name", action_name)
         private_action = etree.SubElement(action, "PrivateAction")
         routing_act = etree.SubElement(private_action, "RoutingAction")
         assign_route = etree.SubElement(routing_act, "AssignRouteAction")
@@ -654,8 +674,8 @@ class GenerateXML():
         route.set("closed", "false")
 
         waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
-        expression = f"\"Maneuver ID\" is '{maneuver_id}'"
-        request = QgsFeatureRequest().setFilterExpression(expression)
+        query = f"\"Maneuver ID\" is '{maneuver_id}'"
+        request = QgsFeatureRequest().setFilterExpression(query)
         for feature in waypoint_layer.getFeatures(request):
             waypoint = etree.SubElement(route, "Waypoint")
             waypoint.set("routeStrategy", feature["Route Strategy"])
@@ -665,6 +685,112 @@ class GenerateXML():
             world_position.set("y", str(feature["Pos Y"]))
             world_position.set("z", "0.2")
             world_position.set("h", str(feature["Orientation"]))
+
+    def get_longitudinal_maneuvers(self, maneuver_id, event):
+        """
+        Writes waypoints with the same maneuver ID.
+
+        Args:
+            maneuver_id: [int] used to match waypoints to same maneuver
+            event: [XML element]
+        """
+        action = etree.SubElement(event, "Action")
+        action_name = f"Action for Manuever ID {maneuver_id}"
+        action.set("name", action_name)
+        private_action = etree.SubElement(action, "PrivateAction")
+        long_act = etree.SubElement(private_action, "LongitudinalAction")
+
+        long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+        expression = f"\"Maneuver ID\" is '{maneuver_id}'"
+        request = QgsFeatureRequest().setFilterExpression(expression)
+        for feature in long_man_layer.getFeatures(request):
+            act_type = feature["Type"]
+            if act_type == "SpeedAction":
+                speed_act = etree.SubElement(long_act, act_type)
+                speed_act_dynamics = etree.SubElement(speed_act, "SpeedActionDynamics")
+                speed_act_dynamics.set("dynamicsShape", feature["Dynamics Shape"])
+                speed_act_dynamics.set("value", str(feature["Dynamics Value"]))
+                speed_act_dynamics.set("dynamicsDimension", feature["Dynamics Dimension"])
+
+                speed_target = etree.SubElement(speed_act, "SpeedActionTarget")
+                speed_target_type = feature["Speed Target"]
+                if speed_target_type == "RelativeTargetSpeed":
+                    relative_target_speed = etree.SubElement(speed_target, speed_target_type)
+                    relative_target_speed.set("entityRef", feature["Ref Entity"])
+                    relative_target_speed.set("value", str(feature["Target Speed"]))
+                    relative_target_speed.set("speedTargetValueType", feature["Target Type"])
+                    relative_target_speed.set("continuous", str(feature["Continuous"]).lower())
+                elif speed_target_type == "AbsoluteTargetSpeed":
+                    absolute_target_speed = etree.SubElement(speed_target, speed_target_type)
+                    absolute_target_speed.set("value", str(feature["Target Speed"]))
+
+            elif act_type == "LongitudinalDistanceAction":
+                long_dist_act = etree.SubElement(long_act, act_type)
+                long_dist_act.set("entityRef", feature["Ref Entity"])
+                long_dist_act.set("freespace", str(feature["Freespace"]).lower())
+                long_dist_act.set("continuous", str(feature["Continuous"]).lower())
+                dynamic_constraints = etree.SubElement(long_dist_act, "DynamicConstraints")
+                dynamic_constraints.set("maxAcceleration", str(feature["Max Acceleration"]))
+                dynamic_constraints.set("maxDeceleration", str(feature["Max Deceleration"]))
+                dynamic_constraints.set("maxSpeed", str(feature["Max Speed"]))
+
+    def get_lateral_maneuvers(self, maneuver_id, event):
+        """
+        Writes waypoints with the same maneuver ID.
+
+        Args:
+            maneuver_id: [int] used to match waypoints to same maneuver
+            event: [XML element]
+        """
+        action = etree.SubElement(event, "Action")
+        action_name = f"Action for Manuever ID {maneuver_id}"
+        action.set("name", action_name)
+        private_action = etree.SubElement(action, "PrivateAction")
+        lat_act = etree.SubElement(private_action, "LateralAction")
+
+        lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
+        expression = f"\"Maneuver ID\" is '{maneuver_id}'"
+        request = QgsFeatureRequest().setFilterExpression(expression)
+        for feature in lat_man_layer.getFeatures(request):
+            act_type = feature["Type"]
+            if act_type == "LaneChangeAction":
+                lane_change_act = etree.SubElement(lat_act, act_type)
+                lane_change_dynamics = etree.SubElement(lane_change_act, "LaneChangeActionDynamics")
+                lane_change_dynamics.set("dynamicsShape", feature["Dynamics Shape"])
+                lane_change_dynamics.set("value", str(feature["Dynamics Value"]))
+                lane_change_dynamics.set("dynamicsDimension", feature["Dynamics Dimension"])
+
+                lane_target = etree.SubElement(lane_change_act, "LaneChangeTarget")
+                target_choice = feature["Lane Target"]
+                if target_choice == "RelativeTargetLane":
+                    relative_target_lane = etree.SubElement(lane_target, target_choice)
+                    relative_target_lane.set("entityRef", feature["Ref Entity"])
+                    relative_target_lane.set("value", feature["Lane Target Value"])
+                elif target_choice == "AbsoluteTargetLane":
+                    absolute_target_lane = etree.SubElement(lane_target, target_choice)
+                    absolute_target_lane.set("value", feature["Lane Target Value"])
+
+            elif act_type == "LaneOffsetAction":
+                lane_offset_act = etree.SubElement(lat_act, act_type)
+                lane_offset_dynamics = etree.SubElement(lane_offset_act, "LaneOffsetActionDynamics")
+                lane_offset_dynamics.set("maxLateralAcc", str(feature["Max Lateral Acceleration"]))
+                lane_offset_dynamics.set("dynamicsShape", feature["Dynamics Shape"])
+                lane_target = etree.SubElement(lane_offset_act, "LaneOffsetTarget")
+                target_choice = feature["Lane Target"]
+                if target_choice == "RelativeTargetLaneOffset":
+                    relative_target_lane = etree.SubElement(lane_target, target_choice)
+                    relative_target_lane.set("entityRef", feature["Ref Entity"])
+                    relative_target_lane.set("value", feature["Lane Target Value"])
+                elif target_choice == "AbsoluteTargetLaneOffset":
+                    absolute_target_lane = etree.SubElement(lane_target, target_choice)
+                    absolute_target_lane.set("value", feature["Lane Target Value"])
+
+            elif act_type == "LateralDistanceAction":
+                lat_dist_act = etree.SubElement(lat_act, act_type)
+                lat_dict_dynamics = etree.SubElement(lat_dist_act, "DynamicConstraints")
+                lat_dict_dynamics.set("maxAcceleration", str(feature["Max Acceleration"]))
+                lat_dict_dynamics.set("maxDeceleration", str(feature["Max Deceleration"]))
+                lat_dict_dynamics.set("maxSpeed", str(feature["Max Speed"]))
 
     def get_maneuver_start_trigger(self, feature, event):
         """
@@ -677,7 +803,7 @@ class GenerateXML():
         start_trigger = etree.SubElement(event, "StartTrigger")
         cond_group = etree.SubElement(start_trigger, "ConditionGroup")
         cond = etree.SubElement(cond_group, "Condition")
-        cond_name = "Condition for " + feature["Entity"]
+        cond_name = f'Condition for Maneuver ID {str(feature["id"])}'
         cond.set("name", cond_name)
         cond.set("delay", "0")
         cond.set("conditionEdge", "rising")
@@ -851,7 +977,7 @@ class GenerateXML():
         xosc_file.close()
 
         if self._warning_message:
-            text = f"Exported OpenSCENARIO file to {self.filepath} with warning: \n\n"
+            text = f"Exported OpenSCENARIO file to {self._filepath} with warning: \n\n"
             text += "\n".join(self._warning_message)
         else:
             text = f"Successfully exported OpenSCENARIO file to {self._filepath}"

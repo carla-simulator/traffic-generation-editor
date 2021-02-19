@@ -41,10 +41,13 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.addManeuver_Button.pressed.connect(self.add_maneuvers)
         self.entityManeuverType.currentTextChanged.connect(self.change_maneuver)
         self.waypointOrientation_useLane.stateChanged.connect(self.override_orientation)
-        self.ConditionType.currentTextChanged.connect(self.update_start_trigger_condition)
-        self.ValueCond.currentTextChanged.connect(self.update_value_condition_parameters)
-        self.EntityCond.currentTextChanged.connect(self.update_entity_condition_parameters)
+        self.conditionType.currentTextChanged.connect(self.update_start_trigger_condition)
+        self.valueCond.currentTextChanged.connect(self.update_value_condition_parameters)
+        self.entityCond.currentTextChanged.connect(self.update_entity_condition_parameters)
         self.entitySelection.currentTextChanged.connect(self.update_ref_entity)
+        self.lateral_Type.currentTextChanged.connect(self.change_lateral_type)
+        self.long_Type.currentTextChanged.connect(self.change_longitudinal_type)
+        self.long_SpeedTarget.currentTextChanged.connect(self.change_longitudinal_speed_target)
 
         self.toggleTrafficLightLabels_Button.pressed.connect(self.toggle_traffic_light_labels)
         self.refreshTrafficLights_Button.pressed.connect(self.refresh_traffic_lights)
@@ -52,6 +55,8 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self._waypoint_layer = None
         self._maneuver_layer = None
+        self._long_man_layer = None
+        self._lat_man_layer = None
         self._man_id = None
         self._traffic_labels_on = False
         self._traffic_labels_setup = False
@@ -95,11 +100,12 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
         label_settings = QgsPalLayerSettings()
         label_settings.isExpression = True
-        label_settings.fieldName = "concat('ManID: ', \"Maneuver ID\", ' ', \"Entity\", ' - ', \"Waypoint No\")"
+        label_name = "concat('ManID: ', \"Maneuver ID\", ' ', \"Entity\", ' - ', \"Waypoint No\")"
+        label_settings.fieldName = label_name
         self._waypoint_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
         self._waypoint_layer.setLabelsEnabled(True)
 
-        # Maneuvers
+        # Maneuvers + Start Triggers
         if not QgsProject.instance().mapLayersByName("Maneuvers"):
             maneuver_layer = QgsVectorLayer("None", "Maneuvers", "memory")
             QgsProject.instance().addMapLayer(maneuver_layer, False)
@@ -145,18 +151,86 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
             QgsMessageLog.logMessage(message, level=Qgis.Info)
         else:
-            message = "Using existing maneuvers layer added"
+            message = "Using existing maneuvers layer"
             iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
             QgsMessageLog.logMessage(message, level=Qgis.Info)
 
         self._maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
+
+        # Longitudinal Maneuvers
+        if not QgsProject.instance().mapLayersByName("Longitudinal Maneuvers"):
+            long_man_layer = QgsVectorLayer("None", "Longitudinal Maneuvers", "memory")
+            QgsProject.instance().addMapLayer(long_man_layer, False)
+            osc_layer.addLayer(long_man_layer)
+            # Setup layer attributes
+            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
+                               QgsField("Type", QVariant.String),
+                               QgsField("Speed Target", QVariant.String),
+                               QgsField("Ref Entity", QVariant.String),
+                               QgsField("Dynamics Shape", QVariant.String),
+                               QgsField("Dynamics Dimension", QVariant.String),
+                               QgsField("Dynamics Value", QVariant.Double),
+                               QgsField("Target Type", QVariant.String),
+                               QgsField("Target Speed", QVariant.Double),
+                               QgsField("Continuous", QVariant.Bool),
+                               QgsField("Freespace", QVariant.Bool),
+                               QgsField("Max Acceleration", QVariant.Double),
+                               QgsField("Max Deceleration", QVariant.Double),
+                               QgsField("Max Speed", QVariant.Double)]
+            data_input = long_man_layer.dataProvider()
+            data_input.addAttributes(data_attributes)
+            long_man_layer.updateFields()
+
+            message = "Longitudinal maneuvers layer added"
+            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
+        else:
+            message = "Using existing longitudinal maneuvers layer"
+            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
+
+        self._long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+
+        # Lateral Maneuvers
+        if not QgsProject.instance().mapLayersByName("Lateral Maneuvers"):
+            lat_man_layer = QgsVectorLayer("None", "Lateral Maneuvers", "memory")
+            QgsProject.instance().addMapLayer(lat_man_layer, False)
+            osc_layer.addLayer(lat_man_layer)
+            # Setup layer attributes
+            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
+                               QgsField("Type", QVariant.String),
+                               QgsField("Lane Target", QVariant.String),
+                               QgsField("Ref Entity", QVariant.String),
+                               QgsField("Dynamics Shape", QVariant.String),
+                               QgsField("Dynamics Dimension", QVariant.String),
+                               QgsField("Dynamics Value", QVariant.Double),
+                               QgsField("Lane Target Value", QVariant.String),
+                               QgsField("Max Lateral Acceleration", QVariant.Double),
+                               QgsField("Max Acceleration", QVariant.Double),
+                               QgsField("Max Deceleration", QVariant.Double),
+                               QgsField("Max Speed", QVariant.Double)]
+            data_input = lat_man_layer.dataProvider()
+            data_input.addAttributes(data_attributes)
+            lat_man_layer.updateFields()
+
+            message = "Lateral maneuvers layer added"
+            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
+        else:
+            message = "Using existing lateral maneuvers layer"
+            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
+
+        self._lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
 
     def refresh_entity(self):
         """
         Gets list of entities spawned on map and populates drop down
         """
         self.entitySelection.clear()
-        self.refEntitySelection.clear()
+        self.entityTrig_RefEntity.clear()
+        self.lateral_RefEntity.clear()
+        self.long_RefEntity.clear()
         entities = []
         if QgsProject.instance().mapLayersByName("Vehicles - Ego"):
             layer = QgsProject.instance().mapLayersByName("Vehicles - Ego")[0]
@@ -177,15 +251,26 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 entities.append(ped_id)
 
         self.entitySelection.addItems(entities)
-        self.refEntitySelection.addItems(entities)
+        self.entityTrig_RefEntity.addItems(entities)
+        self.lateral_RefEntity.addItems(entities)
+        self.long_RefEntity.addItems(entities)
 
     def update_ref_entity(self):
         """
         Updates start trigger reference entity to match selected entity by default.
         """
         selected_entity = self.entitySelection.currentText()
-        index = self.refEntitySelection.findText(selected_entity)
-        self.refEntitySelection.setCurrentIndex(index)
+        # Trigger
+        index = self.entityTrig_RefEntity.findText(selected_entity)
+        self.entityTrig_RefEntity.setCurrentIndex(index)
+
+        # Lateral reference entity
+        index = self.lateral_RefEntity.findText(selected_entity)
+        self.lateral_RefEntity.setCurrentIndex(index)
+
+        # Longitudinal reference entity
+        index = self.long_RefEntity.findText(selected_entity)
+        self.long_RefEntity.setCurrentIndex(index)
 
     def override_orientation(self):
         """
@@ -247,25 +332,30 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
     def add_maneuvers(self):
         """
-        Spawn waypoints on the map.
+        Insert maneuvers
         """
         self.get_maneuver_id()
 
         canvas = iface.mapCanvas()
 
         if self.maneuverType.currentText() == "Entity Maneuvers":
-            entity = self.entitySelection.currentText()
-            if self.waypointOrientation_useLane.isChecked():
-                entity_orientation = None
-            else:
-                entity_orientation = math.radians(float(self.waypointOrientation.text()))
+            if self.entityManeuverType.currentText() == "Waypoint":
+                entity = self.entitySelection.currentText()
+                if self.waypointOrientation_useLane.isChecked():
+                    entity_orientation = None
+                else:
+                    entity_orientation = math.radians(float(self.waypointOrientation.text()))
 
-            entity_attributes = {"Maneuver ID": self._man_id,
-                                 "Entity":entity,
-                                 "Orientation":entity_orientation,
-                                 "Route Strat":self.waypointStrategy.currentText()}
-            tool = PointTool(canvas, self._waypoint_layer, entity_attributes, layer_type="Waypoints")
-            canvas.setMapTool(tool)
+                entity_attributes = {"Maneuver ID": self._man_id,
+                                    "Entity":entity,
+                                    "Orientation":entity_orientation,
+                                    "Route Strat":self.waypointStrategy.currentText()}
+                tool = PointTool(canvas, self._waypoint_layer, entity_attributes, layer_type="Waypoints")
+                canvas.setMapTool(tool)
+            elif self.entityManeuverType.currentText() == "Longitudinal":
+                self.save_longitudinal_attributes()
+            elif self.entityManeuverType.currentText() == "Lateral":
+                self.save_lateral_attributes()
         elif self.maneuverType.currentText() == "Global Actions":
             pass
 
@@ -277,10 +367,108 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """
         if self.entityManeuverType.currentText() == "Waypoint":
             self.waypointGroup.setEnabled(True)
-            self.actorMoveGroup.setDisabled(True)
-        elif self.entityManeuverType.currentText() == "Move on Condition":
+            self.lateralGroup.setDisabled(True)
+            self.longitudinalGroup.setDisabled(True)
+        elif self.entityManeuverType.currentText() == "Longitudinal":
             self.waypointGroup.setDisabled(True)
-            self.actorMoveGroup.setEnabled(True)
+            self.lateralGroup.setDisabled(True)
+            self.longitudinalGroup.setEnabled(True)
+        elif self.entityManeuverType.currentText() == "Lateral":
+            self.waypointGroup.setDisabled(True)
+            self.lateralGroup.setEnabled(True)
+            self.longitudinalGroup.setDisabled(True)
+
+    def change_lateral_type(self):
+        """
+        Enables / disables fields for lateral maneuvers based on type of lateral maneuvers.
+        """
+        if self.lateral_Type.currentText() == "LaneChangeAction":
+            self.lateral_DynamicsDim.setEnabled(True)
+            self.lateral_DynamicsShape.setEnabled(True)
+            self.lateral_DynamicsValue.setEnabled(True)
+            self.lateral_LaneTargetValue.setEnabled(True)
+            self.lateral_RefEntity.setEnabled(True)
+            self.lateral_LaneTarget.setEnabled(True)
+            self.lateral_MaxLatAccel.setDisabled(True)
+            self.lateral_MaxAccel.setDisabled(True)
+            self.lateral_MaxDecel.setDisabled(True)
+            self.lateral_MaxSpeed.setDisabled(True)
+            lane_targets = ["RelativeTargetLane", "AbsoluteTargetLane"]
+            self.lateral_LaneTarget.clear()
+            self.lateral_LaneTarget.addItems(lane_targets)
+
+        elif self.lateral_Type.currentText() == "LaneOffsetAction":
+            self.lateral_MaxLatAccel.setEnabled(True)
+            self.lateral_DynamicsShape.setEnabled(True)
+            self.lateral_LaneTargetValue.setEnabled(True)
+            self.lateral_RefEntity.setEnabled(True)
+            self.lateral_LaneTarget.setEnabled(True)
+            self.lateral_MaxAccel.setDisabled(True)
+            self.lateral_MaxDecel.setDisabled(True)
+            self.lateral_MaxSpeed.setDisabled(True)
+            self.lateral_DynamicsDim.setDisabled(True)
+            self.lateral_DynamicsValue.setDisabled(True)
+            lane_targets = ["RelativeTargetLaneOffset", "AbsoluteTargetLaneOffset"]
+            self.lateral_LaneTarget.clear()
+            self.lateral_LaneTarget.addItems(lane_targets)
+
+        elif self.lateral_Type.currentText() == "LateralDistanceAction":
+            self.lateral_MaxAccel.setEnabled(True)
+            self.lateral_MaxDecel.setEnabled(True)
+            self.lateral_MaxSpeed.setEnabled(True)
+            self.lateral_MaxLatAccel.setDisabled(True)
+            self.lateral_LaneTargetValue.setDisabled(True)
+            self.lateral_DynamicsDim.setDisabled(True)
+            self.lateral_DynamicsShape.setDisabled(True)
+            self.lateral_DynamicsValue.setDisabled(True)
+            self.lateral_RefEntity.setDisabled(True)
+            self.lateral_LaneTarget.setDisabled(True)
+
+    def change_longitudinal_type(self):
+        """
+        Enables / disables fields for longitudinal maneuvers based on type.
+        """
+        if self.long_Type.currentText() == "SpeedAction":
+            self.long_RefEntity.setEnabled(True)
+            self.long_SpeedTarget.setEnabled(True)
+            self.long_DynamicsShape.setEnabled(True)
+            self.long_DynamicsDim.setEnabled(True)
+            self.long_DynamicsValue.setEnabled(True)
+            self.long_TargetType.setEnabled(True)
+            self.long_TargetSpeedValue.setEnabled(True)
+            self.long_Continuous.setEnabled(True)
+            self.long_MaxAccel.setDisabled(True)
+            self.long_MaxDecel.setDisabled(True)
+            self.long_MaxSpeed.setDisabled(True)
+            self.long_Freespace.setDisabled(True)
+        elif self.long_Type.currentText() == "LongitudinalDistanceAction":
+            self.long_MaxAccel.setEnabled(True)
+            self.long_MaxDecel.setEnabled(True)
+            self.long_MaxSpeed.setEnabled(True)
+            self.long_RefEntity.setEnabled(True)
+            self.long_Continuous.setEnabled(True)
+            self.long_Freespace.setEnabled(True)
+            self.long_SpeedTarget.setDisabled(True)
+            self.long_DynamicsShape.setDisabled(True)
+            self.long_DynamicsDim.setDisabled(True)
+            self.long_DynamicsValue.setDisabled(True)
+            self.long_TargetType.setDisabled(True)
+            self.long_TargetSpeedValue.setDisabled(True)
+
+    def change_longitudinal_speed_target(self):
+        """
+        Enables / disables fields for longitudinal maneuvers based on type.
+        """
+        if self.long_SpeedTarget.currentText() == "RelativeTargetSpeed":
+            self.long_RefEntity.setEnabled(True)
+            self.long_TargetSpeedValue.setEnabled(True)
+            self.long_TargetType.setEnabled(True)
+            self.long_Continuous.setEnabled(True)
+        elif self.long_SpeedTarget.currentText() == "AbsoluteTargetSpeed":
+            self.long_TargetSpeedValue.setEnabled(True)
+            self.long_RefEntity.setDisabled(True)
+            self.long_TargetType.setDisabled(True)
+            self.long_Continuous.setDisabled(True)
 
     def get_world_position(self):
         """
@@ -296,55 +484,55 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         Enables / disables parameters for Value Conditions based on condition selected.
         """
         # Parameter Reference
-        if self.ValueCond.currentText() == "ParameterCondition":
+        if self.valueCond.currentText() == "ParameterCondition":
             self.Value_ParamRef.setEnabled(True)
         else:
             self.Value_ParamRef.setDisabled(True)
 
         # Name
-        if (self.ValueCond.currentText() == "UserDefinedValueCondition"
-            or self.ValueCond.currentText() == "TrafficSignalCondition"):
+        if (self.valueCond.currentText() == "UserDefinedValueCondition"
+            or self.valueCond.currentText() == "TrafficSignalCondition"):
             self.Value_Name.setEnabled(True)
         else:
             self.Value_Name.setDisabled(True)
 
         # DateTime
-        if self.ValueCond.currentText() == "TimeOfDayCondition":
+        if self.valueCond.currentText() == "TimeOfDayCondition":
             self.Value_DateTime.setEnabled(True)
         else:
             self.Value_DateTime.setDisabled(True)
 
         # Value
-        if (self.ValueCond.currentText() == "ParameterCondition"
-            or self.ValueCond.currentText() == "SimulationTimeCondition"
-            or self.ValueCond.currentText() == "UserDefinedValueCondition"):
+        if (self.valueCond.currentText() == "ParameterCondition"
+            or self.valueCond.currentText() == "SimulationTimeCondition"
+            or self.valueCond.currentText() == "UserDefinedValueCondition"):
             self.Value_Value.setEnabled(True)
         else:
             self.Value_Value.setDisabled(True)
 
         # Rule
-        if (self.ValueCond.currentText() == "ParameterCondition"
-            or self.ValueCond.currentText() == "TimeOfDayCondition"
-            or self.ValueCond.currentText() == "SimulationTimeCondition"
-            or self.ValueCond.currentText() == "UserDefinedValueCondition"):
+        if (self.valueCond.currentText() == "ParameterCondition"
+            or self.valueCond.currentText() == "TimeOfDayCondition"
+            or self.valueCond.currentText() == "SimulationTimeCondition"
+            or self.valueCond.currentText() == "UserDefinedValueCondition"):
             self.Value_Rule.setEnabled(True)
         else:
             self.Value_Rule.setDisabled(True)
 
         # State
-        if self.ValueCond.currentText() == "TrafficSignalCondition":
+        if self.valueCond.currentText() == "TrafficSignalCondition":
             self.Value_State.setEnabled(True)
         else:
             self.Value_State.setDisabled(True)
 
         # Storyboard elements
-        if self.ValueCond.currentText() == "StoryboardElementStateCondition":
+        if self.valueCond.currentText() == "StoryboardElementStateCondition":
             self.StoryboardGroup.setEnabled(True)
         else:
             self.StoryboardGroup.setDisabled(True)
 
         # Traffic signal controller
-        if self.ValueCond.currentText() == "TrafficSignalControllerCondition":
+        if self.valueCond.currentText() == "TrafficSignalControllerCondition":
             self.TrafficSignalGroup.setEnabled(True)
         else:
             self.TrafficSignalGroup.setDisabled(True)
@@ -354,65 +542,65 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         Enables / disables parameters for Entity Conditions based on condition selected.
         """
         # Entity Ref
-        if (self.EntityCond.currentText() == "TimeHeadwayCondition"
-            or self.EntityCond.currentText() == "RelativeSpeedCondition"
-            or self.EntityCond.currentText() == "RelativeDistanceCondition"
-            or self.EntityCond.currentText() == "ReachPositionCondition"):
-            self.refEntitySelection.setEnabled(True)
+        if (self.entityCond.currentText() == "TimeHeadwayCondition"
+            or self.entityCond.currentText() == "RelativeSpeedCondition"
+            or self.entityCond.currentText() == "RelativeDistanceCondition"
+            or self.entityCond.currentText() == "ReachPositionCondition"):
+            self.entityTrig_RefEntity.setEnabled(True)
         else:
-            self.refEntitySelection.setDisabled(True)
+            self.entityTrig_RefEntity.setDisabled(True)
 
         # Duration
-        if (self.EntityCond.currentText() == "EndOfRoadCondition"
-            or self.EntityCond.currentText() == "OffroadCondition"
-            or self.EntityCond.currentText() == "StandStillCondition"):
+        if (self.entityCond.currentText() == "EndOfRoadCondition"
+            or self.entityCond.currentText() == "OffroadCondition"
+            or self.entityCond.currentText() == "StandStillCondition"):
             self.Entity_Duration.setEnabled(True)
         else:
             self.Entity_Duration.setDisabled(True)
 
         # Value (setting disabled)
-        if (self.EntityCond.currentText() == "EndOfRoadCondition"
-            or self.EntityCond.currentText() == "CollisionCondition"
-            or self.EntityCond.currentText() == "OffroadCondition"
-            or self.EntityCond.currentText() == "TimeToCollisionCondition"
-            or self.EntityCond.currentText() == "StandStillCondition"
-            or self.EntityCond.currentText() == "ReachPositionCondition"
-            or self.EntityCond.currentText() == "DistanceCondition"):
+        if (self.entityCond.currentText() == "EndOfRoadCondition"
+            or self.entityCond.currentText() == "CollisionCondition"
+            or self.entityCond.currentText() == "OffroadCondition"
+            or self.entityCond.currentText() == "TimeToCollisionCondition"
+            or self.entityCond.currentText() == "StandStillCondition"
+            or self.entityCond.currentText() == "ReachPositionCondition"
+            or self.entityCond.currentText() == "DistanceCondition"):
             self.Entity_Value.setDisabled(True)
         else:
             self.Entity_Value.setEnabled(True)
 
         # Rule (setting disabled)
-        if (self.EntityCond.currentText() == "EndOfRoadCondition"
-            or self.EntityCond.currentText() == "OffroadCondition"
-            or self.EntityCond.currentText() == "StandStillCondition"
-            or self.EntityCond.currentText() == "TraveledDistanceCondition"
-            or self.EntityCond.currentText() == "ReachPositionCondition"):
+        if (self.entityCond.currentText() == "EndOfRoadCondition"
+            or self.entityCond.currentText() == "OffroadCondition"
+            or self.entityCond.currentText() == "StandStillCondition"
+            or self.entityCond.currentText() == "TraveledDistanceCondition"
+            or self.entityCond.currentText() == "ReachPositionCondition"):
             self.Entity_Rule.setDisabled(True)
         else:
             self.Entity_Rule.setEnabled(True)
 
         # Relative Distance
-        if self.EntityCond.currentText() == "RelativeDistanceCondition":
+        if self.entityCond.currentText() == "RelativeDistanceCondition":
             self.Entity_RelDistType.setEnabled(True)
         else:
             self.Entity_RelDistType.setDisabled(True)
 
         # Freespace
-        if (self.EntityCond.currentText() == "TimeHeadwayCondition"
-            or self.EntityCond.currentText() == "RelativeDistanceCondition"):
+        if (self.entityCond.currentText() == "TimeHeadwayCondition"
+            or self.entityCond.currentText() == "RelativeDistanceCondition"):
             self.Entity_Freespace.setEnabled(True)
         else:
             self.Entity_Freespace.setDisabled(True)
 
         # Along Route
-        if self.EntityCond.currentText() == "TimeHeadwayCondition":
+        if self.entityCond.currentText() == "TimeHeadwayCondition":
             self.Entity_AlongRoute.setEnabled(True)
         else:
             self.Entity_AlongRoute.setDisabled(True)
 
         # Position
-        if self.EntityCond.currentText() == "ReachPositionCondition":
+        if self.entityCond.currentText() == "ReachPositionCondition":
             self.Entity_PositionGroup.setEnabled(True)
         else:
             self.Entity_PositionGroup.setDisabled(True)
@@ -421,7 +609,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """
         Enables / disables groups based on trigger condition selected.
         """
-        if self.ConditionType.currentText() == "by Entity":
+        if self.conditionType.currentText() == "by Entity":
             self.EntityConditionGroup.setEnabled(True)
             self.ValueConditionGroup.setDisabled(True)
         else:
@@ -448,16 +636,16 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                self.maneuverType.currentText(),
                                self.entitySelection.currentText(),
                                self.entityManeuverType.currentText(),
-                               self.ConditionType.currentText(),
-                               self.EntityCond.currentText(),
-                               self.refEntitySelection.currentText(),
+                               self.conditionType.currentText(),
+                               self.entityCond.currentText(),
+                               self.entityTrig_RefEntity.currentText(),
                                float(self.Entity_Duration.text()),
                                float(self.Entity_Value.text()),
                                self.Entity_Rule.currentText(),
                                self.Entity_RelDistType.currentText(),
                                self.Entity_Freespace.isChecked(),
                                self.Entity_AlongRoute.isChecked(),
-                               self.ValueCond.currentText(),
+                               self.valueCond.currentText(),
                                self.Value_ParamRef.text(),
                                self.Value_Name.text(),
                                self.Value_DateTime.dateTime().toString("yyyy-MM-ddThh:mm:ss"),
@@ -477,6 +665,54 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                float(self.entityPositionY.text()),
                                float(self.entityHeading.text())])
         self._maneuver_layer.dataProvider().addFeature(feature)
+
+    def save_longitudinal_attributes(self):
+        """
+        Gets longudinal maneuver attributes and saves into QGIS attributes table.
+        """
+        feature = QgsFeature()
+        feature.setAttributes([self._man_id,
+                               self.long_Type.currentText(),
+                               self.long_SpeedTarget.currentText(),
+                               self.long_RefEntity.currentText(),
+                               self.long_DynamicsShape.currentText(),
+                               self.long_DynamicsDim.currentText(),
+                               float(self.long_DynamicsValue.text()),
+                               self.long_TargetType.currentText(),
+                               float(self.long_TargetSpeedValue.text()),
+                               self.long_Continuous.isChecked(),
+                               self.long_Freespace.isChecked(),
+                               float(self.long_MaxAccel.text()),
+                               float(self.long_MaxDecel.text()),
+                               float(self.long_MaxSpeed.text())])
+        self._long_man_layer.dataProvider().addFeature(feature)
+
+        message = "Maneuver added"
+        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+        QgsMessageLog.logMessage(message, level=Qgis.Info)
+
+    def save_lateral_attributes(self):
+        """
+        Gets lateral maneuver attributes and saves into QGIS attributes table.
+        """
+        feature = QgsFeature()
+        feature.setAttributes([self._man_id,
+                               self.lateral_Type.currentText(),
+                               self.lateral_LaneTarget.currentText(),
+                               self.lateral_RefEntity.currentText(),
+                               self.lateral_DynamicsShape.currentText(),
+                               self.lateral_DynamicsDim.currentText(),
+                               float(self.lateral_DynamicsValue.text()),
+                               self.lateral_LaneTargetValue.text(),
+                               float(self.lateral_MaxLatAccel.text()),
+                               float(self.lateral_MaxAccel.text()),
+                               float(self.lateral_MaxDecel.text()),
+                               float(self.lateral_MaxSpeed.text())])
+        self._lat_man_layer.dataProvider().addFeature(feature)
+
+        message = "Maneuver added"
+        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+        QgsMessageLog.logMessage(message, level=Qgis.Info)
 
 #pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):

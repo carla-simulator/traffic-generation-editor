@@ -3,14 +3,14 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=OSC Generator
+name=OpenSCENARIO Editor Toolkit
 qgisMinimumVersion=3.0
-description=This plugin generates OpenSCENARIO XOSC files.
+description=This plugin allows users to create OpenSCENARIO scenarios and ability to run scenarios in CARLA.
 version=0.1
 author=Intel Corp
 email=intel.com
 
-about=Enables faster and easier generation of OpenSCENARIO XOSC files. Icons made by Freepik from Flaticon.
+about=Enables faster and easier generation of OpenSCENARIO XOSC files. Also enables connection to CARLA. Icons made by Freepik from Flaticon.
 
 tracker=http://bugs
 repository=http://repo

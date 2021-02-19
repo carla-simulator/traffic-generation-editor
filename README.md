@@ -1,10 +1,52 @@
 # QGIS OpenSCENARIO Generation Plugin
 
+## Table of Contents
+- [QGIS OpenSCENARIO Generation Plugin](#qgis-openscenario-generation-plugin)
+  - [Table of Contents](#table-of-contents)
+    - [Prerequisites](#prerequisites)
+      - [Python Packages](#python-packages)
+  - [Installation](#installation)
+  - [Features](#features)
+  - [OpenSCENARIO Support List](#openscenario-support-list)
+    - [Environment](#environment)
+    - [Actors](#actors)
+    - [Static Objects (Props)](#static-objects-props)
+    - [End Evaluation KPIs](#end-evaluation-kpis)
+    - [Entity Maneuvers](#entity-maneuvers)
+    - [Global Maneuvers](#global-maneuvers)
+  - [Guide](#guide)
+    - [Prerequisite](#prerequisite)
+    - [Toolbar UI](#toolbar-ui)
+    - [Adding Environment Variables](#adding-environment-variables)
+    - [Adding Vehicles](#adding-vehicles)
+    - [Adding Pedestrians](#adding-pedestrians)
+    - [Removing Vehicles or Pedestrians](#removing-vehicles-or-pedestrians)
+    - [Adding Maneuvers](#adding-maneuvers)
+    - [Removing Maneuvers and Waypoints](#removing-maneuvers-and-waypoints)
+    - [Connecting to CARLA](#connecting-to-carla)
+    - [Env variables](#env-variables)
+    - [Adding Camera](#adding-camera)
+      - [Place Camera Manually:](#place-camera-manually)
+      - [Place Camera Automatically:](#place-camera-automatically)
+    - [Play Scenario](#play-scenario)
+    - [Stop Scenario](#stop-scenario)
+ 
+
 ### Prerequisites
 - Python 3.6
 - [QGIS 3](https://www.qgis.org/)
 - [CARLA AD Map plugin version 2.4.2 and above](https://github.com/carla-simulator/map/releases)
+- [CARLA](https://github.com/carla-simulator/carla/releases/) (Version >= 0.9.10)
+- [CARLA Scenario Runner](https://github.com/carla-simulator/scenario_runner/releases)
+
+#### Python Packages
+- [pygame package](https://pypi.org/project/pygame/)
 - [defusedxml package](https://pypi.org/project/defusedxml/)
+
+Python packages can be installed using the supplied `requirements.txt` by:
+```bash
+pip3 install --user -r /path/to/requirements.txt
+```
 
 ## Installation
 1. Download the repo as a zip file in GitHub (`Code > Download ZIP`).
@@ -15,18 +57,17 @@
 
 ![Install from ZIP](Docs/OSCGenerator_InstallZIP.png)
 
-4. Change to `Installed` tab and make sure `OSC Generator` is enabled.
+4. Change to `Installed` tab and make sure `OpenSCENARIO Editor Toolkit` is enabled.
 5. Enjoy!
   
 ## Features
 - Place entiites onto loaded OpenDRIVE map (through AD Map plugin)
 - Add maneuvers to entities
-  - Current support for waypoints only
 - Add global maneuvers
   - Current support for traffic light actions only
 - Set initial environment variables (cloud state, time of day, precipitation)
 
-## Support List
+## OpenSCENARIO Support List
 
 ✅ - Supported
 
@@ -75,8 +116,8 @@ Driven distance test | ✅ |
 Description | Support | Notes
 -- | -- | --
 Waypoints | ✅ | 
-Longitudinal | ❌ | 
-Lateral | ❌ | 
+Longitudinal | ✅ | 
+Lateral | ✅ | 
 Synchronize Action | ❌ | 
 Teleport Action | ❌ | 
 
@@ -104,6 +145,9 @@ Icon | Description
 <img src="icons/icon_maneuver.png" alt="Add maneuvers" width="50"/> | Add maneuvers
 <img src="icons/icon_endEval.png" alt="Add end evaluation KPIs" width="50"/> | Add end evaluation KPIs (Specific for Scenario Runner)
 <img src="icons/icon_code.png" alt="Export OpenSCENARIO" width="50"/> | Export OpenSCENARIO file
+<img src="icons/carla_logo.png" alt="Connect to CARLA instance" width="50"/> | Connect to carla instance 
+<img src="icons/video_cam.png" alt="Insert camera" width="50"/> | Add bird eye view camera 
+
 
 ### Adding Environment Variables
 1. Click on 'Edit environment' button to load dock widget.
@@ -169,8 +213,14 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 3. Entity maneuvers
    1. Choose entity to apply maneuver to, if entity is not listed, click on `Refresh entity list`.
    2. Set up the start triggers of the maneuvers using the `Triggers` tab.
-   3. Click on `Insert`, and click on the map to spawn as many waypoints as intended.
-   4. To end spawning of waypoints, click on the `Pan Map` tool (symbolized with a hand icon)
+   3. Choose type of maneuver (waypoints, longitudinal, lateral)
+      1. Waypoint Maneuvers
+         1. Choose waypoint strategy and whether to use lane heading or user-defined heading.
+         2. Click on `Insert`, and click on the map to spawn as many waypoints as intended.
+         3. To end spawning of waypoints, click on the `Pan Map` tool (symbolized with a hand icon)
+      2. Longitudinal and lateral maneuvers
+         1. Choose the parameters.
+         2. Click on `Insert`.
 4. Global actions
    1. To enable/disable labels on traffic lights, press on `Toggle traffic light labels`.
    2. To refresh traffic light IDs, press on `Refresh traffic light IDs`.
@@ -184,6 +234,8 @@ _Note: It is important to set up the start triggers first before inserting the m
    2. Click on a point on the map.
    3. The coordinates of the click point will be updated in the UI.
 
+_Note: Stop triggers are currently not supported._
+
 ### Removing Maneuvers and Waypoints
 1. In `Layers` right click on layer and select `Open Attribute Table`.
    
@@ -194,3 +246,59 @@ _Note: It is important to set up the start triggers first before inserting the m
 4. Click on trash can to delete entity.
 5. Click on pencil icon to disable editing.
 6. When prompted to save changes, choose 'Yes'.
+
+### Connecting to CARLA
+
+### Env variables
+
+* For Scenario_Runner
+```bash
+export CARLA_ROOT=/path/to/your/carla/installation
+export SCENARIO_RUNNER_ROOT=/path/to/your/scenario/runner/installation
+export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla/dist/carla-<VERSION>.egg
+export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla/agents
+export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla
+export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI
+```
+1. Click on 'Carla-connect' button to load the dock widget.
+
+   ![Carla_connect Dock Widget](Docs/camera1.PNG)
+
+2. To change the map, Choose a map from drop down menu. 
+
+   ![Carla_connect Dock Widget town](Docs/camera2.PNG)
+
+3. Press on 'Change Map'
+
+_Note: To change environment settings, simply select the map and press 'Change Map' again. Previous map will be cleared and replaced with the updated ones._
+
+### Adding Camera 
+
+1. click on 'Add Camera' button to load Add camera dock widget. 
+
+    ![Add Camera](Docs/camera3.PNG)
+
+#### Place Camera Manually:
+
+* Select the height you want to place the bird eye camera from drop down menu. 
+
+    ![plot](Docs/camera4.PNG)
+
+* Click on 'Insert camera manually' button,  mouse pointer will change to cross-type pointer.
+* Click on desired map position to spawn camera.
+
+#### Place Camera Automatically:
+
+* To place camera automatically click on 'Auto Insert Camera'. This will find the centroid of all actors spawned and place a bird eye view camera 30m above the centriod positon. 
+
+_Note: To use Automatic Camera placement, make sure you have added at least 2 actors/vehicles._
+
+
+### Play Scenario
+
+1. To Run the created scenario, press on 'Play Scenario' button. 
+2. This will pop up a Pygame window, where created scenario can be visulaized. 
+
+### Stop Scenario
+
+1. To stop the Scenario click on 'Stop scenario button', this will destroy all actors and close py game window. 
