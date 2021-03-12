@@ -98,7 +98,7 @@ class GenerateXML():
         header.set("revMinor", "0")
         header.set("date", datetime.today().strftime("%Y-%m-%dT%H:%M:%S"))
         header.set("description", "Generated OpenSCENARIO File")
-        header.set("author", "Wen Jie")
+        header.set("author", "QGIS OSCGenerator Plugin")
 
     def get_road_network(self, root):
         """
@@ -558,6 +558,9 @@ class GenerateXML():
                                 traffic_signal_state.set("state", feature["Infra: Traffic Light State"])
 
                         self.get_maneuver_start_trigger(feature, event)
+
+                        if feature["Stop Trigger Enabled"]:
+                            self.get_maneuver_stop_trigger(feature, event)
         else:
             # No maneuvers defined by user
             man_group = etree.SubElement(act, "ManeuverGroup")
@@ -794,7 +797,7 @@ class GenerateXML():
 
     def get_maneuver_start_trigger(self, feature, event):
         """
-        Writes waypoints with the same maneuver ID.
+        Writes start triggers for maneuver.
 
         Args:
             feature: [dictionary] used to get variables from QGIS attributes table
@@ -813,84 +816,185 @@ class GenerateXML():
             trig_entity = etree.SubElement(by_entity_cond, "TriggeringEntities")
             trig_entity.set("triggeringEntitiesRule", "any")
             trig_entity_ref = etree.SubElement(trig_entity, "EntityRef")
-            trig_entity_ref.set("entityRef", feature["Entity: Ref Entity"])
+            trig_entity_ref.set("entityRef", feature["Start - Entity: Ref Entity"])
             entity_cond = etree.SubElement(by_entity_cond, "EntityCondition")
-            entity_cond_element = etree.SubElement(entity_cond, feature["Entity: Condition"])
+            entity_cond_element = etree.SubElement(entity_cond, feature["Start - Entity: Condition"])
 
-            if (feature["Entity: Condition"] == "EndOfRoadCondition"
-                or feature["Entity: Condition"] == "OffroadCondition"
-                or feature["Entity: Condition"] == "StandStillCondition"):
-                entity_cond_element.set("duration", str(feature["Entity: Duration"]))
+            if (feature["Start - Entity: Condition"] == "EndOfRoadCondition"
+                or feature["Start - Entity: Condition"] == "OffroadCondition"
+                or feature["Start - Entity: Condition"] == "StandStillCondition"):
+                entity_cond_element.set("duration", str(feature["Start - Entity: Duration"]))
 
-            if (feature["Entity: Condition"] == "TimeHeadwayCondition"
-                or feature["Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Entity: Condition"] == "RelativeDistanceCondition"):
-                entity_cond_element.set("entityRef", feature["Entity: Ref Entity"])
+            if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Start - Entity: Condition"] == "RelativeSpeedCondition"
+                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("entityRef", feature["Start - Entity: Ref Entity"])
 
-            if (feature["Entity: Condition"] == "TimeHeadwayCondition"
-                or feature["Entity: Condition"] == "AccelerationCondition"
-                or feature["Entity: Condition"] == "SpeedCondition"
-                or feature["Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Entity: Condition"] == "TraveledDistanceCondition"
-                or feature["Entity: Condition"] == "RelativeDistanceCondition"):
-                entity_cond_element.set("value", str(feature["Entity: Value"]))
+            if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Start - Entity: Condition"] == "AccelerationCondition"
+                or feature["Start - Entity: Condition"] == "SpeedCondition"
+                or feature["Start - Entity: Condition"] == "RelativeSpeedCondition"
+                or feature["Start - Entity: Condition"] == "TraveledDistanceCondition"
+                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("value", str(feature["Start - Entity: Value"]))
 
-            if (feature["Entity: Condition"] == "TimeHeadwayCondition"
-                or feature["Entity: Condition"] == "RelativeDistanceCondition"):
-                entity_cond_element.set("freespace", str(feature["Entity: Freespace"]).lower())
+            if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("freespace", str(feature["Start - Entity: Freespace"]).lower())
 
-            if feature["Entity: Condition"] == "TimeHeadwayCondtion":
-                entity_cond_element.set("alongRoute", str(feature["Entity: Along Route"]).lower())
+            if feature["Start - Entity: Condition"] == "TimeHeadwayCondtion":
+                entity_cond_element.set("alongRoute", str(feature["Start - Entity: Along Route"]).lower())
 
-            if (feature["Entity: Condition"] == "TimeHeadwayCondition"
-                or feature["Entity: Condition"] == "AccelerationCondition"
-                or feature["Entity: Condition"] == "SpeedCondition"
-                or feature["Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Entity: Condition"] == "RelativeDistanceCondition"):
-                entity_cond_element.set("rule", feature["Entity: Rule"])
+            if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Start - Entity: Condition"] == "AccelerationCondition"
+                or feature["Start - Entity: Condition"] == "SpeedCondition"
+                or feature["Start - Entity: Condition"] == "RelativeSpeedCondition"
+                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("rule", feature["Start - Entity: Rule"])
 
-            if feature["Entity: Condition"] == "ReachPositionCondition":
-                entity_cond_element.set("tolerance", str(feature["WorldPos: Tolerance"]))
+            if feature["Start - Entity: Condition"] == "ReachPositionCondition":
+                entity_cond_element.set("tolerance", str(feature["Start - WorldPos: Tolerance"]))
                 position = etree.SubElement(entity_cond_element, "Position")
                 world_position = etree.SubElement(position, "WorldPosition")
-                world_position.set("x", str(feature["WorldPos: X"]))
-                world_position.set("y", str(feature["WorldPos: Y"]))
+                world_position.set("x", str(feature["Start - WorldPos: X"]))
+                world_position.set("y", str(feature["Start - WorldPos: Y"]))
                 world_position.set("z", "0")
-                world_position.set("h", str(feature["WorldPos: Heading"]))
+                world_position.set("h", str(feature["Start - WorldPos: Heading"]))
 
         elif feature["Start Trigger"] == "by Value":
             by_value_cond = etree.SubElement(cond, "ByValueCondition")
-            value_cond_element = etree.SubElement(by_value_cond, feature["Value: Condition"])
+            value_cond_element = etree.SubElement(by_value_cond, feature["Start - Value: Condition"])
 
-            if feature["Value: Condition"] == "ParameterCondition":
-                value_cond_element.set("parameterRef", feature["Value: Param Ref"])
+            if feature["Start - Value: Condition"] == "ParameterCondition":
+                value_cond_element.set("parameterRef", feature["Start - Value: Param Ref"])
 
-            if (feature["Value: Condition"] == "UserDefinedValueCondition"
-                or feature["Value: Condition"] == "TrafficSignalCondition"):
-                value_cond_element.set("name", feature["Value: Name"])
+            if (feature["Start - Value: Condition"] == "UserDefinedValueCondition"
+                or feature["Start - Value: Condition"] == "TrafficSignalCondition"):
+                value_cond_element.set("name", feature["Start - Value: Name"])
 
-            if (feature["Value: Condition"] == "ParameterCondition"
-                or feature["Value: Condition"] == "SimulationTimeCondition"
-                or feature["Value: Condition"] == "UserDefinedValueCondition"):
-                value_cond_element.set("value", str(feature["Value: Value"]))
+            if (feature["Start - Value: Condition"] == "ParameterCondition"
+                or feature["Start - Value: Condition"] == "SimulationTimeCondition"
+                or feature["Start - Value: Condition"] == "UserDefinedValueCondition"):
+                value_cond_element.set("value", str(feature["Start - Value: Value"]))
 
-            if (feature["Value: Condition"] == "ParameterCondition"
-                or feature["Value: Condition"] == "TimeOfDayCondition"
-                or feature["Value: Condition"] == "SimulationTimeCondition"
-                or feature["Value: Condition"] == "UserDefinedValueCondition"):
-                value_cond_element.set("rule", feature["Value: Rule"])
+            if (feature["Start - Value: Condition"] == "ParameterCondition"
+                or feature["Start - Value: Condition"] == "TimeOfDayCondition"
+                or feature["Start - Value: Condition"] == "SimulationTimeCondition"
+                or feature["Start - Value: Condition"] == "UserDefinedValueCondition"):
+                value_cond_element.set("rule", feature["Start - Value: Rule"])
 
-            if feature["Value: Condition"] == "TrafficSignalCondition":
-                value_cond_element.set("state", feature["Value: State"])
+            if feature["Start - Value: Condition"] == "TrafficSignalCondition":
+                value_cond_element.set("state", feature["Start - Value: State"])
 
-            if feature["Value: Condition"] == "StoryboardElementStateCondition":
-                value_cond_element.set("storyboardElementType", feature["Value: Sboard Type"])
-                value_cond_element.set("storyboardElementRef", feature["Value: Sboard Element"])
-                value_cond_element.set("state", feature["Value: Sboard State"])
+            if feature["Start - Value: Condition"] == "StoryboardElementStateCondition":
+                value_cond_element.set("storyboardElementType", feature["Start - Value: Sboard Type"])
+                value_cond_element.set("storyboardElementRef", feature["Start - Value: Sboard Element"])
+                value_cond_element.set("state", feature["Start - Value: Sboard State"])
 
-            if feature["Value: Condition"] == "TrafficSignalControllerCondition":
+            if feature["Start - Value: Condition"] == "TrafficSignalControllerCondition":
                 value_cond_element.set("trafficSignalControllerRef", feature["Value: TController Ref"])
-                value_cond_element.set("phase", feature["Value: TController Phase"])
+                value_cond_element.set("phase", feature["Start - Value: TController Phase"])
+
+    def get_maneuver_stop_trigger(self, feature, event):
+        """
+        Writes stop triggers for maneuvers if enabled.
+
+        Args:
+            feature: [dictionary] used to get variables from QGIS attributes table
+            event: [XML element]
+        """
+        stop_trigger = etree.SubElement(event, "StopTrigger")
+        cond_group = etree.SubElement(stop_trigger, "ConditionGroup")
+        cond = etree.SubElement(cond_group, "Condition")
+        cond_name = f'Condition for Maneuver ID {str(feature["id"])}'
+        cond.set("name", cond_name)
+        cond.set("delay", "0")
+        cond.set("conditionEdge", "rising")
+
+        if feature["Stop Trigger"] == "by Entity":
+            by_entity_cond = etree.SubElement(cond, "ByEntityCondition")
+            trig_entity = etree.SubElement(by_entity_cond, "TriggeringEntities")
+            trig_entity.set("triggeringEntitiesRule", "any")
+            trig_entity_ref = etree.SubElement(trig_entity, "EntityRef")
+            trig_entity_ref.set("entityRef", feature["Stop - Entity: Ref Entity"])
+            entity_cond = etree.SubElement(by_entity_cond, "EntityCondition")
+            entity_cond_element = etree.SubElement(entity_cond, feature["Stop - Entity: Condition"])
+
+            if (feature["Stop - Entity: Condition"] == "EndOfRoadCondition"
+                or feature["Stop - Entity: Condition"] == "OffroadCondition"
+                or feature["Stop - Entity: Condition"] == "StandStillCondition"):
+                entity_cond_element.set("duration", str(feature["Stop - Entity: Duration"]))
+
+            if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeSpeedCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("entityRef", feature["Stop - Entity: Ref Entity"])
+
+            if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Stop - Entity: Condition"] == "AccelerationCondition"
+                or feature["Stop - Entity: Condition"] == "SpeedCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeSpeedCondition"
+                or feature["Stop - Entity: Condition"] == "TraveledDistanceCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("value", str(feature["Stop - Entity: Value"]))
+
+            if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("freespace", str(feature["Stop - Entity: Freespace"]).lower())
+
+            if feature["Stop - Entity: Condition"] == "TimeHeadwayCondtion":
+                entity_cond_element.set("alongRoute", str(feature["Stop - Entity: Along Route"]).lower())
+
+            if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
+                or feature["Stop - Entity: Condition"] == "AccelerationCondition"
+                or feature["Stop - Entity: Condition"] == "SpeedCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeSpeedCondition"
+                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                entity_cond_element.set("rule", feature["Stop - Entity: Rule"])
+
+            if feature["Stop - Entity: Condition"] == "ReachPositionCondition":
+                entity_cond_element.set("tolerance", str(feature["Stop - WorldPos: Tolerance"]))
+                position = etree.SubElement(entity_cond_element, "Position")
+                world_position = etree.SubElement(position, "WorldPosition")
+                world_position.set("x", str(feature["Stop - WorldPos: X"]))
+                world_position.set("y", str(feature["Stop - WorldPos: Y"]))
+                world_position.set("z", "0")
+                world_position.set("h", str(feature["Stop - WorldPos: Heading"]))
+
+        elif feature["Stop Trigger"] == "by Value":
+            by_value_cond = etree.SubElement(cond, "ByValueCondition")
+            value_cond_element = etree.SubElement(by_value_cond, feature["Stop - Value: Condition"])
+
+            if feature["Stop - Value: Condition"] == "ParameterCondition":
+                value_cond_element.set("parameterRef", feature["Stop - Value: Param Ref"])
+
+            if (feature["Stop - Value: Condition"] == "UserDefinedValueCondition"
+                or feature["Stop - Value: Condition"] == "TrafficSignalCondition"):
+                value_cond_element.set("name", feature["Stop - Value: Name"])
+
+            if (feature["Stop - Value: Condition"] == "ParameterCondition"
+                or feature["Stop - Value: Condition"] == "SimulationTimeCondition"
+                or feature["Stop - Value: Condition"] == "UserDefinedValueCondition"):
+                value_cond_element.set("value", str(feature["Stop - Value: Value"]))
+
+            if (feature["Stop - Value: Condition"] == "ParameterCondition"
+                or feature["Stop - Value: Condition"] == "TimeOfDayCondition"
+                or feature["Stop - Value: Condition"] == "SimulationTimeCondition"
+                or feature["Stop - Value: Condition"] == "UserDefinedValueCondition"):
+                value_cond_element.set("rule", feature["Stop - Value: Rule"])
+
+            if feature["Stop - Value: Condition"] == "TrafficSignalCondition":
+                value_cond_element.set("state", feature["Stop - Value: State"])
+
+            if feature["Stop - Value: Condition"] == "StoryboardElementStateCondition":
+                value_cond_element.set("storyboardElementType", feature["Stop - Value: Sboard Type"])
+                value_cond_element.set("storyboardElementRef", feature["Stop - Value: Sboard Element"])
+                value_cond_element.set("state", feature["Stop - Value: Sboard State"])
+
+            if feature["Stop - Value: Condition"] == "TrafficSignalControllerCondition":
+                value_cond_element.set("trafficSignalControllerRef", feature["Value: TController Ref"])
+                value_cond_element.set("phase", feature["Stop - Value: TController Phase"])
+
 
     def get_story_start_trigger(self, act):
         """

@@ -49,7 +49,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="entityManeuvers">
        <attribute name="title">
@@ -73,7 +73,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>376</width>
+             <width>410</width>
              <height>992</height>
             </rect>
            </property>
@@ -871,9 +871,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="triggers">
+      <widget class="QWidget" name="startTriggers">
        <attribute name="title">
-        <string>Triggers</string>
+        <string>Start Triggers</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
@@ -888,7 +888,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-463</y>
              <width>363</width>
              <height>1156</height>
             </rect>
@@ -1343,7 +1343,7 @@
                     </property>
                     <property name="dateTime">
                      <datetime>
-                      <hour>22</hour>
+                      <hour>20</hour>
                       <minute>0</minute>
                       <second>0</second>
                       <year>2020</year>
@@ -1360,7 +1360,7 @@
                     </property>
                     <property name="time">
                      <time>
-                      <hour>22</hour>
+                      <hour>20</hour>
                       <minute>0</minute>
                       <second>0</second>
                      </time>
@@ -1507,6 +1507,697 @@
                      </item>
                      <item row="5" column="1">
                       <widget class="QComboBox" name="Storyboard_State">
+                       <item>
+                        <property name="text">
+                         <string>completeState</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>runningState</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>standbyState</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>startTransition</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>endTransition</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>stopTransition</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>skipTransition</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="stopTriggers">
+       <attribute name="title">
+        <string>Stop Triggers</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QScrollArea" name="scrollArea_3">
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_3">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>-230</y>
+             <width>363</width>
+             <height>1156</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QGroupBox" name="stopTriggersGroup">
+              <property name="title">
+               <string>Stop Triggers</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_15">
+               <item row="0" column="1">
+                <widget class="QComboBox" name="stop_ConditionType">
+                 <item>
+                  <property name="text">
+                   <string>by Entity</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>by Value</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QGroupBox" name="stop_EntityConditionGroup">
+                 <property name="title">
+                  <string>By Entity Condition</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_16">
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="stop_Entity_Rule_Label">
+                    <property name="text">
+                     <string>Rule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="stop_Entity_Value_Label">
+                    <property name="text">
+                     <string>Value</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QComboBox" name="stop_Entity_Rule">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>lessThan</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>equalTo</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>greaterThan</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="stop_Entity_RelDisttype_Label">
+                    <property name="text">
+                     <string>Rel Dist Type</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="11" column="1">
+                   <widget class="QCheckBox" name="stop_Entity_AlongRoute">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Along Route</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QComboBox" name="stop_Entity_Cond">
+                    <property name="editable">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>EndOfRoadCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>CollisionCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>OffroadCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TimeHeadwayCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TimeToCollisionCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>AccelerationCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>StandStillCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>SpeedCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>RelativeSpeedCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TraveledDistanceCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>ReachPositionCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>DistanceCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>RelativeDistanceCondition</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QLabel" name="stop_Entity_Cond_Label">
+                    <property name="text">
+                     <string>Entity Condition</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="stop_Entity_RefEntity_Label">
+                    <property name="text">
+                     <string>Ref Entity</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QComboBox" name="stop_Entity_RelDistType">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>cartesianDistance</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>longitudinal</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>lateral</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QComboBox" name="stop_Entity_RefEntity">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="editable">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QLineEdit" name="stop_Entity_Duration">
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QLineEdit" name="stop_Entity_Value">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="9" column="1">
+                   <widget class="QCheckBox" name="stop_Entity_Freespace">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Freespace</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="stop_Entity_Duration_Label">
+                    <property name="text">
+                     <string>Duration</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="12" column="0" colspan="2">
+                   <widget class="QGroupBox" name="stop_Entity_PositionGroup">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Position Type</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_17">
+                     <item row="4" column="0">
+                      <widget class="QLabel" name="stop_Entity_PositionY_Label">
+                       <property name="text">
+                        <string>Coordinate Y</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLabel" name="stop_Entity_PositionX">
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="4" column="1">
+                      <widget class="QLabel" name="stop_Entity_PositionY">
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QSpinBox" name="stop_Entity_Tolerance">
+                       <property name="value">
+                        <number>10</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="stop_Entity_PositionType_Label">
+                       <property name="text">
+                        <string>Position</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="stop_Entity_Heading_Label">
+                       <property name="text">
+                        <string>Heading</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="6" column="0" colspan="2">
+                      <widget class="QPushButton" name="stop_EntityChoosePosition_Button">
+                       <property name="text">
+                        <string>Choose position</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0" colspan="2">
+                      <widget class="QComboBox" name="stop_Entity_PositionType">
+                       <item>
+                        <property name="text">
+                         <string>WorldPosition</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="stop_Entity_PositionX_Label">
+                       <property name="text">
+                        <string>Coordinate X</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QLabel" name="stop_Entity_Heading">
+                       <property name="text">
+                        <string>0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="stop_Entity_Tolerance_Label">
+                       <property name="text">
+                        <string>Tolerance</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="stop_ConditionType_Label">
+                 <property name="text">
+                  <string>Condition</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="2">
+                <widget class="QGroupBox" name="stop_ValueConditionGroup">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="title">
+                  <string>By Value Condition</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_18">
+                  <item row="6" column="1">
+                   <widget class="QLineEdit" name="stop_Value_Value">
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLineEdit" name="stop_Value_Name">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QLabel" name="stop_Value_Cond_Label">
+                    <property name="text">
+                     <string>Value Condition</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QLineEdit" name="stop_Value_ParamRef"/>
+                  </item>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QComboBox" name="stop_Value_Cond">
+                    <property name="editable">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>ParameterCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TimeOfDayCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>SimulationTimeCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>StoryboardElementStateCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>UserDefinedValueCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TrafficSignalCondition</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TrafficSignalControllerCondition</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="stop_Value_ParamRef_Label">
+                    <property name="text">
+                     <string>Param Ref</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="stop_Value_Name_Label">
+                    <property name="text">
+                     <string>Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="stop_Value_DateTime_Label">
+                    <property name="text">
+                     <string>Date Time</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="1">
+                   <widget class="QLineEdit" name="stop_Value_State">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="stop_Value_Value_Label">
+                    <property name="text">
+                     <string>Value</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QDateTimeEdit" name="stop_Value_DateTime">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="dateTime">
+                     <datetime>
+                      <hour>18</hour>
+                      <minute>0</minute>
+                      <second>0</second>
+                      <year>2020</year>
+                      <month>10</month>
+                      <day>22</day>
+                     </datetime>
+                    </property>
+                    <property name="date">
+                     <date>
+                      <year>2020</year>
+                      <month>10</month>
+                      <day>22</day>
+                     </date>
+                    </property>
+                    <property name="time">
+                     <time>
+                      <hour>18</hour>
+                      <minute>0</minute>
+                      <second>0</second>
+                     </time>
+                    </property>
+                    <property name="displayFormat">
+                     <string>yyyy-MM-ddThh:mm:ss</string>
+                    </property>
+                    <property name="timeSpec">
+                     <enum>Qt::UTC</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <widget class="QComboBox" name="stop_Value_Rule">
+                    <item>
+                     <property name="text">
+                      <string>lessThan</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>equalTo</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>greaterThan</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="stop_Value_Rule_Label">
+                    <property name="text">
+                     <string>Rule</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0">
+                   <widget class="QLabel" name="stop_Value_State_Label">
+                    <property name="text">
+                     <string>State</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="10" column="0" colspan="2">
+                   <widget class="QGroupBox" name="stop_TrafficSignalGroup">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Traffic Signal Controller</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_19">
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="stop_TrafficSignal_Phase_Label">
+                       <property name="text">
+                        <string>Phase</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="stop_TrafficSignal_ControllerRef"/>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="stop_TrafficSignal_Phase"/>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="stop_TrafficSignal_ControllerRef_Label">
+                       <property name="text">
+                        <string>Controller Ref</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="9" column="0" colspan="2">
+                   <widget class="QGroupBox" name="stop_StoryboardGroup">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="title">
+                     <string>Storyboard Element</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridLayout_20">
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="stop_Storyboard_State_Label">
+                       <property name="text">
+                        <string>State</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="stop_Storyboard_Type_Label">
+                       <property name="text">
+                        <string>Type</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="stop_Storyboard_Element_Label">
+                       <property name="text">
+                        <string>Element</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QComboBox" name="stop_Storyboard_Type">
+                       <item>
+                        <property name="text">
+                         <string>story</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>act</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>maneuver</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>event</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>action</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>maneuverGroup</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="3" column="1">
+                      <widget class="QLineEdit" name="stop_Storyboard_Element"/>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QComboBox" name="stop_Storyboard_State">
                        <item>
                         <property name="text">
                          <string>completeState</string>

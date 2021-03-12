@@ -7,6 +7,7 @@
       - [Python Packages](#python-packages)
   - [Installation](#installation)
   - [Features](#features)
+  - [Known Issues](#known-issues)
   - [OpenSCENARIO Support List](#openscenario-support-list)
     - [Environment](#environment)
     - [Actors](#actors)
@@ -23,7 +24,8 @@
     - [Removing Vehicles or Pedestrians](#removing-vehicles-or-pedestrians)
     - [Adding Maneuvers](#adding-maneuvers)
     - [Removing Maneuvers and Waypoints](#removing-maneuvers-and-waypoints)
-    - [Connecting to CARLA](#connecting-to-carla)
+    - [Editing Parameters](#editing-parameters)
+  - [Connecting to CARLA](#connecting-to-carla)
     - [Env variables](#env-variables)
     - [Adding Camera](#adding-camera)
       - [Place Camera Manually:](#place-camera-manually)
@@ -62,10 +64,15 @@ pip3 install --user -r /path/to/requirements.txt
   
 ## Features
 - Place entiites onto loaded OpenDRIVE map (through AD Map plugin)
+- Specity start and stop triggers for maneuvers
 - Add maneuvers to entities
 - Add global maneuvers
   - Current support for traffic light actions only
 - Set initial environment variables (cloud state, time of day, precipitation)
+
+## Known Issues
+- Non CARLA maps are not fully supported
+  - Entity spawn z coordinates need to be manually adjusted
 
 ## OpenSCENARIO Support List
 
@@ -212,8 +219,9 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 2. Choose either to add entity maneuvers or global actions under `Maneuver Type`.
 3. Entity maneuvers
    1. Choose entity to apply maneuver to, if entity is not listed, click on `Refresh entity list`.
-   2. Set up the start triggers of the maneuvers using the `Triggers` tab.
-   3. Choose type of maneuver (waypoints, longitudinal, lateral)
+   2. Set up start triggers of the maneuver using the `Start Triggers` tab.
+   3. Set up stop triggers of the maneuver using the `Stop Triggers` tab. If stop triggers are not needed, uncheck the check box beside `Stop Triggers`.
+   4. Choose type of maneuver (waypoints, longitudinal, lateral)
       1. Waypoint Maneuvers
          1. Choose waypoint strategy and whether to use lane heading or user-defined heading.
          2. Click on `Insert`, and click on the map to spawn as many waypoints as intended.
@@ -247,7 +255,21 @@ _Note: Stop triggers are currently not supported._
 5. Click on pencil icon to disable editing.
 6. When prompted to save changes, choose 'Yes'.
 
-### Connecting to CARLA
+### Editing Parameters
+After inserting entities or maneuvers, you can edit them using the Attributes table.
+1. In `Layers`, right click on layer and select `Open Attribute Table`.
+2. Click on the pencil icon on top left to enable editing.
+3. Double click on cell to edit.
+   
+   ![Editing Parameters](Docs/OSCGenerator_EditAttributes.png)
+
+4. Change the cell value.
+5. When desired changes are complete, click on pencil icon to disable editing.
+6. When promted to save changes, choose 'Yes'.
+   
+_Note: Changing the positions (X, Y, heading) in the attributes table does not update the positions seen in the map._
+
+## Connecting to CARLA
 
 ### Env variables
 

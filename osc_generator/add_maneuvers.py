@@ -105,7 +105,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._waypoint_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
         self._waypoint_layer.setLabelsEnabled(True)
 
-        # Maneuvers + Start Triggers
+        # Maneuvers + Start Triggers + Stop Triggers
         if not QgsProject.instance().mapLayersByName("Maneuvers"):
             maneuver_layer = QgsVectorLayer("None", "Maneuvers", "memory")
             QgsProject.instance().addMapLayer(maneuver_layer, False)
@@ -116,33 +116,60 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Entity", QVariant.String),
                                QgsField("Entity: Maneuver Type", QVariant.String),
                                QgsField("Start Trigger", QVariant.String),
-                               QgsField("Entity: Condition", QVariant.String),
-                               QgsField("Entity: Ref Entity", QVariant.String),
-                               QgsField("Entity: Duration", QVariant.Double),
-                               QgsField("Entity: Value", QVariant.Double),
-                               QgsField("Entity: Rule", QVariant.String),
-                               QgsField("Entity: RelDistType", QVariant.String),
-                               QgsField("Entity: Freespace", QVariant.Bool),
-                               QgsField("Entity: Along Route", QVariant.Bool),
-                               QgsField("Value: Condition", QVariant.String),
-                               QgsField("Value: Param Ref", QVariant.String),
-                               QgsField("Value: Name", QVariant.String),
-                               QgsField("Value: DateTime", QVariant.String),
-                               QgsField("Value: Value", QVariant.Double),
-                               QgsField("Value: Rule", QVariant.String),
-                               QgsField("Value: State", QVariant.String),
-                               QgsField("Value: Sboard Type", QVariant.String),
-                               QgsField("Value: Sboard Element", QVariant.String),
-                               QgsField("Value: Sboard State", QVariant.String),
-                               QgsField("Value: TController Ref", QVariant.String),
-                               QgsField("Value: TController Phase", QVariant.String),
+                               QgsField("Start - Entity: Condition", QVariant.String),
+                               QgsField("Start - Entity: Ref Entity", QVariant.String),
+                               QgsField("Start - Entity: Duration", QVariant.Double),
+                               QgsField("Start - Entity: Value", QVariant.Double),
+                               QgsField("Start - Entity: Rule", QVariant.String),
+                               QgsField("Start - Entity: RelDistType", QVariant.String),
+                               QgsField("Start - Entity: Freespace", QVariant.Bool),
+                               QgsField("Start - Entity: Along Route", QVariant.Bool),
+                               QgsField("Start - Value: Condition", QVariant.String),
+                               QgsField("Start - Value: Param Ref", QVariant.String),
+                               QgsField("Start - Value: Name", QVariant.String),
+                               QgsField("Start - Value: DateTime", QVariant.String),
+                               QgsField("Start - Value: Value", QVariant.Double),
+                               QgsField("Start - Value: Rule", QVariant.String),
+                               QgsField("Start - Value: State", QVariant.String),
+                               QgsField("Start - Value: Sboard Type", QVariant.String),
+                               QgsField("Start - Value: Sboard Element", QVariant.String),
+                               QgsField("Start - Value: Sboard State", QVariant.String),
+                               QgsField("Start - Value: TController Ref", QVariant.String),
+                               QgsField("Start - Value: TController Phase", QVariant.String),
                                QgsField("Global: Act Type", QVariant.String),
                                QgsField("Infra: Traffic Light ID", QVariant.Int),
                                QgsField("Infra: Traffic Light State", QVariant.String),
-                               QgsField("WorldPos: Tolerance", QVariant.Double),
-                               QgsField("WorldPos: X", QVariant.Double),
-                               QgsField("WorldPos: Y", QVariant.Double),
-                               QgsField("WorldPos: Heading", QVariant.Double)]
+                               QgsField("Start - WorldPos: Tolerance", QVariant.Double),
+                               QgsField("Start - WorldPos: X", QVariant.Double),
+                               QgsField("Start - WorldPos: Y", QVariant.Double),
+                               QgsField("Start - WorldPos: Heading", QVariant.Double),
+                               # Stop Triggers
+                               QgsField("Stop Trigger Enabled", QVariant.Bool),
+                               QgsField("Stop Trigger", QVariant.String),
+                               QgsField("Stop - Entity: Condition", QVariant.String),
+                               QgsField("Stop - Entity: Ref Entity", QVariant.String),
+                               QgsField("Stop - Entity: Duration", QVariant.Double),
+                               QgsField("Stop - Entity: Value", QVariant.Double),
+                               QgsField("Stop - Entity: Rule", QVariant.String),
+                               QgsField("Stop - Entity: RelDistType", QVariant.String),
+                               QgsField("Stop - Entity: Freespace", QVariant.Bool),
+                               QgsField("Stop - Entity: Along Route", QVariant.Bool),
+                               QgsField("Stop - Value: Condition", QVariant.String),
+                               QgsField("Stop - Value: Param Ref", QVariant.String),
+                               QgsField("Stop - Value: Name", QVariant.String),
+                               QgsField("Stop - Value: DateTime", QVariant.String),
+                               QgsField("Stop - Value: Value", QVariant.Double),
+                               QgsField("Stop - Value: Rule", QVariant.String),
+                               QgsField("Stop - Value: State", QVariant.String),
+                               QgsField("Stop - Value: Sboard Type", QVariant.String),
+                               QgsField("Stop - Value: Sboard Element", QVariant.String),
+                               QgsField("Stop - Value: Sboard State", QVariant.String),
+                               QgsField("Stop - Value: TController Ref", QVariant.String),
+                               QgsField("Stop - Value: TController Phase", QVariant.String),
+                               QgsField("Stop - WorldPos: Tolerance", QVariant.Double),
+                               QgsField("Stop - WorldPos: X", QVariant.Double),
+                               QgsField("Stop - WorldPos: Y", QVariant.Double),
+                               QgsField("Stop - WorldPos: Heading", QVariant.Double)]
             data_input = maneuver_layer.dataProvider()
             data_input.addAttributes(data_attributes)
             maneuver_layer.updateFields()
@@ -231,6 +258,8 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.entityTrig_RefEntity.clear()
         self.lateral_RefEntity.clear()
         self.long_RefEntity.clear()
+        self.stop_Entity_RefEntity.clear()
+
         entities = []
         if QgsProject.instance().mapLayersByName("Vehicles - Ego"):
             layer = QgsProject.instance().mapLayersByName("Vehicles - Ego")[0]
@@ -254,15 +283,20 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.entityTrig_RefEntity.addItems(entities)
         self.lateral_RefEntity.addItems(entities)
         self.long_RefEntity.addItems(entities)
+        self.stop_Entity_RefEntity.addItems(entities)
 
     def update_ref_entity(self):
         """
         Updates start trigger reference entity to match selected entity by default.
         """
         selected_entity = self.entitySelection.currentText()
-        # Trigger
+        # Start Trigger (Ref Entity)
         index = self.entityTrig_RefEntity.findText(selected_entity)
         self.entityTrig_RefEntity.setCurrentIndex(index)
+
+        # Stop Trigger (Ref Entity)
+        index = self.stop_Entity_RefEntity.findText(selected_entity)
+        self.stop_Entity_RefEntity.setCurrentIndex(index)
 
         # Lateral reference entity
         index = self.lateral_RefEntity.findText(selected_entity)
@@ -357,6 +391,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             elif self.entityManeuverType.currentText() == "Lateral":
                 self.save_lateral_attributes()
         elif self.maneuverType.currentText() == "Global Actions":
+            # Infrastructure actions are saved inside Maneuvers layer
             pass
 
         self.save_maneuver_attributes()
@@ -663,7 +698,34 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                float(self.entityTolerance.text()),
                                float(self.entityPositionX.text()),
                                float(self.entityPositionY.text()),
-                               float(self.entityHeading.text())])
+                               float(self.entityHeading.text()),
+                               # Stop Triggers
+                               self.stopTriggersGroup.isChecked(),
+                               self.stop_ConditionType.currentText(),
+                               self.stop_Entity_Cond.currentText(),
+                               self.stop_Entity_RefEntity.currentText(),
+                               self.stop_Entity_Duration.text(),
+                               self.stop_Entity_Value.text(),
+                               self.stop_Entity_Rule.currentText(),
+                               self.stop_Entity_RelDistType.currentText(),
+                               self.stop_Entity_Freespace.isChecked(),
+                               self.stop_Entity_AlongRoute.isChecked(),
+                               self.stop_Value_Cond.currentText(),
+                               self.stop_Value_ParamRef.text(),
+                               self.stop_Value_Name.text(),
+                               self.stop_Value_DateTime.dateTime().toString("yyyy-MM-ddThh:mm:ss"),
+                               float(self.stop_Value_Value.text()),
+                               self.stop_Value_Rule.currentText(),
+                               self.stop_Value_State.text(),
+                               self.stop_Storyboard_Type.currentText(),
+                               self.stop_Storyboard_Element.text(),
+                               self.stop_Storyboard_State.currentText(),
+                               self.stop_TrafficSignal_ControllerRef.text(),
+                               self.stop_TrafficSignal_Phase.text(),
+                               float(self.stop_Entity_Tolerance.text()),
+                               float(self.stop_Entity_PositionX.text()),
+                               float(self.stop_Entity_PositionY.text()),
+                               float(self.stop_Entity_Heading.text())])
         self._maneuver_layer.dataProvider().addFeature(feature)
 
     def save_longitudinal_attributes(self):
