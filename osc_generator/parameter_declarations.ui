@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OSCGenerator_ParameterDeclarations</class>
+ <widget class="QDockWidget" name="OSCGenerator_ParameterDeclarations">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>376</width>
+    <height>280</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Parameter Declarations</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="3" column="0">
+     <widget class="QLabel" name="param_value_label">
+      <property name="text">
+       <string>Value</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QLineEdit" name="param_name">
+      <property name="text">
+       <string>myParameter</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="param_name_label">
+      <property name="text">
+       <string>Parameter Name</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="param_type_label">
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="2">
+     <widget class="QComboBox" name="param_type">
+      <item>
+       <property name="text">
+        <string>integer</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>double</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>string</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>unsignedInt</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>unsignedShort</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>boolean</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>dateTime</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <widget class="QLineEdit" name="param_value">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="3">
+     <widget class="QPushButton" name="add_param_button">
+      <property name="text">
+       <string> Insert</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

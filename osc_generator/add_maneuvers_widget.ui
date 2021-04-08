@@ -16,21 +16,21 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
     <item row="3" column="0" colspan="2">
-     <widget class="QPushButton" name="addManeuver_Button">
+     <widget class="QPushButton" name="add_maneuver_button">
       <property name="text">
        <string>Insert</string>
       </property>
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QLabel" name="maneuverType_Label">
+     <widget class="QLabel" name="maneuver_type_label">
       <property name="text">
        <string>Maneuver Type</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QComboBox" name="maneuverType">
+     <widget class="QComboBox" name="maneuver_type">
       <item>
        <property name="text">
         <string>Entity Maneuvers</string>
@@ -49,7 +49,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="entityManeuvers">
        <attribute name="title">
@@ -57,7 +57,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="1" column="1">
-         <widget class="QLabel" name="entitySelection_Label">
+         <widget class="QLabel" name="entity_selection_label">
           <property name="text">
            <string>Entity</string>
           </property>
@@ -72,20 +72,20 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-356</y>
              <width>410</width>
              <height>992</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="3" column="0" colspan="2">
-             <widget class="QGroupBox" name="waypointGroup">
+             <widget class="QGroupBox" name="waypoint_group">
               <property name="title">
                <string>Waypoint Maneuvers</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
                <item row="0" column="1">
-                <widget class="QLineEdit" name="waypointOrientation">
+                <widget class="QLineEdit" name="waypoint_orientation">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -95,14 +95,14 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="waypointOrientation_Label">
+                <widget class="QLabel" name="waypoint_orientation_label">
                  <property name="text">
                   <string>Orientation</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="2">
-                <widget class="QCheckBox" name="waypointOrientation_useLane">
+                <widget class="QCheckBox" name="waypoint_orientation_use_lane">
                  <property name="text">
                   <string>Use lane heading</string>
                  </property>
@@ -112,14 +112,14 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="waypointStrategy_Label">
+                <widget class="QLabel" name="waypoint_strategy_label">
                  <property name="text">
                   <string>Strategy</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="1" colspan="2">
-                <widget class="QComboBox" name="waypointStrategy">
+                <widget class="QComboBox" name="waypoint_strategy">
                  <property name="enabled">
                   <bool>true</bool>
                  </property>
@@ -152,7 +152,7 @@
              </widget>
             </item>
             <item row="6" column="0">
-             <widget class="QGroupBox" name="lateralGroup">
+             <widget class="QGroupBox" name="lateral_group">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -161,14 +161,14 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_14">
                <item row="7" column="1" colspan="2">
-                <widget class="QLineEdit" name="lateral_LaneTargetValue">
+                <widget class="QLineEdit" name="lateral_lane_target_value">
                  <property name="text">
                   <string>0</string>
                  </property>
                 </widget>
                </item>
                <item row="14" column="1">
-                <widget class="QLineEdit" name="lateral_MaxAccel">
+                <widget class="QLineEdit" name="lateral_max_accel">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -178,21 +178,21 @@
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QLabel" name="lateral_DynamicsDim_Label">
+                <widget class="QLabel" name="lateral_dynamics_dim_label">
                  <property name="text">
                   <string>Dynamics Dimension</string>
                  </property>
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="lateral_RefEntity_Label">
+                <widget class="QLabel" name="lateral_ref_entity_label">
                  <property name="text">
                   <string>Ref Entity</string>
                  </property>
                 </widget>
                </item>
                <item row="15" column="1">
-                <widget class="QLineEdit" name="lateral_MaxDecel">
+                <widget class="QLineEdit" name="lateral_max_decel">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -202,7 +202,7 @@
                 </widget>
                </item>
                <item row="16" column="1">
-                <widget class="QLineEdit" name="lateral_MaxSpeed">
+                <widget class="QLineEdit" name="lateral_max_speed">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -212,42 +212,42 @@
                 </widget>
                </item>
                <item row="15" column="2">
-                <widget class="QLabel" name="lateral_MaxDecel_UnitLabel">
+                <widget class="QLabel" name="lateral_max_decel_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="11" column="2">
-                <widget class="QLabel" name="lateral_MaxLatAccel_UnitLabel">
+                <widget class="QLabel" name="lateral_max_lat_accel_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="14" column="0">
-                <widget class="QLabel" name="lateral_MaxAccel_Label">
+                <widget class="QLabel" name="lateral_max_accel_label">
                  <property name="text">
                   <string>Max Acceleration</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="lateral_Type_Label">
+                <widget class="QLabel" name="lateral_type_label">
                  <property name="text">
                   <string>Type</string>
                  </property>
                 </widget>
                </item>
                <item row="4" column="0">
-                <widget class="QLabel" name="lateral_DynamicsShape_Label">
+                <widget class="QLabel" name="entity_dynamics_shape_label">
                  <property name="text">
                   <string>Dynamics Shape</string>
                  </property>
                 </widget>
                </item>
                <item row="5" column="1" colspan="2">
-                <widget class="QComboBox" name="lateral_DynamicsDim">
+                <widget class="QComboBox" name="lateral_dynamics_dim">
                  <item>
                   <property name="text">
                    <string>rate</string>
@@ -266,21 +266,21 @@
                 </widget>
                </item>
                <item row="16" column="2">
-                <widget class="QLabel" name="lateral_MaxSpeed_UnitLabel">
+                <widget class="QLabel" name="lateral_max_speed_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="2" column="1" colspan="2">
-                <widget class="QComboBox" name="lateral_RefEntity">
+                <widget class="QComboBox" name="lateral_ref_entity">
                  <property name="editable">
                   <bool>false</bool>
                  </property>
                 </widget>
                </item>
                <item row="0" column="1" colspan="2">
-                <widget class="QComboBox" name="lateral_Type">
+                <widget class="QComboBox" name="lateral_type">
                  <item>
                   <property name="text">
                    <string>LaneChangeAction</string>
@@ -299,7 +299,7 @@
                 </widget>
                </item>
                <item row="11" column="1">
-                <widget class="QLineEdit" name="lateral_MaxLatAccel">
+                <widget class="QLineEdit" name="lateral_max_lat_accel">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -309,21 +309,21 @@
                 </widget>
                </item>
                <item row="6" column="0">
-                <widget class="QLabel" name="lateral_DynamicsValue_2">
+                <widget class="QLabel" name="lateral_dynamics_value_label">
                  <property name="text">
                   <string>Dynamics Value</string>
                  </property>
                 </widget>
                </item>
                <item row="16" column="0">
-                <widget class="QLabel" name="lateral_MaxSpeed_Label">
+                <widget class="QLabel" name="lateral_max_speed_label">
                  <property name="text">
                   <string>Max Speed</string>
                  </property>
                 </widget>
                </item>
                <item row="4" column="1" colspan="2">
-                <widget class="QComboBox" name="lateral_DynamicsShape">
+                <widget class="QComboBox" name="lateral_dynamics_shape">
                  <item>
                   <property name="text">
                    <string>linear</string>
@@ -347,42 +347,42 @@
                 </widget>
                </item>
                <item row="7" column="0">
-                <widget class="QLabel" name="lateral_LaneTargetValue_Label">
+                <widget class="QLabel" name="lateral_lane_target_value_label">
                  <property name="text">
                   <string>Lane Target Value</string>
                  </property>
                 </widget>
                </item>
                <item row="11" column="0">
-                <widget class="QLabel" name="lateral_MaxLatAccel_Label">
+                <widget class="QLabel" name="lateral_max_lat_accel_label">
                  <property name="text">
                   <string>Max Lateral Accel</string>
                  </property>
                 </widget>
                </item>
                <item row="14" column="2">
-                <widget class="QLabel" name="lateral_MaxAccel_UnitLabel">
+                <widget class="QLabel" name="lateral_max_accel_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="15" column="0">
-                <widget class="QLabel" name="lateral_MaxDecel_Label">
+                <widget class="QLabel" name="lateral_max_decel_label">
                  <property name="text">
                   <string>Max Deceleration</string>
                  </property>
                 </widget>
                </item>
                <item row="6" column="1" colspan="2">
-                <widget class="QLineEdit" name="lateral_DynamicsValue">
+                <widget class="QLineEdit" name="lateral_dynamics_value">
                  <property name="text">
                   <string>0</string>
                  </property>
                 </widget>
                </item>
                <item row="1" column="1" colspan="2">
-                <widget class="QComboBox" name="lateral_LaneTarget">
+                <widget class="QComboBox" name="lateral_lane_target">
                  <item>
                   <property name="text">
                    <string>RelativeTargetLane</string>
@@ -396,14 +396,14 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="lateral_LaneTarget_Label">
+                <widget class="QLabel" name="lateral_lane_target_label">
                  <property name="text">
                   <string>Lane Target</string>
                  </property>
                 </widget>
                </item>
                <item row="10" column="0" colspan="3">
-                <widget class="QLabel" name="lateral_DynamicConstraints_Label">
+                <widget class="QLabel" name="lateral_dynamic_contraints_label">
                  <property name="font">
                   <font>
                    <weight>75</weight>
@@ -420,7 +420,7 @@
              </widget>
             </item>
             <item row="5" column="0" colspan="2">
-             <widget class="QGroupBox" name="longitudinalGroup">
+             <widget class="QGroupBox" name="longitudinal_group">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -432,42 +432,42 @@
               </property>
               <layout class="QGridLayout" name="gridLayout_2">
                <item row="2" column="0">
-                <widget class="QLabel" name="long_RefEntity_Label">
+                <widget class="QLabel" name="long_ref_entity_label">
                  <property name="text">
                   <string>Ref Entity</string>
                  </property>
                 </widget>
                </item>
                <item row="9" column="0">
-                <widget class="QLabel" name="long_TargetSpeedValue_Label">
+                <widget class="QLabel" name="long_target_speed_value_label">
                  <property name="text">
                   <string>Target Speed</string>
                  </property>
                 </widget>
                </item>
                <item row="14" column="2">
-                <widget class="QLabel" name="long_MaxAccel_UnitLabel">
+                <widget class="QLabel" name="long_max_accel_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="15" column="2">
-                <widget class="QLabel" name="long_MaxDecel_UnitLabel">
+                <widget class="QLabel" name="long_max_decel_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="9" column="1">
-                <widget class="QLineEdit" name="long_TargetSpeedValue">
+                <widget class="QLineEdit" name="long_target_speed_value">
                  <property name="text">
                   <string>0</string>
                  </property>
                 </widget>
                </item>
                <item row="6" column="1" colspan="2">
-                <widget class="QComboBox" name="long_DynamicsDim">
+                <widget class="QComboBox" name="long_dynamics_dim">
                  <item>
                   <property name="text">
                    <string>rate</string>
@@ -486,35 +486,35 @@
                 </widget>
                </item>
                <item row="2" column="1" colspan="2">
-                <widget class="QComboBox" name="long_RefEntity">
+                <widget class="QComboBox" name="long_ref_entity">
                  <property name="editable">
                   <bool>false</bool>
                  </property>
                 </widget>
                </item>
                <item row="6" column="0">
-                <widget class="QLabel" name="long_DynamicsDim_Label">
+                <widget class="QLabel" name="long_dynamics_dim_label">
                  <property name="text">
                   <string>Dynamics Dimension</string>
                  </property>
                 </widget>
                </item>
                <item row="3" column="0">
-                <widget class="QLabel" name="long_DynamicsShape_Label">
+                <widget class="QLabel" name="long_dynamics_shape_label">
                  <property name="text">
                   <string>Dynamics Shape</string>
                  </property>
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="long_Type_Label">
+                <widget class="QLabel" name="long_type_label">
                  <property name="text">
                   <string>Type</string>
                  </property>
                 </widget>
                </item>
                <item row="22" column="1">
-                <widget class="QLineEdit" name="long_MaxSpeed">
+                <widget class="QLineEdit" name="long_max_speed">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -524,7 +524,7 @@
                 </widget>
                </item>
                <item row="12" column="0" colspan="3">
-                <widget class="QLabel" name="long_DynamicConstraints_Label">
+                <widget class="QLabel" name="long_dynamic_contraints_label">
                  <property name="font">
                   <font>
                    <weight>75</weight>
@@ -538,7 +538,7 @@
                 </widget>
                </item>
                <item row="0" column="1" colspan="2">
-                <widget class="QComboBox" name="long_Type">
+                <widget class="QComboBox" name="long_type">
                  <property name="editable">
                   <bool>false</bool>
                  </property>
@@ -555,42 +555,42 @@
                 </widget>
                </item>
                <item row="8" column="0">
-                <widget class="QLabel" name="long_TargetType_Label">
+                <widget class="QLabel" name="long_target_type_label">
                  <property name="text">
                   <string>Target Type</string>
                  </property>
                 </widget>
                </item>
                <item row="22" column="0">
-                <widget class="QLabel" name="long_MaxSpeed_Label">
+                <widget class="QLabel" name="long_max_speed_label">
                  <property name="text">
                   <string>Max Speed</string>
                  </property>
                 </widget>
                </item>
                <item row="9" column="2">
-                <widget class="QLabel" name="long_TargetSpeedValue_UnitLabel">
+                <widget class="QLabel" name="long_target_speed_value_unit_label">
                  <property name="text">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m/s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="15" column="0">
-                <widget class="QLabel" name="long_MaxDecel_Label">
+                <widget class="QLabel" name="long_max_decel_label">
                  <property name="text">
                   <string>Max Deceleration</string>
                  </property>
                 </widget>
                </item>
                <item row="7" column="0">
-                <widget class="QLabel" name="long_DynamicsValue_Label">
+                <widget class="QLabel" name="long_dynamics_value_label">
                  <property name="text">
                   <string>Dynamics Value</string>
                  </property>
                 </widget>
                </item>
                <item row="8" column="1" colspan="2">
-                <widget class="QComboBox" name="long_TargetType">
+                <widget class="QComboBox" name="long_target_type">
                  <item>
                   <property name="text">
                    <string>delta</string>
@@ -604,7 +604,7 @@
                 </widget>
                </item>
                <item row="1" column="1" colspan="2">
-                <widget class="QComboBox" name="long_SpeedTarget">
+                <widget class="QComboBox" name="long_speed_target">
                  <property name="editable">
                   <bool>false</bool>
                  </property>
@@ -621,14 +621,14 @@
                 </widget>
                </item>
                <item row="7" column="1" colspan="2">
-                <widget class="QLineEdit" name="long_DynamicsValue">
+                <widget class="QLineEdit" name="long_dynamics_value">
                  <property name="text">
                   <string>0</string>
                  </property>
                 </widget>
                </item>
                <item row="10" column="1" colspan="2">
-                <widget class="QCheckBox" name="long_Continuous">
+                <widget class="QCheckBox" name="long_continuous">
                  <property name="text">
                   <string>Continuous</string>
                  </property>
@@ -638,14 +638,14 @@
                 </widget>
                </item>
                <item row="14" column="0">
-                <widget class="QLabel" name="long_MaxAccel_Label">
+                <widget class="QLabel" name="long_max_accel_label">
                  <property name="text">
                   <string>Max Acceleration</string>
                  </property>
                 </widget>
                </item>
                <item row="3" column="1" colspan="2">
-                <widget class="QComboBox" name="long_DynamicsShape">
+                <widget class="QComboBox" name="long_dynamics_shape">
                  <item>
                   <property name="text">
                    <string>linear</string>
@@ -669,7 +669,7 @@
                 </widget>
                </item>
                <item row="15" column="1">
-                <widget class="QLineEdit" name="long_MaxDecel">
+                <widget class="QLineEdit" name="long_max_decel">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -679,14 +679,14 @@
                 </widget>
                </item>
                <item row="22" column="2">
-                <widget class="QLabel" name="long_MaxSpeed_UnitLabel">
+                <widget class="QLabel" name="long_max_speed_unit_label">
                  <property name="text">
                   <string>m/s&lt;sup&gt;2&lt;/sup&gt;</string>
                  </property>
                 </widget>
                </item>
                <item row="14" column="1">
-                <widget class="QLineEdit" name="long_MaxAccel">
+                <widget class="QLineEdit" name="long_max_accel">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -696,14 +696,14 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="long_SpeedTarget_Label">
+                <widget class="QLabel" name="long_speed_target_label">
                  <property name="text">
                   <string>Speed Target</string>
                  </property>
                 </widget>
                </item>
                <item row="11" column="1" colspan="2">
-                <widget class="QCheckBox" name="long_Freespace">
+                <widget class="QCheckBox" name="long_freespace">
                  <property name="text">
                   <string>Freespace</string>
                  </property>
@@ -720,7 +720,7 @@
          </widget>
         </item>
         <item row="0" column="1" colspan="2">
-         <widget class="QPushButton" name="refreshEntity_Button">
+         <widget class="QPushButton" name="refresh_entity_button">
           <property name="cursor">
            <cursorShape>ArrowCursor</cursorShape>
           </property>
@@ -752,7 +752,7 @@
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QComboBox" name="entitySelection">
+         <widget class="QComboBox" name="entity_selection">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -762,14 +762,14 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLabel" name="entityManeuverType_Label">
+         <widget class="QLabel" name="entity_maneuver_type_label">
           <property name="text">
            <string>Maneuver Type</string>
           </property>
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QComboBox" name="entityManeuverType">
+         <widget class="QComboBox" name="entity_maneuver_type">
           <item>
            <property name="text">
             <string>Waypoint</string>
@@ -795,14 +795,14 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_12">
         <item row="0" column="0">
-         <widget class="QLabel" name="globalActType_Label">
+         <widget class="QLabel" name="global_act_type_label">
           <property name="text">
            <string>Action Type</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QComboBox" name="globalActType">
+         <widget class="QComboBox" name="global_act_type">
           <item>
            <property name="text">
             <string>InfrastructureAction</string>
@@ -811,13 +811,13 @@
          </widget>
         </item>
         <item row="1" column="0" colspan="2">
-         <widget class="QGroupBox" name="infraActGroup">
+         <widget class="QGroupBox" name="infrastructure_act_group">
           <property name="title">
            <string>Traffic Signal Action</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_13">
            <item row="4" column="1">
-            <widget class="QComboBox" name="trafficLightState">
+            <widget class="QComboBox" name="traffic_light_state">
              <item>
               <property name="text">
                <string>green</string>
@@ -836,31 +836,31 @@
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="trafficLightID_Label">
+            <widget class="QLabel" name="traffic_light_id_label">
              <property name="text">
               <string>Traffic Light ID</string>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QComboBox" name="trafficLightID"/>
+            <widget class="QComboBox" name="traffic_light_id"/>
            </item>
            <item row="0" column="0" colspan="2">
-            <widget class="QPushButton" name="toggleTrafficLightLabels_Button">
+            <widget class="QPushButton" name="toggle_traffic_light_labels_button">
              <property name="text">
               <string>Toggle traffic light labels</string>
              </property>
             </widget>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="trafficLightState_Label">
+            <widget class="QLabel" name="traffic_light_state_label">
              <property name="text">
               <string>Traffic Light State</string>
              </property>
             </widget>
            </item>
            <item row="1" column="0" colspan="2">
-            <widget class="QPushButton" name="refreshTrafficLights_Button">
+            <widget class="QPushButton" name="refresh_traffic_light_ids_button">
              <property name="text">
               <string>Refresh traffic light IDs</string>
              </property>
@@ -888,20 +888,20 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-463</y>
+             <y>0</y>
              <width>363</width>
              <height>1156</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QGroupBox" name="StartTriggerGroup">
+             <widget class="QGroupBox" name="start_triggers_group">
               <property name="title">
                <string>Start Triggers</string>
               </property>
               <layout class="QGridLayout" name="gridLayout_4">
                <item row="0" column="1">
-                <widget class="QComboBox" name="conditionType">
+                <widget class="QComboBox" name="start_condition_type">
                  <item>
                   <property name="text">
                    <string>by Entity</string>
@@ -915,27 +915,27 @@
                 </widget>
                </item>
                <item row="1" column="0" colspan="2">
-                <widget class="QGroupBox" name="EntityConditionGroup">
+                <widget class="QGroupBox" name="start_entity_condition_group">
                  <property name="title">
                   <string>By Entity Condition</string>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_5">
                   <item row="7" column="0">
-                   <widget class="QLabel" name="Entity_Rule_Label">
+                   <widget class="QLabel" name="start_entity_rule_label">
                     <property name="text">
                      <string>Rule</string>
                     </property>
                    </widget>
                   </item>
                   <item row="6" column="0">
-                   <widget class="QLabel" name="Entity_Value_Label">
+                   <widget class="QLabel" name="start_entity_value_label">
                     <property name="text">
                      <string>Value</string>
                     </property>
                    </widget>
                   </item>
                   <item row="7" column="1">
-                   <widget class="QComboBox" name="Entity_Rule">
+                   <widget class="QComboBox" name="start_entity_rule">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -957,14 +957,14 @@
                    </widget>
                   </item>
                   <item row="8" column="0">
-                   <widget class="QLabel" name="Entity_RelDistType_Label">
+                   <widget class="QLabel" name="start_entity_rel_dist_type_label">
                     <property name="text">
                      <string>Rel Dist Type</string>
                     </property>
                    </widget>
                   </item>
                   <item row="11" column="1">
-                   <widget class="QCheckBox" name="Entity_AlongRoute">
+                   <widget class="QCheckBox" name="start_entity_along_route">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -974,7 +974,7 @@
                    </widget>
                   </item>
                   <item row="1" column="0" colspan="2">
-                   <widget class="QComboBox" name="entityCond">
+                   <widget class="QComboBox" name="start_entity_cond">
                     <property name="editable">
                      <bool>false</bool>
                     </property>
@@ -1046,21 +1046,21 @@
                    </widget>
                   </item>
                   <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="entityCond_Label">
+                   <widget class="QLabel" name="start_entity_cond_label">
                     <property name="text">
                      <string>Entity Condition</string>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="refEntitySelection_Label">
+                   <widget class="QLabel" name="start_entity_ref_entity_label">
                     <property name="text">
                      <string>Ref Entity</string>
                     </property>
                    </widget>
                   </item>
                   <item row="8" column="1">
-                   <widget class="QComboBox" name="Entity_RelDistType">
+                   <widget class="QComboBox" name="start_entity_rel_dist_type">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1082,7 +1082,7 @@
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QComboBox" name="entityTrig_RefEntity">
+                   <widget class="QComboBox" name="start_entity_ref_entity">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1092,14 +1092,14 @@
                    </widget>
                   </item>
                   <item row="5" column="1">
-                   <widget class="QLineEdit" name="Entity_Duration">
+                   <widget class="QLineEdit" name="start_entity_duration">
                     <property name="text">
                      <string>0</string>
                     </property>
                    </widget>
                   </item>
                   <item row="6" column="1">
-                   <widget class="QLineEdit" name="Entity_Value">
+                   <widget class="QLineEdit" name="start_entity_value">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1109,7 +1109,7 @@
                    </widget>
                   </item>
                   <item row="9" column="1">
-                   <widget class="QCheckBox" name="Entity_Freespace">
+                   <widget class="QCheckBox" name="start_entity_freespace">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1119,14 +1119,14 @@
                    </widget>
                   </item>
                   <item row="5" column="0">
-                   <widget class="QLabel" name="Entity_Duration_Label">
+                   <widget class="QLabel" name="start_entity_duration_label">
                     <property name="text">
                      <string>Duration</string>
                     </property>
                    </widget>
                   </item>
                   <item row="12" column="0" colspan="2">
-                   <widget class="QGroupBox" name="Entity_PositionGroup">
+                   <widget class="QGroupBox" name="start_entity_position_group">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1135,56 +1135,56 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_11">
                      <item row="4" column="0">
-                      <widget class="QLabel" name="entityPositionY_Label">
+                      <widget class="QLabel" name="start_entity_position_y_label">
                        <property name="text">
                         <string>Coordinate Y</string>
                        </property>
                       </widget>
                      </item>
                      <item row="3" column="1">
-                      <widget class="QLabel" name="entityPositionX">
+                      <widget class="QLabel" name="start_entity_position_x">
                        <property name="text">
                         <string>0</string>
                        </property>
                       </widget>
                      </item>
                      <item row="4" column="1">
-                      <widget class="QLabel" name="entityPositionY">
+                      <widget class="QLabel" name="start_entity_position_y">
                        <property name="text">
                         <string>0</string>
                        </property>
                       </widget>
                      </item>
                      <item row="2" column="1">
-                      <widget class="QSpinBox" name="entityTolerance">
+                      <widget class="QSpinBox" name="start_entity_tolerance">
                        <property name="value">
                         <number>10</number>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="Entity_PositionType_Label">
+                      <widget class="QLabel" name="start_entity_position_type_label">
                        <property name="text">
                         <string>Position</string>
                        </property>
                       </widget>
                      </item>
                      <item row="5" column="0">
-                      <widget class="QLabel" name="entityHeading_Label">
+                      <widget class="QLabel" name="start_entity_heading_label">
                        <property name="text">
                         <string>Heading</string>
                        </property>
                       </widget>
                      </item>
                      <item row="6" column="0" colspan="2">
-                      <widget class="QPushButton" name="entityChoosePosition_Button">
+                      <widget class="QPushButton" name="start_entity_choose_position_button">
                        <property name="text">
                         <string>Choose position</string>
                        </property>
                       </widget>
                      </item>
                      <item row="1" column="0" colspan="2">
-                      <widget class="QComboBox" name="Entity_PositionType">
+                      <widget class="QComboBox" name="start_entity_position_type">
                        <item>
                         <property name="text">
                          <string>WorldPosition</string>
@@ -1193,21 +1193,21 @@
                       </widget>
                      </item>
                      <item row="3" column="0">
-                      <widget class="QLabel" name="entityPositionX_Label">
+                      <widget class="QLabel" name="start_entity_position_x_label">
                        <property name="text">
                         <string>Coordinate X</string>
                        </property>
                       </widget>
                      </item>
                      <item row="5" column="1">
-                      <widget class="QLabel" name="entityHeading">
+                      <widget class="QLabel" name="start_entity_heading">
                        <property name="text">
                         <string>0</string>
                        </property>
                       </widget>
                      </item>
                      <item row="2" column="0">
-                      <widget class="QLabel" name="entityTolerance_Label">
+                      <widget class="QLabel" name="start_entity_tolerance_label">
                        <property name="text">
                         <string>Tolerance</string>
                        </property>
@@ -1220,14 +1220,14 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="conditionType_Label">
+                <widget class="QLabel" name="start_condition_type_label">
                  <property name="text">
                   <string>Condition</string>
                  </property>
                 </widget>
                </item>
                <item row="3" column="0" colspan="2">
-                <widget class="QGroupBox" name="ValueConditionGroup">
+                <widget class="QGroupBox" name="start_value_condition_group">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -1236,31 +1236,31 @@
                  </property>
                  <layout class="QGridLayout" name="gridLayout_6">
                   <item row="6" column="1">
-                   <widget class="QLineEdit" name="Value_Value">
+                   <widget class="QLineEdit" name="start_value_value">
                     <property name="text">
                      <string>0</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="1">
-                   <widget class="QLineEdit" name="Value_Name">
+                   <widget class="QLineEdit" name="start_value_name">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="valueCond_Label">
+                   <widget class="QLabel" name="start_value_cond_label">
                     <property name="text">
                      <string>Value Condition</string>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QLineEdit" name="Value_ParamRef"/>
+                   <widget class="QLineEdit" name="start_value_param_ref"/>
                   </item>
                   <item row="1" column="0" colspan="2">
-                   <widget class="QComboBox" name="valueCond">
+                   <widget class="QComboBox" name="start_value_cond">
                     <property name="editable">
                      <bool>false</bool>
                     </property>
@@ -1302,42 +1302,42 @@
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="Value_ParamRef_Label">
+                   <widget class="QLabel" name="start_value_param_ref_label">
                     <property name="text">
                      <string>Param Ref</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="0">
-                   <widget class="QLabel" name="Value_Name_Label">
+                   <widget class="QLabel" name="start_value_name_label">
                     <property name="text">
                      <string>Name</string>
                     </property>
                    </widget>
                   </item>
                   <item row="5" column="0">
-                   <widget class="QLabel" name="Value_DateTime_Label">
+                   <widget class="QLabel" name="start_value_datetime_label">
                     <property name="text">
                      <string>Date Time</string>
                     </property>
                    </widget>
                   </item>
                   <item row="8" column="1">
-                   <widget class="QLineEdit" name="Value_State">
+                   <widget class="QLineEdit" name="start_value_state">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="6" column="0">
-                   <widget class="QLabel" name="Value_Value_Label">
+                   <widget class="QLabel" name="start_value_value_label">
                     <property name="text">
                      <string>Value</string>
                     </property>
                    </widget>
                   </item>
                   <item row="5" column="1">
-                   <widget class="QDateTimeEdit" name="Value_DateTime">
+                   <widget class="QDateTimeEdit" name="start_value_datetime">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1374,7 +1374,7 @@
                    </widget>
                   </item>
                   <item row="7" column="1">
-                   <widget class="QComboBox" name="Value_Rule">
+                   <widget class="QComboBox" name="start_value_rule">
                     <item>
                      <property name="text">
                       <string>lessThan</string>
@@ -1393,21 +1393,21 @@
                    </widget>
                   </item>
                   <item row="7" column="0">
-                   <widget class="QLabel" name="Value_Rule_Label">
+                   <widget class="QLabel" name="start_value_rule_label">
                     <property name="text">
                      <string>Rule</string>
                     </property>
                    </widget>
                   </item>
                   <item row="8" column="0">
-                   <widget class="QLabel" name="Value_State_Label">
+                   <widget class="QLabel" name="start_value_state_label">
                     <property name="text">
                      <string>State</string>
                     </property>
                    </widget>
                   </item>
                   <item row="10" column="0" colspan="2">
-                   <widget class="QGroupBox" name="TrafficSignalGroup">
+                   <widget class="QGroupBox" name="start_traffic_signal_group">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1416,20 +1416,20 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_9">
                      <item row="1" column="0">
-                      <widget class="QLabel" name="TrafficSignal_Phase_Label">
+                      <widget class="QLabel" name="start_traffic_phase_label">
                        <property name="text">
                         <string>Phase</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QLineEdit" name="TrafficSignal_ControllerRef"/>
+                      <widget class="QLineEdit" name="start_traffic_controller_ref"/>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QLineEdit" name="TrafficSignal_Phase"/>
+                      <widget class="QLineEdit" name="start_traffic_phase"/>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="TrafficSignal_ControllerRef_Label">
+                      <widget class="QLabel" name="start_traffic_controller_ref_label">
                        <property name="text">
                         <string>Controller Ref</string>
                        </property>
@@ -1439,7 +1439,7 @@
                    </widget>
                   </item>
                   <item row="9" column="0" colspan="2">
-                   <widget class="QGroupBox" name="StoryboardGroup">
+                   <widget class="QGroupBox" name="start_storyboard_group">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1448,28 +1448,28 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_7">
                      <item row="5" column="0">
-                      <widget class="QLabel" name="Storyboard_State_Label">
+                      <widget class="QLabel" name="start_storyboard_state_label">
                        <property name="text">
                         <string>State</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="Storyboard_Type_Label">
+                      <widget class="QLabel" name="start_storyboard_type_label">
                        <property name="text">
                         <string>Type</string>
                        </property>
                       </widget>
                      </item>
                      <item row="3" column="0">
-                      <widget class="QLabel" name="Storyboard_Element_Label">
+                      <widget class="QLabel" name="start_storyboard_element_label">
                        <property name="text">
                         <string>Element</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QComboBox" name="Storyboard_Type">
+                      <widget class="QComboBox" name="start_storyboard_type">
                        <item>
                         <property name="text">
                          <string>story</string>
@@ -1503,10 +1503,10 @@
                       </widget>
                      </item>
                      <item row="3" column="1">
-                      <widget class="QLineEdit" name="Storyboard_Element"/>
+                      <widget class="QLineEdit" name="start_storyboard_element"/>
                      </item>
                      <item row="5" column="1">
-                      <widget class="QComboBox" name="Storyboard_State">
+                      <widget class="QComboBox" name="start_storyboard_state">
                        <item>
                         <property name="text">
                          <string>completeState</string>
@@ -1576,23 +1576,26 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-230</y>
+             <y>0</y>
              <width>363</width>
              <height>1156</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QGroupBox" name="stopTriggersGroup">
+             <widget class="QGroupBox" name="stop_triggers_group">
               <property name="title">
                <string>Stop Triggers</string>
               </property>
               <property name="checkable">
                <bool>true</bool>
               </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
               <layout class="QGridLayout" name="gridLayout_15">
                <item row="0" column="1">
-                <widget class="QComboBox" name="stop_ConditionType">
+                <widget class="QComboBox" name="stop_condition_type">
                  <item>
                   <property name="text">
                    <string>by Entity</string>
@@ -1606,27 +1609,27 @@
                 </widget>
                </item>
                <item row="1" column="0" colspan="2">
-                <widget class="QGroupBox" name="stop_EntityConditionGroup">
+                <widget class="QGroupBox" name="stop_entity_condition_group">
                  <property name="title">
                   <string>By Entity Condition</string>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_16">
                   <item row="7" column="0">
-                   <widget class="QLabel" name="stop_Entity_Rule_Label">
+                   <widget class="QLabel" name="stop_entity_rule_label">
                     <property name="text">
                      <string>Rule</string>
                     </property>
                    </widget>
                   </item>
                   <item row="6" column="0">
-                   <widget class="QLabel" name="stop_Entity_Value_Label">
+                   <widget class="QLabel" name="stop_entity_value_label">
                     <property name="text">
                      <string>Value</string>
                     </property>
                    </widget>
                   </item>
                   <item row="7" column="1">
-                   <widget class="QComboBox" name="stop_Entity_Rule">
+                   <widget class="QComboBox" name="stop_entity_rule">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1648,14 +1651,14 @@
                    </widget>
                   </item>
                   <item row="8" column="0">
-                   <widget class="QLabel" name="stop_Entity_RelDisttype_Label">
+                   <widget class="QLabel" name="stop_entity_rel_dist_type_label">
                     <property name="text">
                      <string>Rel Dist Type</string>
                     </property>
                    </widget>
                   </item>
                   <item row="11" column="1">
-                   <widget class="QCheckBox" name="stop_Entity_AlongRoute">
+                   <widget class="QCheckBox" name="stop_entity_along_route">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1665,7 +1668,7 @@
                    </widget>
                   </item>
                   <item row="1" column="0" colspan="2">
-                   <widget class="QComboBox" name="stop_Entity_Cond">
+                   <widget class="QComboBox" name="stop_entity_cond">
                     <property name="editable">
                      <bool>false</bool>
                     </property>
@@ -1737,21 +1740,21 @@
                    </widget>
                   </item>
                   <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="stop_Entity_Cond_Label">
+                   <widget class="QLabel" name="stop_entity_cond_label">
                     <property name="text">
                      <string>Entity Condition</string>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="stop_Entity_RefEntity_Label">
+                   <widget class="QLabel" name="stop_entity_ref_entity_label">
                     <property name="text">
                      <string>Ref Entity</string>
                     </property>
                    </widget>
                   </item>
                   <item row="8" column="1">
-                   <widget class="QComboBox" name="stop_Entity_RelDistType">
+                   <widget class="QComboBox" name="stop_entity_rel_dist_type">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1773,7 +1776,7 @@
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QComboBox" name="stop_Entity_RefEntity">
+                   <widget class="QComboBox" name="stop_entity_ref_entity">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1783,14 +1786,14 @@
                    </widget>
                   </item>
                   <item row="5" column="1">
-                   <widget class="QLineEdit" name="stop_Entity_Duration">
+                   <widget class="QLineEdit" name="stop_entity_duration">
                     <property name="text">
                      <string>0</string>
                     </property>
                    </widget>
                   </item>
                   <item row="6" column="1">
-                   <widget class="QLineEdit" name="stop_Entity_Value">
+                   <widget class="QLineEdit" name="stop_entity_value">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1800,7 +1803,7 @@
                    </widget>
                   </item>
                   <item row="9" column="1">
-                   <widget class="QCheckBox" name="stop_Entity_Freespace">
+                   <widget class="QCheckBox" name="stop_entity_freespace">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1810,14 +1813,14 @@
                    </widget>
                   </item>
                   <item row="5" column="0">
-                   <widget class="QLabel" name="stop_Entity_Duration_Label">
+                   <widget class="QLabel" name="stop_entity_duration_label">
                     <property name="text">
                      <string>Duration</string>
                     </property>
                    </widget>
                   </item>
                   <item row="12" column="0" colspan="2">
-                   <widget class="QGroupBox" name="stop_Entity_PositionGroup">
+                   <widget class="QGroupBox" name="stop_entity_position_group">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -1826,56 +1829,56 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_17">
                      <item row="4" column="0">
-                      <widget class="QLabel" name="stop_Entity_PositionY_Label">
+                      <widget class="QLabel" name="stop_entity_position_y_label">
                        <property name="text">
                         <string>Coordinate Y</string>
                        </property>
                       </widget>
                      </item>
                      <item row="3" column="1">
-                      <widget class="QLabel" name="stop_Entity_PositionX">
+                      <widget class="QLabel" name="stop_entity_position_x">
                        <property name="text">
                         <string>0</string>
                        </property>
                       </widget>
                      </item>
                      <item row="4" column="1">
-                      <widget class="QLabel" name="stop_Entity_PositionY">
+                      <widget class="QLabel" name="stop_entity_position_y">
                        <property name="text">
                         <string>0</string>
                        </property>
                       </widget>
                      </item>
                      <item row="2" column="1">
-                      <widget class="QSpinBox" name="stop_Entity_Tolerance">
+                      <widget class="QSpinBox" name="stop_entity_tolerance">
                        <property name="value">
                         <number>10</number>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="stop_Entity_PositionType_Label">
+                      <widget class="QLabel" name="stop_entity_position_type_label">
                        <property name="text">
                         <string>Position</string>
                        </property>
                       </widget>
                      </item>
                      <item row="5" column="0">
-                      <widget class="QLabel" name="stop_Entity_Heading_Label">
+                      <widget class="QLabel" name="stop_entity_heading_label">
                        <property name="text">
                         <string>Heading</string>
                        </property>
                       </widget>
                      </item>
                      <item row="6" column="0" colspan="2">
-                      <widget class="QPushButton" name="stop_EntityChoosePosition_Button">
+                      <widget class="QPushButton" name="stop_entity_choose_position_button">
                        <property name="text">
                         <string>Choose position</string>
                        </property>
                       </widget>
                      </item>
                      <item row="1" column="0" colspan="2">
-                      <widget class="QComboBox" name="stop_Entity_PositionType">
+                      <widget class="QComboBox" name="stop_entity_position_type">
                        <item>
                         <property name="text">
                          <string>WorldPosition</string>
@@ -1884,21 +1887,21 @@
                       </widget>
                      </item>
                      <item row="3" column="0">
-                      <widget class="QLabel" name="stop_Entity_PositionX_Label">
+                      <widget class="QLabel" name="stop_entity_position_x_label">
                        <property name="text">
                         <string>Coordinate X</string>
                        </property>
                       </widget>
                      </item>
                      <item row="5" column="1">
-                      <widget class="QLabel" name="stop_Entity_Heading">
+                      <widget class="QLabel" name="stop_entity_heading">
                        <property name="text">
                         <string>0</string>
                        </property>
                       </widget>
                      </item>
                      <item row="2" column="0">
-                      <widget class="QLabel" name="stop_Entity_Tolerance_Label">
+                      <widget class="QLabel" name="stop_entity_tolerance_label">
                        <property name="text">
                         <string>Tolerance</string>
                        </property>
@@ -1911,14 +1914,14 @@
                 </widget>
                </item>
                <item row="0" column="0">
-                <widget class="QLabel" name="stop_ConditionType_Label">
+                <widget class="QLabel" name="stop_condition_type_label">
                  <property name="text">
                   <string>Condition</string>
                  </property>
                 </widget>
                </item>
                <item row="3" column="0" colspan="2">
-                <widget class="QGroupBox" name="stop_ValueConditionGroup">
+                <widget class="QGroupBox" name="stop_value_condition_group">
                  <property name="enabled">
                   <bool>false</bool>
                  </property>
@@ -1927,31 +1930,31 @@
                  </property>
                  <layout class="QGridLayout" name="gridLayout_18">
                   <item row="6" column="1">
-                   <widget class="QLineEdit" name="stop_Value_Value">
+                   <widget class="QLineEdit" name="stop_value_value">
                     <property name="text">
                      <string>0</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="1">
-                   <widget class="QLineEdit" name="stop_Value_Name">
+                   <widget class="QLineEdit" name="stop_value_name">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="stop_Value_Cond_Label">
+                   <widget class="QLabel" name="stop_value_cond_label">
                     <property name="text">
                      <string>Value Condition</string>
                     </property>
                    </widget>
                   </item>
                   <item row="2" column="1">
-                   <widget class="QLineEdit" name="stop_Value_ParamRef"/>
+                   <widget class="QLineEdit" name="stop_value_param_ref"/>
                   </item>
                   <item row="1" column="0" colspan="2">
-                   <widget class="QComboBox" name="stop_Value_Cond">
+                   <widget class="QComboBox" name="stop_value_cond">
                     <property name="editable">
                      <bool>false</bool>
                     </property>
@@ -1993,42 +1996,42 @@
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="stop_Value_ParamRef_Label">
+                   <widget class="QLabel" name="stop_value_param_ref_label">
                     <property name="text">
                      <string>Param Ref</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="0">
-                   <widget class="QLabel" name="stop_Value_Name_Label">
+                   <widget class="QLabel" name="stop_value_name_label">
                     <property name="text">
                      <string>Name</string>
                     </property>
                    </widget>
                   </item>
                   <item row="5" column="0">
-                   <widget class="QLabel" name="stop_Value_DateTime_Label">
+                   <widget class="QLabel" name="stop_value_datetime_label">
                     <property name="text">
                      <string>Date Time</string>
                     </property>
                    </widget>
                   </item>
                   <item row="8" column="1">
-                   <widget class="QLineEdit" name="stop_Value_State">
+                   <widget class="QLineEdit" name="stop_value_state">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
                    </widget>
                   </item>
                   <item row="6" column="0">
-                   <widget class="QLabel" name="stop_Value_Value_Label">
+                   <widget class="QLabel" name="stop_value_value_label">
                     <property name="text">
                      <string>Value</string>
                     </property>
                    </widget>
                   </item>
                   <item row="5" column="1">
-                   <widget class="QDateTimeEdit" name="stop_Value_DateTime">
+                   <widget class="QDateTimeEdit" name="stop_value_datetime">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -2065,7 +2068,7 @@
                    </widget>
                   </item>
                   <item row="7" column="1">
-                   <widget class="QComboBox" name="stop_Value_Rule">
+                   <widget class="QComboBox" name="stop_value_rule">
                     <item>
                      <property name="text">
                       <string>lessThan</string>
@@ -2084,21 +2087,21 @@
                    </widget>
                   </item>
                   <item row="7" column="0">
-                   <widget class="QLabel" name="stop_Value_Rule_Label">
+                   <widget class="QLabel" name="stop_value_rule_label">
                     <property name="text">
                      <string>Rule</string>
                     </property>
                    </widget>
                   </item>
                   <item row="8" column="0">
-                   <widget class="QLabel" name="stop_Value_State_Label">
+                   <widget class="QLabel" name="stop_value_state_label">
                     <property name="text">
                      <string>State</string>
                     </property>
                    </widget>
                   </item>
                   <item row="10" column="0" colspan="2">
-                   <widget class="QGroupBox" name="stop_TrafficSignalGroup">
+                   <widget class="QGroupBox" name="stop_traffic_signal_group">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -2107,20 +2110,20 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_19">
                      <item row="1" column="0">
-                      <widget class="QLabel" name="stop_TrafficSignal_Phase_Label">
+                      <widget class="QLabel" name="stop_traffic_phase_label">
                        <property name="text">
                         <string>Phase</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QLineEdit" name="stop_TrafficSignal_ControllerRef"/>
+                      <widget class="QLineEdit" name="stop_traffic_controller_ref"/>
                      </item>
                      <item row="1" column="1">
-                      <widget class="QLineEdit" name="stop_TrafficSignal_Phase"/>
+                      <widget class="QLineEdit" name="stop_traffic_phase"/>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="stop_TrafficSignal_ControllerRef_Label">
+                      <widget class="QLabel" name="stop_traffic_controller_ref_label">
                        <property name="text">
                         <string>Controller Ref</string>
                        </property>
@@ -2130,7 +2133,7 @@
                    </widget>
                   </item>
                   <item row="9" column="0" colspan="2">
-                   <widget class="QGroupBox" name="stop_StoryboardGroup">
+                   <widget class="QGroupBox" name="stop_storyboard_group">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -2139,28 +2142,28 @@
                     </property>
                     <layout class="QGridLayout" name="gridLayout_20">
                      <item row="5" column="0">
-                      <widget class="QLabel" name="stop_Storyboard_State_Label">
+                      <widget class="QLabel" name="stop_storyboard_state_label">
                        <property name="text">
                         <string>State</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="0">
-                      <widget class="QLabel" name="stop_Storyboard_Type_Label">
+                      <widget class="QLabel" name="stop_storyboard_type_label">
                        <property name="text">
                         <string>Type</string>
                        </property>
                       </widget>
                      </item>
                      <item row="3" column="0">
-                      <widget class="QLabel" name="stop_Storyboard_Element_Label">
+                      <widget class="QLabel" name="stop_storyboard_element_label">
                        <property name="text">
                         <string>Element</string>
                        </property>
                       </widget>
                      </item>
                      <item row="0" column="1">
-                      <widget class="QComboBox" name="stop_Storyboard_Type">
+                      <widget class="QComboBox" name="stop_storyboard_type">
                        <item>
                         <property name="text">
                          <string>story</string>
@@ -2194,10 +2197,10 @@
                       </widget>
                      </item>
                      <item row="3" column="1">
-                      <widget class="QLineEdit" name="stop_Storyboard_Element"/>
+                      <widget class="QLineEdit" name="stop_storyboard_element"/>
                      </item>
                      <item row="5" column="1">
-                      <widget class="QComboBox" name="stop_Storyboard_State">
+                      <widget class="QComboBox" name="stop_storyboard_state">
                        <item>
                         <property name="text">
                          <string>completeState</string>

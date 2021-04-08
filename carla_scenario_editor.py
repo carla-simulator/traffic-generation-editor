@@ -76,11 +76,13 @@ class OSC_Generator:
         self._plugin_is_active_props = False
         self._plugin_is_active_environment = False
         self._plugin_is_active_maneuvers = False
+        self._plugin_is_active_parameters = False
         self._dockwidget_vehicles = None
         self._dockwidget_pedestrians = None
         self._dockwidget_props = None
         self._dockwidget_environment = None
         self._dockwidget_maneuvers = None
+        self._dockwidget_parameters = None
         self._root_layer = QgsProject.instance().layerTreeRoot()
         self.ui = QGISUI(self.iface, "OSC_Generator", True)
         self.action_tool = {}
@@ -186,6 +188,8 @@ class OSC_Generator:
         self.static_info = "Add static objects"
         self.maneuver = "icon_maneuver"
         self.maneuver_info = "Add maneuvers"
+        self.parameter = "icon_parameter"
+        self.parameter_info = "Add Parameters"
         self.endeval = "icon_endEval"
         self.endeval_info = "End evaluation KPI's"
         self.code = "icon_code"
@@ -200,6 +204,7 @@ class OSC_Generator:
         self.__add_action__(self.pedestrians, self.pedestrians_info, self.add_pedestrians)
         self.__add_action__(self.static, self.static_info, self.add_props)
         self.__add_action__(self.maneuver, self.maneuver_info, self.add_maneuver)
+        self.__add_action__(self.parameter, self.parameter_info, self.add_parameters)
         self.__add_action__(self.endeval, self.endeval_info, self.end_evaluation)
         self.__add_action__(self.code, self.code_info, self.export_xosc)
         self.__add_action__(self.carla, self.carla_info, self.run_scenario)
@@ -234,8 +239,10 @@ class OSC_Generator:
         if self._plugin_is_active_props:
             self._dockwidget_props.closingPlugin.disconnect(self.onClosePlugin)
             self._plugin_is_active_props = False
-        
 
+        if self._plugin_is_active_parameters:
+            self._dockwidget_parameters.closingPlugin.disconnect(self.onClosePlugin)
+            self._plugin_is_active_parameters = False
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -364,6 +371,26 @@ class OSC_Generator:
             self._dockwidget_props.closingPlugin.connect(self.onClosePlugin)
             self.iface.addDockWidget(Qt.BottomDockWidgetArea, self._dockwidget_props)
             self._dockwidget_props.show()
+
+    def add_parameters(self):
+        """
+        Adds "Add Parameters" dock widget.
+        Creates OpenSCENARIO layer group if it does not exist.
+        """
+        # Add temporary scratch layer to QGIS (if not yet created)
+        if self._root_layer.findGroup("OpenSCENARIO") is None:
+            self._root_layer.addGroup("OpenSCENARIO")
+
+        # Load plugin
+        if not self._plugin_is_active_parameters:
+            self._plugin_is_active_parameters = True
+
+            if self._dockwidget_parameters is None:
+                self._dockwidget_parameters = ParameterDeclarationsDockWidget()
+
+            self._dockwidget_parameters.closingPlugin.connect(self.onClosePlugin)
+            self.iface.addDockWidget(Qt.BottomDockWidgetArea, self._dockwidget_parameters)
+            self._dockwidget_parameters.show()
 
     def end_evaluation(self):
         """

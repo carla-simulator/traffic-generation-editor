@@ -16,14 +16,14 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
     <item row="5" column="0">
-     <widget class="QLabel" name="propsPhysics_Label">
+     <widget class="QLabel" name="props_physics_label">
       <property name="text">
        <string>Physics</string>
       </property>
      </widget>
     </item>
     <item row="5" column="2">
-     <widget class="QCheckBox" name="propsPhysics">
+     <widget class="QCheckBox" name="props_physics">
       <property name="text">
        <string>Physics on</string>
       </property>
@@ -33,7 +33,7 @@
      </widget>
     </item>
     <item row="1" column="2">
-     <widget class="QComboBox" name="propsObjectType">
+     <widget class="QComboBox" name="props_object_type">
       <item>
        <property name="text">
         <string>none</string>
@@ -122,7 +122,7 @@
      </widget>
     </item>
     <item row="4" column="2">
-     <widget class="QCheckBox" name="propsOrientation_useLane">
+     <widget class="QCheckBox" name="props_orientation_use_lane">
       <property name="text">
        <string>Use lane heading</string>
       </property>
@@ -132,7 +132,7 @@
      </widget>
     </item>
     <item row="3" column="2">
-     <widget class="QLineEdit" name="propsOrientation">
+     <widget class="QLineEdit" name="props_orientation">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -142,49 +142,49 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="propsOrientation_Label">
+     <widget class="QLabel" name="props_orientation_label">
       <property name="text">
        <string>Orientation</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QLabel" name="propsMass_Label">
+     <widget class="QLabel" name="props_mass_label">
       <property name="text">
        <string>Mass</string>
       </property>
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QLabel" name="propsSelection_Label">
+     <widget class="QLabel" name="props_selection_label">
       <property name="text">
        <string>Static Object</string>
       </property>
      </widget>
     </item>
     <item row="6" column="0">
-     <widget class="QPushButton" name="propsLabels_Button">
+     <widget class="QPushButton" name="props_labels_button">
       <property name="text">
        <string>Labels</string>
       </property>
      </widget>
     </item>
     <item row="2" column="2">
-     <widget class="QLineEdit" name="propsMass">
+     <widget class="QLineEdit" name="props_mass">
       <property name="text">
        <string>10</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="propsObjectType_Label">
+     <widget class="QLabel" name="props_object_type_label">
       <property name="text">
        <string>Object Type</string>
       </property>
      </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QComboBox" name="propsSelection">
+     <widget class="QComboBox" name="props_selection">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -645,7 +645,7 @@
      </widget>
     </item>
     <item row="6" column="2">
-     <widget class="QPushButton" name="addProps_Button">
+     <widget class="QPushButton" name="add_props_button">
       <property name="text">
        <string>Insert</string>
       </property>

@@ -29,7 +29,8 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
         super(ExportXOSCDialog, self).__init__(parent)
         self.setupUi(self)
         # UI element signals
-        self.selectPath_Button.pressed.connect(self.select_output)
+        self.select_path_button.pressed.connect(self.select_output)
+        self.map_selection.currentTextChanged.connect(self.user_defined_map)
 
     def select_output(self):
         """Prompts user to select output file"""
@@ -39,19 +40,28 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
         # Update text field only if user press 'OK'
         if filename:
             filename += ".xosc"
-            self.selectPath.setText(filename)
+            self.select_path.setText(filename)
 
     def save_file(self):
         """Exports OpenSCENARIO file by reading attibutes from QGIS"""
-        if self.selectPath.text() is not "":
-            filepath = self.selectPath.text()
-            road_network = self.mapSelection.currentText()
+        if self.select_path.text() is not "":
+            filepath = self.select_path.text()
+            road_network = self.map_selection.currentText()
+            if self.map_selection.currentText() == "User Defined":
+                road_network = self.map_selection_user_defined.text()
             gen_xml = GenerateXML(filepath, road_network)
             gen_xml.main()
         else:
             message = "No export path was selected"
             iface.messageBar().pushMessage("Warning", message, level=Qgis.Warning)
             QgsMessageLog.logMessage(message, level=Qgis.Warning)
+
+    def user_defined_map(self):
+        """Enables/Disables text field for user defined maps"""
+        if self.map_selection.currentText() == "User Defined":
+            self.map_selection_user_defined.setEnabled(True)
+        else:
+            self.map_selection_user_defined.setDisabled(True)
 
 class GenerateXML():
     """
@@ -62,13 +72,29 @@ class GenerateXML():
         self._road_network = road_network
         self._warning_message = []
 
+    def is_float(self, value):
+        """
+        Checks value if it can be converted to float.
+
+        Args:
+            value (string): value to check if can be converted to float
+
+        Returns:
+            bool: True if float, False if not
+        """
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
     def main(self):
         """
         Main function for generating OpenSCENARIO files.
         """
         root = etree.Element("OpenSCENARIO")
         self.get_header(root)
-        etree.SubElement(root, "ParameterDeclarations")
+        self.get_parameter_declarations(root)
         etree.SubElement(root, "CatalogLocations")
         self.get_road_network(root)
         self.get_entities(root)
@@ -99,6 +125,26 @@ class GenerateXML():
         header.set("date", datetime.today().strftime("%Y-%m-%dT%H:%M:%S"))
         header.set("description", "Generated OpenSCENARIO File")
         header.set("author", "QGIS OSCGenerator Plugin")
+
+    def get_parameter_declarations(self, root):
+        """
+        Set up user-defined parameters for OpenSCENARIO file.
+
+        Args:
+            root: [XML element] root layer
+        """
+        param_declare_group = etree.SubElement(root, "ParameterDeclarations")
+        if QgsProject.instance().mapLayersByName("Parameter Declarations"):
+            param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
+            for feature in param_layer.getFeatures():
+                param_name = feature["Parameter Name"]
+                param_type = feature["Type"]
+                param_value = feature["Value"]
+
+                param = etree.SubElement(param_declare_group, "ParameterDeclaration")
+                param.set("name", param_name)
+                param.set("type", param_type)
+                param.set("value", param_value)
 
     def get_road_network(self, root):
         """
@@ -292,6 +338,9 @@ class GenerateXML():
                 agent = feature["Agent"]
                 agent_camera = str(feature["Agent Camera"]).lower()
 
+                if agent == "User Defined":
+                    agent = feature["Agent User Defined"]
+
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
                 self.entity_teleport_action(entity, orientation, pos_x, pos_y)
@@ -308,6 +357,11 @@ class GenerateXML():
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
                 init_speed = feature["Init Speed"]
+                agent = feature["Agent"]
+                agent_camera = str(feature["Agent Camera"]).lower()
+
+                if agent == "User Defined":
+                    agent = feature["Agent User Defined"]
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
@@ -388,13 +442,13 @@ class GenerateXML():
         controller_properties_group = etree.SubElement(controller, "Properties")
         controller_properties = etree.SubElement(controller_properties_group, "Property")
         controller_properties.set("name", "module")
-        if agent == "external_control":
-            controller_properties.set("value", agent)
-        elif agent == "simple_vehicle_control":
+        if agent == "simple_vehicle_control":
             controller_properties.set("value", agent)
             attach_camera = etree.SubElement(controller_properties_group, "Property")
             attach_camera.set("name", "attach_camera")
             attach_camera.set("value", agent_camera)
+        else:
+            controller_properties.set("value", agent)
 
         overrides = etree.SubElement(controller_act, "OverrideControllerValueAction")
         override_throttle = etree.SubElement(overrides, "Throttle")
@@ -472,9 +526,11 @@ class GenerateXML():
 
         Args:
             entity: [XML element]
-            initSpeed: [str, int, float] initial speed of entity to be converted
+            init_speed: [str, int, float] initial speed of entity to be converted
                        to string when writing XML
         """
+        if not self.is_float(init_speed):
+            init_speed = "$" + init_speed
         private_act = etree.SubElement(entity, "PrivateAction")
         long_act = etree.SubElement(private_act, "LongitudinalAction")
         speed_act = etree.SubElement(long_act, "SpeedAction")

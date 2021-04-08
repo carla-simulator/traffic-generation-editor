@@ -13,8 +13,9 @@ import os
 # pylint: disable=no-name-in-module, no-member
 import ad_map_access as ad
 from PyQt5.QtWidgets import QInputDialog
-from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsMessageLog, QgsPointXY,
-    QgsProject, QgsVectorLayer, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling)
+from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsMessageLog, QgsPointXY, 
+    QgsProject, QgsVectorLayer, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
+    QgsFeatureRequest)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
@@ -35,10 +36,11 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         super(AddVehiclesDockWidget, self).__init__(parent)
         self.setupUi(self)
         # UI element signals
-        self.AddVehicleButton.pressed.connect(self.insert_vehicle)
-        self.vehicleOrientation_useLane.stateChanged.connect(self.override_orientation)
-        self.agentSelection.currentTextChanged.connect(self.agent_camera_selection)
-        self.vehicleLabels.pressed.connect(self.toggle_labels)
+        self.add_vehicle_button.pressed.connect(self.insert_vehicle)
+        self.vehicle_orientation_use_lane.stateChanged.connect(self.override_orientation)
+        self.agent_selection.currentTextChanged.connect(self.agent_camera_selection)
+        self.agent_selection.currentTextChanged.connect(self.agent_use_user_defined)
+        self.vehicle_labels.pressed.connect(self.toggle_labels)
 
         self._labels_on = True
         self._vehicle_layer_ego = None
@@ -65,9 +67,10 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Orientation", QVariant.Double),
                                QgsField("Pos X", QVariant.Double),
                                QgsField("Pos Y", QVariant.Double),
-                               QgsField("Init Speed", QVariant.Double),
+                               QgsField("Init Speed", QVariant.String),
                                QgsField("Agent", QVariant.String),
-                               QgsField("Agent Camera", QVariant.Bool)]
+                               QgsField("Agent Camera", QVariant.Bool),
+                               QgsField("Agent User Defined", QVariant.String)]
             data_input_ego = vehicle_layer_ego.dataProvider()
             data_input = vehicle_layer.dataProvider()
             data_input_ego.addAttributes(data_attributes)
@@ -120,7 +123,7 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         Spawn vehicles on map with mouse click.
         User needs to select whether vehicle is ego before pressing button.
         """
-        if self.vehicleIsHero.isChecked():
+        if self.vehicle_is_hero.isChecked():
             iface.setActiveLayer(self._vehicle_layer_ego)
 
             # UI Information
@@ -135,19 +138,48 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
             QgsMessageLog.logMessage(message, level=Qgis.Info)
 
+        # Check value entry
+        orientation = None
+        if self.vehicle_orientation_use_lane.isChecked():
+            orientation = None
+        else:
+            if self.is_float(self.vehicle_orientation.text()):
+                orientation = float(self.vehicle_orientation.text())
+                orientation = math.radians(orientation)
+            else:
+                verification = self.verify_parameters(param=self.vehicle_orientation.text())
+                if len(verification) == 0:
+                    # UI Information
+                    message = f"Parameter {self.vehicle_orientation.text()} does not exist!"
+                    iface.messageBar().pushMessage("Info", message, level=Qgis.Critical)
+                    QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                else:
+                    orientation = float(verification["Value"])
+                    orientation = math.radians(orientation)
+
+        init_speed = None
+        if self.is_float(self.vehicle_init_speed.text()):
+            init_speed = float(self.vehicle_init_speed.text())
+        else:
+            verification = self.verify_parameters(param=self.vehicle_init_speed.text())
+            if len(verification) == 0:
+                # UI Information
+                message = f"Parameter {self.vehicle_init_speed.text()} does not exist!"
+                iface.messageBar().pushMessage("Info", message, level=Qgis.Critical)
+                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+            else:
+                init_speed = self.vehicle_init_speed.text()
+
         # Set map tool to point tool
         canvas = iface.mapCanvas()
         layer = iface.mapCanvas().currentLayer()
-        if self.vehicleOrientation_useLane.isChecked():
-            vehicle_orientation = None
-        else:
-            vehicle_orientation = float(self.vehicleOrientation.text())
-            vehicle_orientation = math.radians(vehicle_orientation)
-        vehicle_attributes = {"Model":self.vehicleSelection.currentText(),
-                              "Orientation":vehicle_orientation,
-                              "InitSpeed":self.vehicleInitSpeed.text(),
-                              "Agent": self.agentSelection.currentText(),
-                              "Agent Camera": self.agent_AttachCamera.isChecked()}
+
+        vehicle_attributes = {"Model":self.vehicle_selection.currentText(),
+                                "Orientation":orientation,
+                                "InitSpeed":init_speed,
+                                "Agent": self.agent_selection.currentText(),
+                                "Agent Camera": self.agent_attach_camera.isChecked(),
+                                "Agent User": self.agent_user_defined.text()}
         tool = PointTool(canvas, layer, vehicle_attributes)
         canvas.setMapTool(tool)
 
@@ -155,20 +187,66 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """
         Toggles user input for orientation based on "Use lane heading" setting.
         """
-        if self.vehicleOrientation_useLane.isChecked():
-            self.vehicleOrientation.setDisabled(True)
+        if self.vehicle_orientation_use_lane.isChecked():
+            self.vehicle_orientation.setDisabled(True)
         else:
-            self.vehicleOrientation.setEnabled(True)
+            self.vehicle_orientation.setEnabled(True)
 
     def agent_camera_selection(self):
         """
         Toggles 'attach_camera' to be user-selectable if agent is 'simple_vehicle_control'
         """
-        if self.agentSelection.currentText() == "simple_vehicle_control":
-            self.agent_AttachCamera.setEnabled(True)
+        if self.agent_selection.currentText() == "simple_vehicle_control":
+            self.agent_attach_camera.setEnabled(True)
         else:
-            self.agent_AttachCamera.setDisabled(True)
+            self.agent_attach_camera.setDisabled(True)
 
+    def agent_use_user_defined(self):
+        """
+        Enables / Disable uesr defined agent text entry
+        """
+        if self.agent_selection.currentText() == "User Defined":
+            self.agent_user_defined.setEnabled(True)
+        else:
+            self.agent_user_defined.setDisabled(True)
+
+    def verify_parameters(self, param):
+        """
+        Checks Parameter Declarations attribute table to verify parameter exists
+
+        Args:
+            param (string): name of parameter to check against
+
+        Returns:
+            feature (dict): parameter definitions
+        """
+        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
+        query = f'"Parameter Name" = \'{param}\''
+        feature_request = QgsFeatureRequest().setFilterExpression(query)
+        features = param_layer.getFeatures(feature_request)
+        feature = {}
+
+        for feat in features:
+            feature["Type"] = feat["Type"]
+            feature["Value"] = feat["Value"]
+
+        return feature
+
+    def is_float(self, value):
+        """
+        Checks value if it can be converted to float.
+
+        Args:
+            value (string): value to check if can be converted to float
+
+        Returns:
+            bool: True if float, False if not
+        """
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
 
 #pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):
@@ -223,7 +301,8 @@ class PointTool(QgsMapTool):
                                    float(enupoint.y),
                                    veh_attr["InitSpeed"],
                                    veh_attr["Agent"],
-                                   veh_attr["Agent Camera"]])
+                                   veh_attr["Agent Camera"],
+                                   veh_attr["Agent User"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
 
@@ -397,12 +476,12 @@ class AddVehicleAttribute():
                       "Yamaha YZF": "vehicle.yamaha.yzf"}
         vehicle_model = vehicle_dict[attributes["Model"]]
         orientation = float(attributes["Orientation"])
-        init_speed = float(attributes["InitSpeed"])
 
         vehicle_attributes = {"id": veh_id,
                               "Model": vehicle_model,
                               "Orientation": orientation,
-                              "InitSpeed": init_speed,
+                              "InitSpeed": attributes["InitSpeed"],
                               "Agent": attributes["Agent"],
-                              "Agent Camera": attributes["Agent Camera"]}
+                              "Agent Camera": attributes["Agent Camera"],
+                              "Agent User": attributes["Agent User"]}
         return vehicle_attributes

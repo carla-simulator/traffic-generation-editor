@@ -24,7 +24,9 @@
     - [Removing Vehicles or Pedestrians](#removing-vehicles-or-pedestrians)
     - [Adding Maneuvers](#adding-maneuvers)
     - [Removing Maneuvers and Waypoints](#removing-maneuvers-and-waypoints)
-    - [Editing Parameters](#editing-parameters)
+    - [Editing Entity / Maneuver Parameters](#editing-entity--maneuver-parameters)
+    - [Adding Own Parameters](#adding-own-parameters)
+    - [Using Self-defined Parameters](#using-self-defined-parameters)
   - [Connecting to CARLA](#connecting-to-carla)
     - [Env variables](#env-variables)
     - [Adding Camera](#adding-camera)
@@ -146,10 +148,11 @@ Infrastructure Action | ✅ | Traffic light signal control
 Icon | Description
 -- | --
 <img src="icons/icon_weather.png" alt="Edit environment" width="50"/> | Edit environment
-<img src="icons/icon_vehicle.png" alt="git commAdd vehicles" width="50"/> | Add vehicles
+<img src="icons/icon_vehicle.png" alt="Add vehicles" width="50"/> | Add vehicles
 <img src="icons/icon_pedestrian.png" alt="Add pedestrians" width="50"/> | Add pedestrians
 <img src="icons/icon_static.png" alt="Add static objects" width="50"/> | Add static objects
 <img src="icons/icon_maneuver.png" alt="Add maneuvers" width="50"/> | Add maneuvers
+<img src="icons/icon_parameter.png" alt="Add parmeters" width="50"/> | Add parameters
 <img src="icons/icon_endEval.png" alt="Add end evaluation KPIs" width="50"/> | Add end evaluation KPIs (Specific for Scenario Runner)
 <img src="icons/icon_code.png" alt="Export OpenSCENARIO" width="50"/> | Export OpenSCENARIO file
 <img src="icons/carla_logo.png" alt="Connect to CARLA instance" width="50"/> | Connect to carla instance 
@@ -169,7 +172,7 @@ _Note: To change environment settings, simply adjust the parameters and press 'A
 ### Adding Vehicles
 1. Click on 'Add vehicles' button to load dock widget.
 2. Choose parameters (vehicle type, use lane heading / manually specify, initial speed)
-3. Agent selection is only enabled for Ego vehicles.
+3. Agent selection is only enabled for Ego vehicles. You can also specify your own agent.
    
   ![Add Vehicles Dock Widget](Docs/OSCGenerator_Vehicles.png)
 
@@ -220,7 +223,7 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 3. Entity maneuvers
    1. Choose entity to apply maneuver to, if entity is not listed, click on `Refresh entity list`.
    2. Set up start triggers of the maneuver using the `Start Triggers` tab.
-   3. Set up stop triggers of the maneuver using the `Stop Triggers` tab. If stop triggers are not needed, uncheck the check box beside `Stop Triggers`.
+   3. If stop triggers are needed, set up stop triggers of the maneuver using the `Stop Triggers` tab by checking the box beside `Stop Triggers`.
    4. Choose type of maneuver (waypoints, longitudinal, lateral)
       1. Waypoint Maneuvers
          1. Choose waypoint strategy and whether to use lane heading or user-defined heading.
@@ -236,13 +239,11 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
    4. Set up the start triggers of the maneuvers using the `Triggers` tab.
    5. Click on `Insert`.
 
-_Note: It is important to set up the start triggers first before inserting the maneuver_
+_Note: It is important to set up the start/stop triggers first before inserting the maneuver_
 1. Special note for Reach Position Condition
    1. To set up `ReachPositionCondition`, click on `Choose position`.
    2. Click on a point on the map.
    3. The coordinates of the click point will be updated in the UI.
-
-_Note: Stop triggers are currently not supported._
 
 ### Removing Maneuvers and Waypoints
 1. In `Layers` right click on layer and select `Open Attribute Table`.
@@ -255,7 +256,7 @@ _Note: Stop triggers are currently not supported._
 5. Click on pencil icon to disable editing.
 6. When prompted to save changes, choose 'Yes'.
 
-### Editing Parameters
+### Editing Entity / Maneuver Parameters
 After inserting entities or maneuvers, you can edit them using the Attributes table.
 1. In `Layers`, right click on layer and select `Open Attribute Table`.
 2. Click on the pencil icon on top left to enable editing.
@@ -268,6 +269,25 @@ After inserting entities or maneuvers, you can edit them using the Attributes ta
 6. When promted to save changes, choose 'Yes'.
    
 _Note: Changing the positions (X, Y, heading) in the attributes table does not update the positions seen in the map._
+
+### Adding Own Parameters
+You can define you own parameters to be used inside the scenario.
+1. Click on the `Add Parameters` icon.
+2. Setup parameters based on requirements (name, type, value).
+
+   ![Parameters Dock Widget](Docs/OSCGenerator_Parameters.png)
+
+3. Click on `Insert`.
+4. If a parameter name already exists, the plugin will prompt you if you want to replace it.
+
+_Note: To edit existing parameters, you can edit them directly using the Attributes table, or using the same parameter name and clicking on `Insert`. The plugin will ask for confirmation to replace the existing parameter._
+
+### Using Self-defined Parameters
+Parameters can be used when creating scenarios.
+1. In the text field entry, simply input the name of the parameter to be used.
+2. If the parameter does not exist, and error message will appear, as shown below.
+   
+   ![Parameter Error Message](Docs/OSCGenerator_ParameterNotExist.png)
 
 ## Connecting to CARLA
 

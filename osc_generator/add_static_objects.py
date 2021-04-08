@@ -15,7 +15,8 @@ from qgis.PyQt.QtCore import Qt, pyqtSignal, QVariant
 from qgis.gui import QgsMapTool
 from qgis.utils import iface
 from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField,
-    QgsFeature, QgsGeometry, QgsPointXY, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling)
+    QgsFeature, QgsGeometry, QgsPointXY, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
+    QgsFeatureRequest)
 from PyQt5.QtWidgets import QInputDialog
 
 # AD Map plugin
@@ -37,9 +38,9 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """
         super(AddPropsDockWidget, self).__init__(parent)
         self.setupUi(self)
-        self.addProps_Button.pressed.connect(self.insert_props)
-        self.propsOrientation_useLane.stateChanged.connect(self.override_orientation)
-        self.propsLabels_Button.pressed.connect(self.toggle_labels)
+        self.add_props_button.pressed.connect(self.insert_props)
+        self.props_orientation_use_lane.stateChanged.connect(self.override_orientation)
+        self.props_labels_button.pressed.connect(self.toggle_labels)
 
         self._labels_on = True
         self._props_layer = None
@@ -60,7 +61,7 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Prop", QVariant.String),
                                QgsField("Prop Type", QVariant.String),
                                QgsField("Orientation", QVariant.Double),
-                               QgsField("Mass", QVariant.Double),
+                               QgsField("Mass", QVariant.String),
                                QgsField("Pos X", QVariant.Double),
                                QgsField("Pos Y", QVariant.Double),
                                QgsField("Physics", QVariant.Bool)]
@@ -116,17 +117,42 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         layer = iface.mapCanvas().currentLayer()
 
         # Static objects orientation
-        if self.propsOrientation_useLane.isChecked():
-            props_orientation = None
+        orientation = None
+        if self.props_orientation_use_lane.isChecked():
+            orientation = None
         else:
-            props_orientation = float(self.propsOrientation.text())
-            props_orientation = math.radians(props_orientation)
+            if self.is_float(self.props_orientation.text()):
+                orientation = float(self.props_orientation.text())
+                orientation = math.radians(orientation)
+            else:
+                verification = self.verify_parameters(param=self.props_orientation.text())
+                if len(verification) == 0:
+                    # UI Information
+                    message = f"Parameter {self.props_orientation.text()} does not exist!"
+                    iface.messageBar().pushMessage("Info", message, level=Qgis.Critical)
+                    QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                else:
+                    orientation = float(verification["Value"])
+                    orientation = math.radians(orientation)
 
-        prop_attributes = {"Prop": self.propsSelection.currentText(),
-                           "Prop Type": self.propsObjectType.currentText(),
-                           "Orientation": props_orientation,
-                           "Mass": float(self.propsMass.text()),
-                           "Physics": str(self.propsPhysics.isChecked())}
+        mass = None
+        if self.is_float(self.props_mass.text()):
+            mass = float(self.props_mass.text())
+        else:
+            verification = self.verify_parameters(param=self.props_mass.text())
+            if len(verification) == 0:
+                # UI Information
+                message = f"Parameter {self.props_mass.text()} does not exist!"
+                iface.messageBar().pushMessage("Info", message, level=Qgis.Critical)
+                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+            else:
+                mass = self.props_mass.text()
+
+        prop_attributes = {"Prop": self.props_selection.currentText(),
+                           "Prop Type": self.props_object_type.currentText(),
+                           "Orientation": orientation,
+                           "Mass": mass,
+                           "Physics": str(self.props_physics.isChecked())}
         tool = PointTool(canvas, layer, prop_attributes)
         canvas.setMapTool(tool)
 
@@ -134,10 +160,49 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """
         Toggles user input for walker orientation on/off
         """
-        if self.propsOrientation_useLane.isChecked():
-            self.propsOrientation.setDisabled(True)
+        if self.props_orientation_use_lane.isChecked():
+            self.props_orientation.setDisabled(True)
         else:
-            self.propsOrientation.setEnabled(True)
+            self.props_orientation.setEnabled(True)
+
+    def verify_parameters(self, param):
+        """
+        Checks Parameter Declarations attribute table to verify parameter exists
+
+        Args:
+            param (string): name of parameter to check against
+
+        Returns:
+            feature (dict): parameter definitions
+        """
+        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
+        query = f'"Parameter Name" = \'{param}\''
+        feature_request = QgsFeatureRequest().setFilterExpression(query)
+        features = param_layer.getFeatures(feature_request)
+        feature = {}
+
+        for feat in features:
+            feature["Type"] = feat["Type"]
+            feature["Value"] = feat["Value"]
+
+        return feature
+
+    def is_float(self, value):
+        """
+        Checks value if it can be converted to float.
+
+        Args:
+            value (string): value to check if can be converted to float
+
+        Returns:
+            bool: True if float, False if not
+        """
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
 
 #pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):

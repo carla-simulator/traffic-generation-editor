@@ -16,7 +16,7 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="2">
-     <widget class="QComboBox" name="walkerSelection">
+     <widget class="QComboBox" name="walker_selection">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -101,14 +101,14 @@
      </widget>
     </item>
     <item row="5" column="2">
-     <widget class="QLineEdit" name="walkerInitSpeed">
+     <widget class="QLineEdit" name="walker_init_speed">
       <property name="text">
        <string>0</string>
       </property>
      </widget>
     </item>
     <item row="3" column="2">
-     <widget class="QLineEdit" name="walkerOrientation">
+     <widget class="QLineEdit" name="walker_orientation">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -118,21 +118,21 @@
      </widget>
     </item>
     <item row="5" column="0">
-     <widget class="QLabel" name="walkerInitSpeed_Label">
+     <widget class="QLabel" name="walker_init_speed_label">
       <property name="text">
        <string>Init Speed</string>
       </property>
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QLabel" name="walkerSelection_Label">
+     <widget class="QLabel" name="walker_selection_label">
       <property name="text">
        <string>Pedestrian</string>
       </property>
      </widget>
     </item>
     <item row="1" column="2">
-     <widget class="QCheckBox" name="walkerUseRandom">
+     <widget class="QCheckBox" name="walker_selection_use_random">
       <property name="text">
        <string>Use random pedestrian</string>
       </property>
@@ -142,28 +142,28 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="walkerOrientation_Label">
+     <widget class="QLabel" name="walker_orientation_label">
       <property name="text">
        <string>Orientation</string>
       </property>
      </widget>
     </item>
     <item row="7" column="0">
-     <widget class="QPushButton" name="walkerLabels_Button">
+     <widget class="QPushButton" name="walker_labels_button">
       <property name="text">
        <string>Labels</string>
       </property>
      </widget>
     </item>
     <item row="7" column="2">
-     <widget class="QPushButton" name="addWalker_Button">
+     <widget class="QPushButton" name="add_walker_button">
       <property name="text">
        <string>Insert</string>
       </property>
      </widget>
     </item>
     <item row="4" column="2">
-     <widget class="QCheckBox" name="walkerOrientation_useLane">
+     <widget class="QCheckBox" name="walker_orientation_use_lane">
       <property name="text">
        <string>Use lane heading</string>
       </property>

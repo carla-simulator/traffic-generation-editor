@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>386</width>
-    <height>301</height>
+    <height>290</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,39 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="1">
-     <widget class="QComboBox" name="vehicleSelection">
+    <item row="8" column="0">
+     <widget class="QPushButton" name="vehicle_labels">
+      <property name="text">
+       <string>Labels</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" colspan="2">
+     <widget class="QLineEdit" name="vehicle_init_speed">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1" colspan="2">
+     <widget class="QPushButton" name="add_vehicle_button">
+      <property name="text">
+       <string>Insert</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QCheckBox" name="vehicle_orientation_use_lane">
+      <property name="text">
+       <string>Use lane heading</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="2">
+     <widget class="QComboBox" name="vehicle_selection">
       <item>
        <property name="text">
         <string>Audi A2</string>
@@ -99,6 +130,11 @@
       </item>
       <item>
        <property name="text">
+        <string>Lincoln MKZ 2020</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Mercedes Benz Coupe</string>
        </property>
       </item>
@@ -155,7 +191,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QLineEdit" name="vehicleOrientation">
+     <widget class="QLineEdit" name="vehicle_orientation">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -164,24 +200,21 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="QGroupBox" name="agentGroup">
+    <item row="2" column="0">
+     <widget class="QLabel" name="vehicle_orientation_label">
+      <property name="text">
+       <string>Orientation</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="3">
+     <widget class="QGroupBox" name="agent_group">
       <property name="title">
        <string>Agent Selection</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="agent_AttachCamera">
-         <property name="text">
-          <string>Attach Camera</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QComboBox" name="agentSelection">
+       <item row="1" column="0">
+        <widget class="QComboBox" name="agent_selection">
          <item>
           <property name="text">
            <string>simple_vehicle_control</string>
@@ -192,67 +225,54 @@
            <string>external_control</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>User Defined</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="agent_attach_camera">
+         <property name="text">
+          <string>Attach Camera</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLineEdit" name="agent_user_defined">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="placeholderText">
+          <string>user-defined agent</string>
+         </property>
         </widget>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="vehicleOrientation_Label">
-      <property name="text">
-       <string>Orientation</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="vehicleSelection_Label">
-      <property name="text">
-       <string>Vehicle</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1">
-     <widget class="QCheckBox" name="vehicleIsHero">
+     <widget class="QCheckBox" name="vehicle_is_hero">
       <property name="text">
        <string>Ego Vehicle</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
-     <widget class="QCheckBox" name="vehicleOrientation_useLane">
+    <item row="0" column="0">
+     <widget class="QLabel" name="vehicle_selection_label">
       <property name="text">
-       <string>Use lane heading</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QLineEdit" name="vehicleInitSpeed">
-      <property name="text">
-       <string>0</string>
+       <string>Vehicle</string>
       </property>
      </widget>
     </item>
     <item row="4" column="0">
-     <widget class="QLabel" name="vehicleInitSpeed_Label">
+     <widget class="QLabel" name="vehicle_init_speed_label">
       <property name="text">
        <string>Init Speed</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1">
-     <widget class="QPushButton" name="AddVehicleButton">
-      <property name="text">
-       <string>Insert</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QPushButton" name="vehicleLabels">
-      <property name="text">
-       <string>Labels</string>
       </property>
      </widget>
     </item>
@@ -260,10 +280,9 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>vehicleSelection</tabstop>
-  <tabstop>AddVehicleButton</tabstop>
-  <tabstop>vehicleOrientation</tabstop>
-  <tabstop>vehicleOrientation_useLane</tabstop>
+  <tabstop>vehicle_selection</tabstop>
+  <tabstop>add_vehicle_button</tabstop>
+  <tabstop>vehicle_orientation</tabstop>
  </tabstops>
  <resources/>
  <connections/>
