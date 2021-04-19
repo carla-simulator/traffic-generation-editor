@@ -41,7 +41,10 @@ class MapUpdate():
         '''
         try:
             self.carla_client = carla.Client(self.host, self.port)
-            self.carla_client.set_timeout(5.0)
+            if self.host == 'localhost':
+                self.carla_client.set_timeout(5.0)
+            else:
+                self.carla_client.set_timeout(15.0)
         except RuntimeError as error:
             print('RuntimeError: {}'.format(error))
             print(' Could not connect to carla instint.')
