@@ -31,12 +31,16 @@ class MapUpdate():
     '''
     Class to read, load, change map from carla.
     '''
+    
+    host = 'localhost'
+    port = 2000
+
     def __init__(self):
         '''
         Connects to carla running in background.
         '''
         try:
-            self.carla_client = carla.Client('localhost', 2000)
+            self.carla_client = carla.Client(self.host, self.port)
             self.carla_client.set_timeout(5.0)
         except RuntimeError as error:
             print('RuntimeError: {}'.format(error))
