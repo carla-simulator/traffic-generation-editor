@@ -28,13 +28,15 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     '''
     closingPlugin = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, host='localhost', port=2000):
         """Constructor."""
         super(CarlaConnectDockWidget, self).__init__(parent)
         self.setupUi(self)
         self.combo_box.clear()
         self.iface = iface
-        self.update_map = MapUpdate()
+        self.host = host
+        self.port = port
+        self.update_map = MapUpdate(self.host, self.port)
         self.maps = self._get_maps()
         self.combo_box.addItems(self.maps)
         self.combo_box.currentTextChanged.connect(self._change_town)
