@@ -48,7 +48,7 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.selected_town = None
         self._scenario_runner_process = None
         self.world = self.update_map.get_world()
-        self.camera_visualization = ImageProcessor()
+        self.camera_visualization = ImageProcessor(self.world)
 
     def _get_maps(self):
         self.maps_available = self.update_map.get_available_map()
