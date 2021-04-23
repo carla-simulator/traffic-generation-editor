@@ -99,7 +99,11 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             file = pathlib.Path(scenario_runner_path)
             if file.exists():
                 try:
-                    self._scenario_runner_process = Popen(['python3', scenario_runner_path, '--reloadWorld', '--openscenario', '/tmp/scenariogenerator1.xosc'])
+                    self._scenario_runner_process = Popen(['python3', scenario_runner_path,
+                                                           '--reloadWorld',
+                                                           '--openscenario', '/tmp/scenariogenerator1.xosc',
+                                                           '--host', self.host,
+                                                           '--port', str(self.port)])
                 except RuntimeError as error:
                     print('RuntimeError: {}'.format(error))
                     print(' Could not run the scenario.')
