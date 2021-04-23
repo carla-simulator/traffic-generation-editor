@@ -435,9 +435,7 @@ class OSC_Generator:
         message = "Loading Map"
         self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
         QgsMessageLog.logMessage(message, level=Qgis.Info)
-        MapUpdate.host = self.host
-        MapUpdate.port = self.port
-        self.update_map = MapUpdate()
+        self.update_map = MapUpdate(self.host, self.port)
         self.update_map.read_map()
         self.update_map.map_init()
         self.update_map.map_update()

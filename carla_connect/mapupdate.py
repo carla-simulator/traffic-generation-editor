@@ -31,17 +31,14 @@ class MapUpdate():
     '''
     Class to read, load, change map from carla.
     '''
-    
-    host = 'localhost'
-    port = 2000
 
-    def __init__(self):
+    def __init__(self, host='localhost', port=2000):
         '''
         Connects to carla running in background.
         '''
         try:
-            self.carla_client = carla.Client(self.host, self.port)
-            if self.host == 'localhost':
+            self.carla_client = carla.Client(host, port)
+            if host == 'localhost':
                 self.carla_client.set_timeout(5.0)
             else:
                 self.carla_client.set_timeout(15.0)
