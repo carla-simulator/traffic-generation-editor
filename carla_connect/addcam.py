@@ -31,12 +31,12 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 class CameraDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     '''class for Qtwidget of camera placement'''
     closingPlugin = pyqtSignal()
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, host='localhost', port=2000):
         self.camera_layer = None
         super(CameraDockWidget, self).__init__(parent)
         self.setupUi(self)
         self.height = None
-        self.world = MapUpdate().get_world()
+        self.world = MapUpdate(host, port).get_world()
         self.auto_cam_placement = AutoCamera(self.world)
         self.AddCameraposition.pressed.connect(self._insert_camera)
         self.AddCamerabutton.pressed.connect(self.auto_cam_placement.auto_camera_placement)
