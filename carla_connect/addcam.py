@@ -31,12 +31,13 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 class CameraDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     '''class for Qtwidget of camera placement'''
     closingPlugin = pyqtSignal()
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, host='localhost', port=2000):
         self.camera_layer = None
         super(CameraDockWidget, self).__init__(parent)
         self.setupUi(self)
         self.height = None
-        self.auto_cam_placement = AutoCamera()
+        self.world = MapUpdate(host, port).get_world()
+        self.auto_cam_placement = AutoCamera(self.world)
         self.AddCameraposition.pressed.connect(self._insert_camera)
         self.AddCamerabutton.pressed.connect(self.auto_cam_placement.auto_camera_placement)
         self.cameraheight.currentTextChanged.connect(self._camera_height)
@@ -81,7 +82,7 @@ class CameraDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         QgsMessageLog.logMessage("Using existing vehicle layer", level=Qgis.Info)
         canvas = iface.mapCanvas()
         layer = iface.mapCanvas().currentLayer()
-        tool = PointTool(canvas, layer, self.height)
+        tool = PointTool(canvas, layer, self.height, self.world)
         canvas.setMapTool(tool)
 
 class PointTool(QgsMapTool):
@@ -91,11 +92,12 @@ class PointTool(QgsMapTool):
     canvas: iface map canvas.
     layers: iface current layer.
     '''
-    def __init__(self, canvas, layer, height):
+    def __init__(self, canvas, layer, height, world):
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.layer = layer
         self.height = height
+        self.world = world
         self.data_input = layer.dataProvider()
         self.canvas.setCursor(Qt.CrossCursor)
 
@@ -120,7 +122,7 @@ class PointTool(QgsMapTool):
         feature.setAttributes([float(enupoint.x), float(enupoint.y)])
         feature.setGeometry(QgsGeometry.fromPolygonXY([squarepoint]))
         # Call function spawn_camera which spawn camera at provided location
-        self.spawn_cam = Spawn()
+        self.spawn_cam = Spawn(self.world)
         if self.height is None:
             self.height = 10
         self.spawn_cam.spawn_camera(enupoint.x, enupoint.y, self.height)
@@ -186,12 +188,13 @@ class PointTool(QgsMapTool):
             return squarepoints
 
 class AutoCamera():
-    def __init__(self):
+    def __init__(self, world):
         '''
         Initilize the variable.
         '''
         self.actors_x_position = np.array([])
         self.actors_y_position = np.array([])
+        self.world = world
 
     def auto_camera_placement(self):
         '''
@@ -242,7 +245,7 @@ class AutoCamera():
         camera_position_x = sum_x / length
         camera_position_y = sum_y / length
         cameraposition = ad.map.point.createENUPoint(x=camera_position_x, y=camera_position_y, z=0)
-        spawn_cam = Spawn()
+        spawn_cam = Spawn(self.world)
         spawn_cam.spawn_camera(cameraposition.x, cameraposition.y, 50)
 
 class Spawn():
@@ -254,11 +257,11 @@ class Spawn():
     height = how high the camera has to be placed
     '''
     actor_list = []
-    def __init__(self):
+    def __init__(self, world):
         '''
         initialize variable
         '''
-        self.world = MapUpdate().get_world()
+        self.world = world
 
     def spawn_camera(self, positionx, positiony, height):
         '''
@@ -273,8 +276,8 @@ class ImageProcessor():
     '''
     class to set up py_gam window and process image
     '''
-    def __init__(self):
-        self.world = MapUpdate().get_world()
+    def __init__(self, world):
+        self.world = world
         self.actor_list = self.world.get_actors()
         self.width = 1200
         self.height = 1200
