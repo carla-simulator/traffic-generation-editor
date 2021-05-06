@@ -39,7 +39,8 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
             filter="OpenSCENARIO (*.xosc)")
         # Update text field only if user press 'OK'
         if filename:
-            filename += ".xosc"
+            if filename[-4:] != "xosc":
+                filename += ".xosc"
             self.select_path.setText(filename)
 
     def save_file(self):
@@ -484,41 +485,51 @@ class GenerateXML():
                 time_of_day = feature["Datetime"]
                 time_animation = str(feature["Datetime Animation"]).lower()
                 cloud_state = feature["Cloud State"]
-                fog_range = feature["Fog Visual Range"]
-                sun_intensity = feature["Sun Intensity"]
-                sun_azimuth = feature["Sun Azimuth"]
-                sun_elevation = feature["Sun Elevation"]
+                fog_range = str(feature["Fog Visual Range"])
+                sun_intensity = str(feature["Sun Intensity"])
+                sun_azimuth = str(feature["Sun Azimuth"])
+                sun_elevation = str(feature["Sun Elevation"])
                 percip_type = feature["Precipitation Type"]
-                percip_intensity = feature["Precipitation Intensity"]
-
-            global_act = etree.SubElement(init_act, "GlobalAction")
-            env_act = etree.SubElement(global_act, "EnvironmentAction")
-            environ = etree.SubElement(env_act, "Environment")
-            environ.set("name", "Environment1")
-
-            env_time = etree.SubElement(environ, "TimeOfDay")
-            env_time.set("animation", time_animation)
-            env_time.set("dateTime", time_of_day)
-
-            weather = etree.SubElement(environ, "Weather")
-            weather.set("cloudState", cloud_state)
-            weather_sun = etree.SubElement(weather, "Sun")
-            weather_sun.set("intensity", sun_intensity)
-            weather_sun.set("azimuth", sun_azimuth)
-            weather_sun.set("elevation", sun_elevation)
-            weather_fog = etree.SubElement(weather, "Fog")
-            weather_fog.set("visualRange", fog_range)
-            weather_percip = etree.SubElement(weather, "Precipitation")
-            weather_percip.set("precipitationType", percip_type)
-            weather_percip.set("intensity", percip_intensity)
-
-            env_road = etree.SubElement(environ, "RoadCondition")
-            env_road.set("frictionScaleFactor", "1.0")
+                percip_intensity = str(feature["Precipitation Intensity"])
         except IndexError:
-            error_message = "No environment variables detected"
-            iface.messageBar().pushMessage("Error", error_message, level=Qgis.Critical)
-            QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
-            self._warning_message.append(f"Critical: {error_message}")
+            error_message = "No environment variables detected, using defaults"
+            iface.messageBar().pushMessage("Info", error_message, level=Qgis.Info)
+            QgsMessageLog.logMessage(error_message, level=Qgis.Info)
+            self._warning_message.append(f"Info: {error_message}")
+
+            time_of_day = "2020-10-23T06:00:00"
+            time_animation = "false"
+            cloud_state = "free"
+            fog_range = "100000"
+            sun_intensity = "0.85"
+            sun_azimuth = "0"
+            sun_elevation = "1.31"
+            percip_type = "dry"
+            percip_intensity = "0"
+        
+        global_act = etree.SubElement(init_act, "GlobalAction")
+        env_act = etree.SubElement(global_act, "EnvironmentAction")
+        environ = etree.SubElement(env_act, "Environment")
+        environ.set("name", "Environment1")
+
+        env_time = etree.SubElement(environ, "TimeOfDay")
+        env_time.set("animation", time_animation)
+        env_time.set("dateTime", time_of_day)
+
+        weather = etree.SubElement(environ, "Weather")
+        weather.set("cloudState", cloud_state)
+        weather_sun = etree.SubElement(weather, "Sun")
+        weather_sun.set("intensity", sun_intensity)
+        weather_sun.set("azimuth", sun_azimuth)
+        weather_sun.set("elevation", sun_elevation)
+        weather_fog = etree.SubElement(weather, "Fog")
+        weather_fog.set("visualRange", fog_range)
+        weather_percip = etree.SubElement(weather, "Precipitation")
+        weather_percip.set("precipitationType", percip_type)
+        weather_percip.set("intensity", percip_intensity)
+
+        env_road = etree.SubElement(environ, "RoadCondition")
+        env_road.set("frictionScaleFactor", "1.0")
 
     def set_init_speed(self, entity, init_speed):
         """
@@ -1136,14 +1147,20 @@ class GenerateXML():
         xosc_file.write(reparsed_xml)
         xosc_file.close()
 
-        if self._warning_message:
-            text = f"Exported OpenSCENARIO file to {self._filepath} with warning: \n\n"
-            text += "\n".join(self._warning_message)
-        else:
-            text = f"Successfully exported OpenSCENARIO file to {self._filepath}"
+        text = f"Successfully exported OpenSCENARIO file to {self._filepath}"
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText(text)
         msg.setWindowTitle("OpenSCENARIO Export")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec()
+
+        if self._warning_message:
+            warn_msg = QMessageBox()
+            warn_msg.setIcon(QMessageBox.Warning)
+            warn_msg_text = "Exported OpenSCENARIO file has warnings!\n\n"
+            warn_msg_text += "\n".join(self._warning_message)
+            warn_msg.setText(warn_msg_text)
+            warn_msg.setWindowTitle("OpenSCENARIO Export Warnings")
+            warn_msg.setStandardButtons(QMessageBox.Ok)
+            warn_msg.exec()

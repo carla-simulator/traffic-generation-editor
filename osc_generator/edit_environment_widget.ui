@@ -10,12 +10,6 @@
     <height>280</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>360</width>
-    <height>138</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Edit Environment</string>
   </property>
@@ -45,18 +39,18 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="QGroupBox" name="DateTimeGroup">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>70</height>
-           </size>
-          </property>
           <property name="title">
            <string>Time of Day</string>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QCheckBox" name="TimeAnimation">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Animation</string>
              </property>
@@ -64,9 +58,15 @@
            </item>
            <item>
             <widget class="QDateTimeEdit" name="TimeofDay">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="dateTime">
               <datetime>
-               <hour>8</hour>
+               <hour>6</hour>
                <minute>0</minute>
                <second>0</second>
                <year>2020</year>
@@ -83,7 +83,7 @@
              </property>
              <property name="time">
               <time>
-               <hour>8</hour>
+               <hour>6</hour>
                <minute>0</minute>
                <second>0</second>
               </time>
@@ -101,12 +101,6 @@
         </item>
         <item row="1" column="0">
          <widget class="QGroupBox" name="WeatherGroup">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>310</height>
-           </size>
-          </property>
           <property name="title">
            <string>Weather</string>
           </property>

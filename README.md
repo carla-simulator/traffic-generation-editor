@@ -75,6 +75,7 @@ pip3 install --user -r /path/to/requirements.txt
 ## Known Issues
 - Non CARLA maps are not fully supported
   - Entity spawn z coordinates need to be manually adjusted
+- When map is unloaded and reloaded with AD Map Access, exporting scenarios might not work 
 
 ## OpenSCENARIO Support List
 
