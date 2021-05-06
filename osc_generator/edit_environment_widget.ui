@@ -57,6 +57,12 @@
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QCheckBox" name="TimeAnimation">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>Animation</string>
              </property>
@@ -64,9 +70,15 @@
            </item>
            <item>
             <widget class="QDateTimeEdit" name="TimeofDay">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="dateTime">
               <datetime>
-               <hour>8</hour>
+               <hour>6</hour>
                <minute>0</minute>
                <second>0</second>
                <year>2020</year>
@@ -83,7 +95,7 @@
              </property>
              <property name="time">
               <time>
-               <hour>8</hour>
+               <hour>6</hour>
                <minute>0</minute>
                <second>0</second>
               </time>
