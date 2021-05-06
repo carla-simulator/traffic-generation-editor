@@ -28,13 +28,15 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     '''
     closingPlugin = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, host='localhost', port=2000):
         """Constructor."""
         super(CarlaConnectDockWidget, self).__init__(parent)
         self.setupUi(self)
         self.combo_box.clear()
         self.iface = iface
-        self.update_map = MapUpdate()
+        self.host = host
+        self.port = port
+        self.update_map = MapUpdate(self.host, self.port)
         self.maps = self._get_maps()
         self.combo_box.addItems(self.maps)
         self.combo_box.currentTextChanged.connect(self._change_town)
@@ -46,7 +48,7 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.selected_town = None
         self._scenario_runner_process = None
         self.world = self.update_map.get_world()
-        self.camera_visualization = ImageProcessor()
+        self.camera_visualization = ImageProcessor(self.world)
 
     def _get_maps(self):
         self.maps_available = self.update_map.get_available_map()
@@ -97,7 +99,11 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             file = pathlib.Path(scenario_runner_path)
             if file.exists():
                 try:
-                    self._scenario_runner_process = Popen(['python3', scenario_runner_path, '--reloadWorld', '--openscenario', '/tmp/scenariogenerator1.xosc'])
+                    self._scenario_runner_process = Popen(['python3', scenario_runner_path,
+                                                           '--reloadWorld',
+                                                           '--openscenario', '/tmp/scenariogenerator1.xosc',
+                                                           '--host', self.host,
+                                                           '--port', str(self.port)])
                 except RuntimeError as error:
                     print('RuntimeError: {}'.format(error))
                     print(' Could not run the scenario.')
