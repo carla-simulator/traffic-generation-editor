@@ -24,6 +24,7 @@ from .osc_generator.add_vehicles import AddVehiclesDockWidget
 from .osc_generator.add_pedestrians import AddPedestriansDockWidget
 from .osc_generator.add_static_objects import AddPropsDockWidget
 from .osc_generator.export_xosc import ExportXOSCDialog
+from .osc_generator.import_xosc import ImportXOSCDialog
 from .osc_generator.edit_environment import EditEnvironmentDockWidget
 from .osc_generator.end_eval_criteria import EndEvalCriteriaDialog
 from .osc_generator.add_maneuvers import AddManeuversDockWidget
@@ -179,42 +180,52 @@ class OSC_Generator:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        self.weather = "icon_weather"
-        self.weather_info = "Edit Environment"
-        self.vehicle = "icon_vehicle"
-        self.vehicle_info = "Add Vehicles"
-        self.pedestrians = "icon_pedestrian"
-        self.pedestrians_info = "Add Pedestrians"
-        self.static = "icon_static"
-        self.static_info = "Add static objects"
-        self.maneuver = "icon_maneuver"
-        self.maneuver_info = "Add maneuvers"
-        self.parameter = "icon_parameter"
-        self.parameter_info = "Add Parameters"
-        self.endeval = "icon_endEval"
-        self.endeval_info = "End evaluation KPI's"
-        self.code = "icon_code"
-        self.code_info = "Export to open scenario"
-        self.carla = "carla_logo"
-        self.carla_info = "Connect to carla"
-        self.cam = "video_cam"
-        self.cam_info = "Add bird eye camera"
+        weather = "icon_weather"
+        weather_info = "Edit Environment"
+        vehicle = "icon_vehicle"
+        vehicle_info = "Add Vehicles"
+        pedestrians = "icon_pedestrian"
+        pedestrians_info = "Add Pedestrians"
+        static = "icon_static"
+        static_info = "Add static objects"
+        maneuver = "icon_maneuver"
+        maneuver_info = "Add maneuvers"
+        parameter = "icon_parameter"
+        parameter_info = "Add Parameters"
+        endeval = "icon_endEval"
+        endeval_info = "End evaluation KPI's"
+        code_export = "icon_code"
+        code_export_info = "Export OpenSCENARIO file"
+        code_import = "icon_import"
+        code_import_info = "Import OpenSCENARIO file"
+        carla = "carla_logo"
+        carla_info = "Connect to CARLA"
+        cam = "video_cam"
+        cam_info = "Add bird eye camera"
 
-        self.__add_action__(self.weather, self.weather_info, self.edit_environment)
-        self.__add_action__(self.vehicle, self.vehicle_info, self.add_vehicles)
-        self.__add_action__(self.pedestrians, self.pedestrians_info, self.add_pedestrians)
-        self.__add_action__(self.static, self.static_info, self.add_props)
-        self.__add_action__(self.maneuver, self.maneuver_info, self.add_maneuver)
-        self.__add_action__(self.parameter, self.parameter_info, self.add_parameters)
-        self.__add_action__(self.endeval, self.endeval_info, self.end_evaluation)
-        self.__add_action__(self.code, self.code_info, self.export_xosc)
-        self.__add_action__(self.carla, self.carla_info, self.run_scenario)
-        self.__add_action__(self.cam, self.cam_info, self.add_camera_position)
+        self.__add_action__(weather, weather_info, self.edit_environment)
+        self.__add_action__(vehicle, vehicle_info, self.add_vehicles)
+        self.__add_action__(pedestrians, pedestrians_info, self.add_pedestrians)
+        self.__add_action__(static, static_info, self.add_props)
+        self.__add_action__(maneuver, maneuver_info, self.add_maneuver)
+        self.__add_action__(parameter, parameter_info, self.add_parameters)
+        self.__add_action__(endeval, endeval_info, self.end_evaluation)
+        self.__add_action__(code_export, code_export_info, self.export_xosc)
+        self.__add_action__(code_import, code_import_info, self.import_xosc)
+        self.__add_action__(carla, carla_info, self.run_scenario)
+        self.__add_action__(cam, cam_info, self.add_camera_position)
 
-    def __add_action__(self, text, info, callback):
-        "..."
-        action = self.ui.add_action(text, info, callback)
-        self.action_tool[text] = (action, None)
+    def __add_action__(self, icon_file, info, callback):
+        """
+        Adds action to QGIS toolbar
+
+        Args:
+            icon_file (str): Icon file name (without file extension)
+            info (str): Tooltip information
+            callback (function): Callback function for button
+        """
+        action = self.ui.add_action(icon_file, info, callback)
+        self.action_tool[icon_file] = (action, None)
 
     #--------------------------------------------------------------------------
 
@@ -325,6 +336,16 @@ class OSC_Generator:
         return_value = dlg.exec_()
         if return_value:
             ExportXOSCDialog.save_file(dlg)
+    
+    def import_xosc(self):
+        """
+        Opens "Import OpenSCENARIO" dialog.
+        """
+        dlg = ImportXOSCDialog()
+        dlg.show()
+        return_value = dlg.exec_()
+        if return_value:
+            ImportXOSCDialog.open_file(dlg)
 
     def edit_environment(self):
         """
@@ -484,16 +505,16 @@ class QGISUI(object):
             self.toolbar = self.iface.addToolBar(title)
             self.toolbar.setObjectName(title)
 
-    def add_action(self, text, info, callback):
+    def add_action(self, icon_file, info, callback):
         "..."
         parent = self.iface.mainWindow()
-        icon = self.__icon__(text)
+        icon = self.__icon__(icon_file)
         action = QAction(icon, info, parent)
         action.triggered.connect(callback)
         self.iface.addPluginToDatabaseMenu(self.menu, action)
         if self.toolbar is not None:
             self.toolbar.addAction(action)
-        self.actions[text] = action
+        self.actions[icon_file] = action
         return action
 
     def __icon__(self, text):
