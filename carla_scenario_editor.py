@@ -33,6 +33,7 @@ try:
     from .carla_connect.mapupdate import MapUpdate
     from .carla_connect.addcam import CameraDockWidget
     from .carla_connect.carla_connect_dockwidget import CarlaConnectDockWidget
+    from .carla_connect.carla_connect_to_host import CarlaConnectToHostDialog
     carla_available = True
 except:
     carla_available = False
@@ -302,6 +303,19 @@ class OSC_Generator:
             self.iface.addDockWidget(Qt.BottomDockWidgetArea, self._dockwidget_pedestrians)
             self._dockwidget_pedestrians.show()
 
+    def get_carla_host_and_port(self):
+        """
+        Opens "Connect to CARLA" dialog.
+        """
+        dlg = CarlaConnectToHostDialog()
+        dlg.show()
+        return_value = dlg.exec_()
+        if return_value:
+            self.host, self.port = CarlaConnectToHostDialog.get_host_and_port(dlg)
+            return True
+        else:
+            return False
+
     def export_xosc(self):
         """
         Opens "Export OpenSCENARIO" dialog.
@@ -412,10 +426,16 @@ class OSC_Generator:
             QgsMessageLog.logMessage(message, level=Qgis.Info)
             return
 
+        if not self.get_carla_host_and_port():
+            message = "Did not specify CARLA host and port"
+            self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
+            return
+
         message = "Loading Map"
         self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
         QgsMessageLog.logMessage(message, level=Qgis.Info)
-        self.update_map = MapUpdate()
+        self.update_map = MapUpdate(self.host, self.port)
         self.update_map.read_map()
         self.update_map.map_init()
         self.update_map.map_update()
@@ -423,7 +443,7 @@ class OSC_Generator:
         self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
         QgsMessageLog.logMessage(message, level=Qgis.Info)
         if not self.pluginIsActive:
-            self.dockwidget = CarlaConnectDockWidget()
+            self.dockwidget = CarlaConnectDockWidget(host=self.host, port=self.port)
             self.dockwidget.closingPlugin.connect(self.onClosePlugin)
             self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
             self.dockwidget.show()
@@ -440,7 +460,14 @@ class OSC_Generator:
             self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
             QgsMessageLog.logMessage(message, level=Qgis.Info)
             return
-        self.camera_dock_widget = CameraDockWidget()
+
+        if not self.get_carla_host_and_port():
+            message = "Did not specify CARLA host and port"
+            self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
+            QgsMessageLog.logMessage(message, level=Qgis.Info)
+            return
+            
+        self.camera_dock_widget = CameraDockWidget(host=self.host, port=self.port)
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.camera_dock_widget)
         self.camera_dock_widget.show()
 
