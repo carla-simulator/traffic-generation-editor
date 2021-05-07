@@ -58,10 +58,16 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
 class ImportXOSC():
     def __init__(self, filepath):
         self._filepath = filepath
+        self._invert_y = False
 
     def import_xosc(self):
         tree = etree.parse(self._filepath)
         self._root = tree.getroot()
+
+        file_header = self._root.findall(".//FileHeader")[0]
+        file_header_description = file_header.attrib.get("description")
+        if file_header_description[:6] == "CARLA:":
+            self._invert_y = True
 
         if self._root.findall(".//EnvironmentAction"):
             env_node = self._root.findall(".//EnvironmentAction")[0]
@@ -71,10 +77,7 @@ class ImportXOSC():
             entity_node = self._root.findall(".//Entities")[0]
             self.parse_entities(entity_node)
 
-    def parse_enviroment_actions(self, env_node):
-        for element in env_node.iter():
-            print("NODE ELEMENTS:", element.tag, element.attrib)
-        
+    def parse_enviroment_actions(self, env_node):        
         print("Got da environment... MAKING A SEARCH ------------")
 
         environment = env_node.findall("Environment")
@@ -168,6 +171,9 @@ class ImportXOSC():
         
         model = pedestrian.attrib.get("model")
 
+        if self._invert_y:
+            world_pos_y = -float(world_pos_y)
+
         polygon_points = self.get_polygon_points(
             world_pos_x, world_pos_y, world_pos_heading, "Pedestrian")
 
@@ -203,6 +209,9 @@ class ImportXOSC():
             world_pos_heading = world_pos.attrib.get("h")
         
         model = vehicle.attrib.get("name")
+
+        if self._invert_y:
+            world_pos_y = -float(world_pos_y)
 
         polygon_points = self.get_polygon_points(
             world_pos_x, world_pos_y, world_pos_heading, "Vehicle")
@@ -244,6 +253,9 @@ class ImportXOSC():
         model = prop.attrib.get("name")
         model_type = prop.attrib.get("miscObjectCategory")
         mass = prop.attrib.get("mass")
+
+        if self._invert_y:
+            world_pos_y = -float(world_pos_y)
 
         physics = False
         for prop_property in prop.iter("Property"):
