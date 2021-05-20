@@ -5,7 +5,7 @@
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
 """
-OpenSCENARIO Generator - Add Static Objects
+OpenSCENARIO Generator - Add Vehicles
 """
 import math
 import os
@@ -15,7 +15,7 @@ import ad_map_access as ad
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsMessageLog, QgsPointXY, 
     QgsProject, QgsVectorLayer, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsFeatureRequest)
+    QgsFeatureRequest, QgsRectangle)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
@@ -67,6 +67,7 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Orientation", QVariant.Double),
                                QgsField("Pos X", QVariant.Double),
                                QgsField("Pos Y", QVariant.Double),
+                               QgsField("Pos Z", QVariant.Double),
                                QgsField("Init Speed", QVariant.String),
                                QgsField("Agent", QVariant.String),
                                QgsField("Agent Camera", QVariant.Bool),
@@ -175,11 +176,11 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         layer = iface.mapCanvas().currentLayer()
 
         vehicle_attributes = {"Model":self.vehicle_selection.currentText(),
-                                "Orientation":orientation,
-                                "InitSpeed":init_speed,
-                                "Agent": self.agent_selection.currentText(),
-                                "Agent Camera": self.agent_attach_camera.isChecked(),
-                                "Agent User": self.agent_user_defined.text()}
+                              "Orientation":orientation,
+                              "InitSpeed":init_speed,
+                              "Agent": self.agent_selection.currentText(),
+                              "Agent Camera": self.agent_attach_camera.isChecked(),
+                              "Agent User": self.agent_user_defined.text()}
         tool = PointTool(canvas, layer, vehicle_attributes)
         canvas.setMapTool(tool)
 
@@ -277,8 +278,21 @@ class PointTool(QgsMapTool):
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
+        lane_id = self.find_lane_id_at_point(event.pos())
+        lane_id_t = int(lane_id)
+        
+        if lane_id_t is not None:
+            lla_left = self.GetLaneEdgeLeft(lane_id_t)
+
+            if lla_left is not None:
+                altitude_sum = 0
+                for lla in lla_left:
+                    altitude_sum = altitude_sum + float(lla.altitude)
+                altitude = altitude_sum / len(lla_left)
+                print("The lane altitude is... " + str(altitude))
+
         # Converting to ENU points
-        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=0)
+        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
         enupoint = ad.map.point.toENU(geopoint)
         add_veh = AddVehicleAttribute()
 
@@ -299,6 +313,7 @@ class PointTool(QgsMapTool):
                                    veh_attr["Orientation"],
                                    float(enupoint.x),
                                    float(enupoint.y),
+                                   float(enupoint.z),
                                    veh_attr["InitSpeed"],
                                    veh_attr["Agent"],
                                    veh_attr["Agent Camera"],
@@ -324,6 +339,44 @@ class PointTool(QgsMapTool):
 
     def isEditTool(self):
         return True
+
+    def find_lane_id_at_point(self, pos):
+        "..."
+        registry = QgsProject.instance()
+        layers = registry.mapLayers()
+        for layer_name in layers:
+            layer = layers[layer_name]
+            point = self.toLayerCoordinates(layer, pos)
+            request = QgsFeatureRequest()
+            rect = QgsRectangle(point[0], point[1], point[0], point[1])
+            request.setFilterRect(rect)
+            try:
+                layer_attrs = layer.attributeList()
+                if layer_attrs is not None:
+                    attr0_name = layer.attributeDisplayName(0)
+                    attr2_name = layer.attributeDisplayName(2)
+                    if attr0_name == "Id" and attr2_name == "HOV":
+                        feats = layer.getFeatures(request)
+                        for feat in feats:
+                            attrs = feat.attributes()
+                            return attrs[0]
+            except AttributeError:
+                pass
+        return None
+    
+    def GetLaneEdge(self, lane_id, tf):
+        lane_t = ad.map.lane.getLane(lane_id)
+        geom = lane_t.edgeLeft if tf else lane_t.edgeRight
+        geos = ad.map.point.GeoEdge()
+        mCoordinateTransform = ad.map.point.CoordinateTransform()
+        mCoordinateTransform.convert(geom.ecefEdge, geos)
+        return geos
+    
+    def GetLaneEdgeLeft(self, lane_id):
+        return self.GetLaneEdge(lane_id, True)
+
+    def GetLaneEdgeRight(self, lane_id):
+        return self.GetLaneEdge(lane_id, False)
 #pylint: enable=missing-function-docstring
 
 
@@ -340,7 +393,8 @@ class AddVehicleAttribute():
         Args:
             geopoint: [AD Map GEOPoint] point of click event
         """
-        dist = ad.physics.Distance(0.025)
+        # dist = ad.physics.Distance(0.025)
+        dist = ad.physics.Distance(5)
         admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
 
         lanes_detected = 0
@@ -392,7 +446,6 @@ class AddVehicleAttribute():
             enupoint: [AD Map ENUPoint] point of click event, as spawn center
             angle: [float] angle to rotate object (in radians)
         """
-
         if angle is not None:
             bot_left_x = float(enupoint.x) + (-2 * math.cos(angle) - 1 * math.sin(angle))
             bot_left_y = float(enupoint.y) + (-2 * math.sin(angle) + 1 * math.cos(angle))

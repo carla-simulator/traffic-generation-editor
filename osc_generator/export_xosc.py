@@ -335,6 +335,7 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
                 init_speed = feature["Init Speed"]
                 agent = feature["Agent"]
                 agent_camera = str(feature["Agent Camera"]).lower()
@@ -344,7 +345,7 @@ class GenerateXML():
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
                 self.vehicle_controller(entity, str(feature["id"]), agent, agent_camera, is_ego=True)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
@@ -357,6 +358,7 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
                 init_speed = feature["Init Speed"]
                 agent = feature["Agent"]
                 agent_camera = str(feature["Agent Camera"]).lower()
@@ -366,7 +368,7 @@ class GenerateXML():
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
                 self.vehicle_controller(entity, str(feature["id"]), agent, agent_camera, is_ego=False)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
@@ -379,11 +381,12 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
                 init_speed = feature["Init Speed"]
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", ped_id)
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
 
@@ -395,12 +398,13 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", prop_id)
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
 
-    def entity_teleport_action(self, entity, orientation, pos_x, pos_y):
+    def entity_teleport_action(self, entity, orientation, pos_x, pos_y, pos_z):
         """
         Writes OpenSCENARIO tags for entity teleport action
 
@@ -409,6 +413,7 @@ class GenerateXML():
             orientation: [double] orientation of entity
             pos_x: [double] position x of entity (in meters)
             pos_y: [double] position y of entity (in meters)
+            pos_z: [double] position z of entity (in meters)
         """
         private_act = etree.SubElement(entity, "PrivateAction")
         teleport_action = etree.SubElement(private_act, "TeleportAction")
@@ -416,7 +421,7 @@ class GenerateXML():
         teleport_worldpos = etree.SubElement(teleport_pos, "WorldPosition")
         teleport_worldpos.set("x", str(pos_x))
         teleport_worldpos.set("y", str(pos_y))
-        teleport_worldpos.set("z", "0.2")
+        teleport_worldpos.set("z", str(pos_z))
         teleport_worldpos.set("h", str(orientation))
 
     def vehicle_controller(self, entity, veh_id, agent, agent_camera, is_ego):

@@ -14,7 +14,7 @@ import random
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsMessageLog,
     QgsPalLayerSettings, QgsPointXY, QgsProject, QgsVectorLayer,
-    QgsVectorLayerSimpleLabeling, QgsFeatureRequest)
+    QgsVectorLayerSimpleLabeling, QgsFeatureRequest, QgsRectangle)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
@@ -64,6 +64,7 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Orientation", QVariant.Double),
                                QgsField("Pos X", QVariant.Double),
                                QgsField("Pos Y", QVariant.Double),
+                               QgsField("Pos Z", QVariant.Double),
                                QgsField("Init Speed", QVariant.String)]
             data_input = walker_layer.dataProvider()
             data_input.addAttributes(data_attributes)
@@ -242,8 +243,22 @@ class PointTool(QgsMapTool):
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
+        lane_id = self.find_lane_id_at_point(event.pos())
+        lane_id_t = int(lane_id)
+        
+        if lane_id_t is not None:
+            lla_left = self.GetLaneEdgeLeft(lane_id_t)
+
+            if lla_left is not None:
+                altitude_sum = 0
+                for lla in lla_left:
+                    altitude_sum = altitude_sum + float(lla.altitude)
+                altitude = altitude_sum / len(lla_left)
+                print("The lane altitude is... " + str(altitude))
+
         # Converting to ENU points
-        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=0)
+        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
+        print(geopoint)
         enupoint = ad.map.point.toENU(geopoint)
         add_walker = AddPedestrianAttribute()
 
@@ -266,6 +281,7 @@ class PointTool(QgsMapTool):
                                    pedestrian_attr["Orientation"],
                                    float(enupoint.x),
                                    float(enupoint.y),
+                                   float(enupoint.z),
                                    pedestrian_attr["Init Speed"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
@@ -287,6 +303,44 @@ class PointTool(QgsMapTool):
 
     def isEditTool(self):
         return True
+
+    def find_lane_id_at_point(self, pos):
+        "..."
+        registry = QgsProject.instance()
+        layers = registry.mapLayers()
+        for layer_name in layers:
+            layer = layers[layer_name]
+            point = self.toLayerCoordinates(layer, pos)
+            request = QgsFeatureRequest()
+            rect = QgsRectangle(point[0], point[1], point[0], point[1])
+            request.setFilterRect(rect)
+            try:
+                layer_attrs = layer.attributeList()
+                if layer_attrs is not None:
+                    attr0_name = layer.attributeDisplayName(0)
+                    attr2_name = layer.attributeDisplayName(2)
+                    if attr0_name == "Id" and attr2_name == "HOV":
+                        feats = layer.getFeatures(request)
+                        for feat in feats:
+                            attrs = feat.attributes()
+                            return attrs[0]
+            except AttributeError:
+                pass
+        return None
+    
+    def GetLaneEdge(self, lane_id, tf):
+        lane_t = ad.map.lane.getLane(lane_id)
+        geom = lane_t.edgeLeft if tf else lane_t.edgeRight
+        geos = ad.map.point.GeoEdge()
+        mCoordinateTransform = ad.map.point.CoordinateTransform()
+        mCoordinateTransform.convert(geom.ecefEdge, geos)
+        return geos
+    
+    def GetLaneEdgeLeft(self, lane_id):
+        return self.GetLaneEdge(lane_id, True)
+
+    def GetLaneEdgeRight(self, lane_id):
+        return self.GetLaneEdge(lane_id, False)
 #pylint: enable=missing-function-docstring
 
 
@@ -307,7 +361,8 @@ class AddPedestrianAttribute():
             lane_heading: [float] heading of click point at selected lane ID
             lane_heading: [None] if click point is not valid
         """
-        dist = ad.physics.Distance(0.025)
+        # dist = ad.physics.Distance(0.025)
+        dist = ad.physics.Distance(5)
         admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
 
         lanes_detected = 0
@@ -322,6 +377,9 @@ class AddPedestrianAttribute():
         elif lanes_detected == 1:
             for point in admap_matched_points:
                 lane_id = point.lanePoint.paraPoint.laneId
+                # lane = ad.map.lane.getLane(lane_id)
+                # altitude_range = ad.map.lane.calcLaneAltitudeRange(lane)
+                # print("Altitude Max: " + str(altitude_range.maximum.mAltitude) + " Min:" + str(altitude_range.minimum.mAltitude))
                 para_offset = point.lanePoint.paraPoint.parametricOffset
                 parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
                 lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
@@ -346,6 +404,9 @@ class AddPedestrianAttribute():
             if ok_pressed:
                 i = lane_ids_to_match.index(lane_id_selected)
                 lane_id = lane_id[i]
+                # lane = ad.map.lane.getLane(lane_id)
+                # altitude_range = ad.map.lane.calcLaneAltitudeRange(lane)
+                # print("Altitude Max: " + str(altitude_range.maximum.mAltitude) + " Min:" + str(altitude_range.minimum.mAltitude))
                 para_offset = para_offsets[i]
                 parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
                 lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
