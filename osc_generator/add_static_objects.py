@@ -16,7 +16,7 @@ from qgis.gui import QgsMapTool
 from qgis.utils import iface
 from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField,
     QgsFeature, QgsGeometry, QgsPointXY, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsFeatureRequest, QgsRectangle)
+    QgsFeatureRequest, QgsSpatialIndex)
 from PyQt5.QtWidgets import QInputDialog
 
 # AD Map plugin
@@ -231,18 +231,36 @@ class PointTool(QgsMapTool):
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
-        lane_id = self.find_lane_id_at_point(event.pos())
-        lane_id_t = int(lane_id)
-        
-        if lane_id_t is not None:
-            lla_left = self.GetLaneEdgeLeft(lane_id_t)
+        lane_edge_layer = QgsProject.instance().mapLayersByName("Lane Edge")[0]
+        lane_edge_data_provider = lane_edge_layer.dataProvider()
+        spatial_index = QgsSpatialIndex()
+        spatial_feature = QgsFeature()
+        lane_edge_features = lane_edge_data_provider.getFeatures()
 
-            if lla_left is not None:
-                altitude_sum = 0
-                for lla in lla_left:
-                    altitude_sum = altitude_sum + float(lla.altitude)
-                altitude = altitude_sum / len(lla_left)
-                print("The lane altitude is... " + str(altitude))
+        while lane_edge_features.nextFeature(spatial_feature):
+            spatial_index.insertFeature(spatial_feature)
+        
+        nearest_ids = spatial_index.nearestNeighbor(point, 5)
+
+        z_values = set()
+        for feat in lane_edge_layer.getFeatures(QgsFeatureRequest().setFilterFids(nearest_ids)):
+            feature_coordinates = feat.geometry().vertexAt(1)
+            z_values.add(round(feature_coordinates.z(), ndigits=4))
+
+        if max(z_values) - min(z_values) < 0.1:
+            altitude = max(z_values)
+        else:
+            stringified_z_values = [str(z_value) for z_value in z_values]
+            z_value_selected, ok_pressed = QInputDialog.getItem(
+                QInputDialog(),
+                "Choose Elevation",
+                "Elevation (meters)",
+                tuple(stringified_z_values),
+                current=0,
+                editable=False)
+            
+            if ok_pressed:
+                altitude = float(z_value_selected)
 
         # Converting to ENU points
         geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
@@ -292,44 +310,6 @@ class PointTool(QgsMapTool):
 
     def isEditTool(self):
         return True
-
-    def find_lane_id_at_point(self, pos):
-        "..."
-        registry = QgsProject.instance()
-        layers = registry.mapLayers()
-        for layer_name in layers:
-            layer = layers[layer_name]
-            point = self.toLayerCoordinates(layer, pos)
-            request = QgsFeatureRequest()
-            rect = QgsRectangle(point[0], point[1], point[0], point[1])
-            request.setFilterRect(rect)
-            try:
-                layer_attrs = layer.attributeList()
-                if layer_attrs is not None:
-                    attr0_name = layer.attributeDisplayName(0)
-                    attr2_name = layer.attributeDisplayName(2)
-                    if attr0_name == "Id" and attr2_name == "HOV":
-                        feats = layer.getFeatures(request)
-                        for feat in feats:
-                            attrs = feat.attributes()
-                            return attrs[0]
-            except AttributeError:
-                pass
-        return None
-    
-    def GetLaneEdge(self, lane_id, tf):
-        lane_t = ad.map.lane.getLane(lane_id)
-        geom = lane_t.edgeLeft if tf else lane_t.edgeRight
-        geos = ad.map.point.GeoEdge()
-        mCoordinateTransform = ad.map.point.CoordinateTransform()
-        mCoordinateTransform.convert(geom.ecefEdge, geos)
-        return geos
-    
-    def GetLaneEdgeLeft(self, lane_id):
-        return self.GetLaneEdge(lane_id, True)
-
-    def GetLaneEdgeRight(self, lane_id):
-        return self.GetLaneEdge(lane_id, False)
 #pylint: enable=missing-function-docstring
 
 
@@ -346,8 +326,7 @@ class AddPropAttribute():
         Args:
             geopoint: [AD Map GEOPoint] point of click event
         """
-        # dist = ad.physics.Distance(0.025)
-        dist = ad.physics.Distance(5)
+        dist = ad.physics.Distance(1)
         admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
 
         lanes_detected = 0
