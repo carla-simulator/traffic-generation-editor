@@ -298,7 +298,7 @@ class PointTool(QgsMapTool):
                                    pedestrian_attr["Orientation"],
                                    float(enupoint.x),
                                    float(enupoint.y),
-                                   float(enupoint.z),
+                                   float(enupoint.z) + 0.2, # Avoid ground collision
                                    pedestrian_attr["Init Speed"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)

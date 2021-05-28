@@ -331,7 +331,7 @@ class PointTool(QgsMapTool):
                                    veh_attr["Orientation"],
                                    float(enupoint.x),
                                    float(enupoint.y),
-                                   float(enupoint.z),
+                                   float(enupoint.z) + 0.2, # Avoid ground collision
                                    veh_attr["InitSpeed"],
                                    veh_attr["Agent"],
                                    veh_attr["Agent Camera"],

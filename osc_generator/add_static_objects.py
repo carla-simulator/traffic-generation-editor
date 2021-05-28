@@ -288,7 +288,7 @@ class PointTool(QgsMapTool):
                                    prop_attr["Mass"],
                                    float(enupoint.x),
                                    float(enupoint.y),
-                                   float(enupoint.z),
+                                   float(enupoint.z) + 0.2, # Avoid ground collision
                                    prop_attr["Physics"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
