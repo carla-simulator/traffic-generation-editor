@@ -31,6 +31,7 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
         # UI element signals
         self.select_path_button.pressed.connect(self.select_output)
         self.map_selection.currentTextChanged.connect(self.user_defined_map)
+        self.load_road_network()
 
     def select_output(self):
         """Prompts user to select output file"""
@@ -63,6 +64,21 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
             self.map_selection_user_defined.setEnabled(True)
         else:
             self.map_selection_user_defined.setDisabled(True)
+
+    def load_road_network(self):
+        """Auto populates road network if available"""
+        if QgsProject.instance().mapLayersByName("Metadata"):
+            metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
+            for feature in metadata_layer.getFeatures():
+                road_network = feature["Road Network"]
+            
+            index = self.map_selection.findText(road_network)
+            if index == -1:
+                self.map_selection.setCurrentText("User Defined")
+                self.map_selection_user_defined.setText(road_network)
+            else:
+                self.map_selection.setCurrentIndex(index)
+
 
 class GenerateXML():
     """

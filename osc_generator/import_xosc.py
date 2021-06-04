@@ -17,6 +17,8 @@ from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsFeature, QgsPointXY, Q
 from defusedxml import ElementTree as etree
 # import xml.etree.ElementTree as etree
 
+from .helper_functions import HelperFunctions
+
 import ad_map_access as ad
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -51,8 +53,7 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
             read_xosc.import_xosc()
         else:
             message = "No file path was given for importing"
-            iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-            QgsMessageLog.logMessage(message, level=Qgis.Critical)
+            HelperFunctions().display_message(message, level="Critical")
 
 
 class ImportXOSC():
@@ -64,10 +65,7 @@ class ImportXOSC():
         tree = etree.parse(self._filepath)
         self._root = tree.getroot()
 
-        file_header = self._root.findall(".//FileHeader")[0]
-        file_header_description = file_header.attrib.get("description")
-        if file_header_description[:6] == "CARLA:":
-            self._invert_y = True
+        self.parse_osc_metadata()
 
         if self._root.findall(".//EnvironmentAction"):
             env_node = self._root.findall(".//EnvironmentAction")[0]
@@ -76,6 +74,43 @@ class ImportXOSC():
         if self._root.findall(".//Entities"):
             entity_node = self._root.findall(".//Entities")[0]
             self.parse_entities(entity_node)
+
+    def parse_osc_metadata(self):
+        """
+        Parses OpenSCENARIO Metadata (File Headers, Road Network, Scene Graph File)
+        """
+        file_header_node = self._root.findall(".//FileHeader")[0]
+        rev_major = file_header_node.attrib.get("revMajor")
+        rev_minor = file_header_node.attrib.get("revMinor")
+        description = file_header_node.attrib.get("description")
+        if description[:6] == "CARLA:":
+            self._invert_y = True
+            description = description[6:]
+        author = file_header_node.attrib.get("author")
+
+        logic_file = self._root.findall(".//RoadNetwork/LogicFile")[0]
+        road_network_filepath = logic_file.attrib.get("filepath")
+        scene_graph_file = self._root.findall(".//RoadNetwork/SceneGraphFile")[0]
+        scene_graph_filepath = scene_graph_file.attrib.get("filepath")
+
+        if not QgsProject.instance().mapLayersByName("Metadata"):
+            HelperFunctions().layer_setup_metadata()
+        
+        metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
+        current_features = [feat.id() for feat in metadata_layer.getFeatures()]
+        metadata_layer.dataProvider().deleteFeatures(current_features)
+
+        feature = QgsFeature()
+        feature.setAttributes([
+            int(rev_major),
+            int(rev_minor),
+            description,
+            author,
+            road_network_filepath,
+            scene_graph_filepath
+        ])
+        metadata_layer.dataProvider().addFeature(feature)
+
 
     def parse_enviroment_actions(self, env_node):        
         print("Got da environment... MAKING A SEARCH ------------")
@@ -102,6 +137,9 @@ class ImportXOSC():
 
         friction_scale_factor = road_condition.attrib.get("frictionScaleFactor")
 
+        if not QgsProject.instance().mapLayersByName("Environment"):
+            HelperFunctions().layer_setup_environment()
+
         env_layer = QgsProject.instance().mapLayersByName("Environment")[0]
         current_features = [feat.id() for feat in env_layer.getFeatures()]
         env_data_provider = env_layer.dataProvider()
@@ -113,8 +151,6 @@ class ImportXOSC():
                                sun_intensity, sun_azimuth, sun_elevation,
                                precip_type, precip_intensity])
         env_data_provider.addFeature(feature)
-        
-        print("====================ENVIRONMENT UPDATED")
 
     def parse_entities(self, entity_node):
         # for element in entity_node.iter():
