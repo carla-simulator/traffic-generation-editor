@@ -61,6 +61,18 @@ class ImportXOSC():
         self._filepath = filepath
         self._invert_y = False
 
+        self.setup_qgis_layers()
+    
+    def setup_qgis_layers(self):
+        """
+        Initiates layers in QGIS if they are not already created.
+        """
+        HelperFunctions().layer_setup_environment()
+        HelperFunctions().layer_setup_metadata()
+        HelperFunctions().layer_setup_vehicle()
+        HelperFunctions().layer_setup_walker()
+        HelperFunctions().layer_setup_end_eval()
+
     def import_xosc(self):
         tree = etree.parse(self._filepath)
         self._root = tree.getroot()
@@ -74,6 +86,10 @@ class ImportXOSC():
         if self._root.findall(".//Entities"):
             entity_node = self._root.findall(".//Entities")[0]
             self.parse_entities(entity_node)
+        
+        if self._root.findall(".//Storyboard/StopTrigger/ConditionGroup"):
+            end_eval_node = self._root.findall(".//Storyboard/StopTrigger")[0]
+            self.parse_end_evals(end_eval_node)
 
     def parse_osc_metadata(self):
         """
@@ -111,7 +127,6 @@ class ImportXOSC():
         ])
         metadata_layer.dataProvider().addFeature(feature)
 
-
     def parse_enviroment_actions(self, env_node):        
         """
         Parses environment information and saves into QGIS layer
@@ -139,9 +154,6 @@ class ImportXOSC():
         precip_intensity = precipitation.attrib.get("intensity")
         precip_type = precipitation.attrib.get("precipitationType")
         friction_scale_factor = road_condition.attrib.get("frictionScaleFactor")
-
-        if not QgsProject.instance().mapLayersByName("Environment"):
-            HelperFunctions().layer_setup_environment()
 
         env_layer = QgsProject.instance().mapLayersByName("Environment")[0]
         current_features = [feat.id() for feat in env_layer.getFeatures()]
@@ -457,3 +469,39 @@ class ImportXOSC():
                               QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
+
+    def parse_end_evals(self, end_eval_node):
+        """
+        Parses end evaluation KPI information and saves into QGIS layers
+
+        Args:
+            end_eval_node (XML element): Node that contains the end_evaluations
+        """
+        # Clear existing paramters
+        end_eval_layer = QgsProject.instance().mapLayersByName("End Evaluation KPIs")[0]
+        current_features = [feat.id() for feat in end_eval_layer.getFeatures()]
+        end_eval_layer.dataProvider().deleteFeatures(current_features)
+
+        for condition in end_eval_node.iter("Condition"):
+            cond_name = condition.attrib.get("name")
+            cond_edge = condition.attrib.get("conditionEdge")
+            delay = condition.attrib.get("delay")
+
+            param_condition = condition.find(".//ParameterCondition")
+            param_ref = param_condition.attrib.get("parameterRef")
+            value = param_condition.attrib.get("value")
+            rule = param_condition.attrib.get("rule")
+
+            print(cond_name)
+
+            feature = QgsFeature()
+            feature.setAttributes([
+                cond_name,
+                float(delay),
+                cond_edge,
+                param_ref,
+                float(value),
+                rule
+            ])
+            
+            end_eval_layer.dataProvider().addFeature(feature)

@@ -1083,7 +1083,6 @@ class GenerateXML():
                 value_cond_element.set("trafficSignalControllerRef", feature["Value: TController Ref"])
                 value_cond_element.set("phase", feature["Stop - Value: TController Phase"])
 
-
     def get_story_start_trigger(self, act):
         """
         Writes story start triggers.

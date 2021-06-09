@@ -46,54 +46,89 @@ class HelperFunctions():
         """
         root_layer = QgsProject.instance().layerTreeRoot()
         osc_layer = root_layer.findGroup("OpenSCENARIO")
+        if osc_layer is None:
+            osc_layer = root_layer.addGroup("OpenSCENARIO")
 
-        metadata_layer = QgsVectorLayer("None", "Metadata", "memory")
-        QgsProject.instance().addMapLayer(metadata_layer, False)
-        osc_layer.addLayer(metadata_layer)
+        if not QgsProject.instance().mapLayersByName("Metadata"):
+            metadata_layer = QgsVectorLayer("None", "Metadata", "memory")
+            QgsProject.instance().addMapLayer(metadata_layer, False)
+            osc_layer.addLayer(metadata_layer)
 
-        # Setup layer attributes
-        data_attibutes = [
-            QgsField("Rev Major", QVariant.Int),
-            QgsField("Rev Minor", QVariant.Int),
-            QgsField("Description", QVariant.String),
-            QgsField("Author", QVariant.String),
-            QgsField("Road Network", QVariant.String),
-            QgsField("Scene Graph File", QVariant.String)
-        ]
-        metadata_layer.dataProvider().addAttributes(data_attibutes)
-        metadata_layer.updateFields()
+            # Setup layer attributes
+            data_attibutes = [
+                QgsField("Rev Major", QVariant.Int),
+                QgsField("Rev Minor", QVariant.Int),
+                QgsField("Description", QVariant.String),
+                QgsField("Author", QVariant.String),
+                QgsField("Road Network", QVariant.String),
+                QgsField("Scene Graph File", QVariant.String)
+            ]
+            metadata_layer.dataProvider().addAttributes(data_attibutes)
+            metadata_layer.updateFields()
 
-        message = "Metadata layer added"
-        self.display_message(message, level="Info")
+            message = "Metadata layer added"
+            self.display_message(message, level="Info")
     
+    def layer_setup_end_eval(self):
+        """
+        Set up OpenSCENARIO end evaluation KPIs layer
+        """
+        root_layer = QgsProject.instance().layerTreeRoot()
+        osc_layer = root_layer.findGroup("OpenSCENARIO")
+        if osc_layer is None:
+            osc_layer = root_layer.addGroup("OpenSCENARIO")
+        
+        if not QgsProject.instance().mapLayersByName("End Evaluation KPIs"):
+            end_eval_layer = QgsVectorLayer("None", "End Evaluation KPIs", "memory")
+            QgsProject.instance().addMapLayer(end_eval_layer, False)
+            osc_layer.addLayer(end_eval_layer)
+            # Setup layer attributes
+            data_attributes = [
+                QgsField("Condition Name", QVariant.String),
+                QgsField("Delay", QVariant.Double),
+                QgsField("Condition Edge", QVariant.String),
+                QgsField("Parameter Ref", QVariant.String),
+                QgsField("Value", QVariant.Double),
+                QgsField("Rule", QVariant.String)
+            ]
+
+            end_eval_layer.dataProvider().addAttributes(data_attributes)
+            end_eval_layer.updateFields()
+
+            message = "End evaluation KPIs layer added"
+            self.display_message(message, level="Info")
+
     def layer_setup_environment(self):
         """
         Set up environment layer
         """
         root_layer = QgsProject.instance().layerTreeRoot()
         osc_layer = root_layer.findGroup("OpenSCENARIO")
+        if osc_layer is None:
+            osc_layer = root_layer.addGroup("OpenSCENARIO")
 
-        env_layer = QgsVectorLayer("None", "Environment", "memory")
-        QgsProject.instance().addMapLayer(env_layer, False)
-        osc_layer.addLayer(env_layer)
-        
-        # Setup layer attributes
-        data_attributes = [
-            QgsField("Datetime", QVariant.String),
-            QgsField("Datetime Animation", QVariant.Bool),
-            QgsField("Cloud State", QVariant.String),
-            QgsField("Fog Visual Range", QVariant.Double),
-            QgsField("Sun Intensity", QVariant.Double),
-            QgsField("Sun Azimuth", QVariant.Double),
-            QgsField("Sun Elevation", QVariant.Double),
-            QgsField("Precipitation Type", QVariant.String),
-            QgsField("Precipitation Intensity", QVariant.Double)
-        ]
-        env_layer.dataProvider().addAttributes(data_attributes)
-        env_layer.updateFields()
+        if not QgsProject.instance().mapLayersByName("Environment"):
+            env_layer = QgsVectorLayer("None", "Environment", "memory")
+            QgsProject.instance().addMapLayer(env_layer, False)
+            osc_layer.addLayer(env_layer)
+            
+            # Setup layer attributes
+            data_attributes = [
+                QgsField("Datetime", QVariant.String),
+                QgsField("Datetime Animation", QVariant.Bool),
+                QgsField("Cloud State", QVariant.String),
+                QgsField("Fog Visual Range", QVariant.Double),
+                QgsField("Sun Intensity", QVariant.Double),
+                QgsField("Sun Azimuth", QVariant.Double),
+                QgsField("Sun Elevation", QVariant.Double),
+                QgsField("Precipitation Type", QVariant.String),
+                QgsField("Precipitation Intensity", QVariant.Double)
+            ]
+            env_layer.dataProvider().addAttributes(data_attributes)
+            env_layer.updateFields()
 
-        message = "Environment layer added"
-        self.display_message(message, level="Info")
+            message = "Environment layer added"
+            self.display_message(message, level="Info")
 
     def layer_setup_walker(self):
         """
@@ -101,32 +136,35 @@ class HelperFunctions():
         """
         root_layer = QgsProject.instance().layerTreeRoot()
         osc_layer = root_layer.findGroup("OpenSCENARIO")
+        if osc_layer is None:
+            osc_layer = root_layer.addGroup("OpenSCENARIO")
 
-        walker_layer = QgsVectorLayer("Polygon", "Pedestrians", "memory")
-        QgsProject.instance().addMapLayer(walker_layer, False)
-        osc_layer.addLayer(walker_layer)
-        
-        # Setup layer attributes
-        data_attributes = [
-            QgsField("id", QVariant.Int),
-            QgsField("Walker", QVariant.String),
-            QgsField("Orientation", QVariant.Double),
-            QgsField("Pos X", QVariant.Double),
-            QgsField("Pos Y", QVariant.Double),
-            QgsField("Pos Z", QVariant.Double),
-            QgsField("Init Speed", QVariant.String)
-        ]
-        walker_layer.dataProvider().addAttributes(data_attributes)
-        walker_layer.updateFields()
+        if not QgsProject.instance().mapLayersByName("Pedestrians"):
+            walker_layer = QgsVectorLayer("Polygon", "Pedestrians", "memory")
+            QgsProject.instance().addMapLayer(walker_layer, False)
+            osc_layer.addLayer(walker_layer)
+            
+            # Setup layer attributes
+            data_attributes = [
+                QgsField("id", QVariant.Int),
+                QgsField("Walker", QVariant.String),
+                QgsField("Orientation", QVariant.Double),
+                QgsField("Pos X", QVariant.Double),
+                QgsField("Pos Y", QVariant.Double),
+                QgsField("Pos Z", QVariant.Double),
+                QgsField("Init Speed", QVariant.String)
+            ]
+            walker_layer.dataProvider().addAttributes(data_attributes)
+            walker_layer.updateFields()
 
-        label_settings = QgsPalLayerSettings()
-        label_settings.isExpression = True
-        label_settings.fieldName = "concat('Pedestrian_', \"id\")"
-        walker_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-        walker_layer.setLabelsEnabled(True)
+            label_settings = QgsPalLayerSettings()
+            label_settings.isExpression = True
+            label_settings.fieldName = "concat('Pedestrian_', \"id\")"
+            walker_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
+            walker_layer.setLabelsEnabled(True)
 
-        message = "Pedestrian layer added"
-        self.display_message(message, level="Info")
+            message = "Pedestrian layer added"
+            self.display_message(message, level="Info")
     
     def layer_setup_vehicle(self):
         """
@@ -134,6 +172,8 @@ class HelperFunctions():
         """
         root_layer = QgsProject.instance().layerTreeRoot()
         osc_layer = root_layer.findGroup("OpenSCENARIO")
+        if osc_layer is None:
+            osc_layer = root_layer.addGroup("OpenSCENARIO")
 
         if (not QgsProject.instance().mapLayersByName("Vehicles") or
             not QgsProject.instance().mapLayersByName("Vehicles - Ego")):
