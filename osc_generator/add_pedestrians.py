@@ -20,6 +20,8 @@ from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
 from qgis.utils import iface
 
+from .helper_functions import HelperFunctions
+
 # AD Map plugin
 import ad_map_access as ad
 
@@ -120,11 +122,11 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if self.walker_orientation_use_lane.isChecked():
             orientation = None
         else:
-            if self.is_float(self.walker_orientation.text()):
+            if HelperFunctions().is_float(self.walker_orientation.text()):
                 walker_orientation = float(self.walker_orientation.text())
                 walker_orientation = math.radians(walker_orientation)
             else:
-                verification = self.verify_parameters(param=self.walker_orientation.text())
+                verification = HelperFunctions().verify_parameters(param=self.walker_orientation.text())
                 if len(verification) == 0:
                     # UI Information
                     message = f"Parameter {self.walker_orientation.text()} does not exist!"
@@ -135,10 +137,10 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     orientation = math.radians(orientation)
 
         init_speed = None
-        if self.is_float(self.walker_init_speed.text()):
+        if HelperFunctions().is_float(self.walker_init_speed.text()):
             init_speed = float(self.walker_init_speed.text())
         else:
-            verification = self.verify_parameters(param=self.walker_init_speed.text())
+            verification = HelperFunctions().verify_parameters(param=self.walker_init_speed.text())
             if len(verification) == 0:
                 # UI Information
                 message = f"Parameter {self.walker_init_speed.text()} does not exist!"
@@ -175,44 +177,6 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.walker_orientation.setDisabled(True)
         else:
             self.walker_orientation.setEnabled(True)
-
-    def verify_parameters(self, param):
-        """
-        Checks Parameter Declarations attribute table to verify parameter exists
-
-        Args:
-            param (string): name of parameter to check against
-
-        Returns:
-            feature (dict): parameter definitions
-        """
-        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
-        query = f'"Parameter Name" = \'{param}\''
-        feature_request = QgsFeatureRequest().setFilterExpression(query)
-        features = param_layer.getFeatures(feature_request)
-        feature = {}
-
-        for feat in features:
-            feature["Type"] = feat["Type"]
-            feature["Value"] = feat["Value"]
-
-        return feature
-
-    def is_float(self, value):
-        """
-        Checks value if it can be converted to float.
-
-        Args:
-            value (string): value to check if can be converted to float
-
-        Returns:
-            bool: True if float, False if not
-        """
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
 
 #pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):
@@ -281,7 +245,7 @@ class PointTool(QgsMapTool):
 
         # Get lane heading and save attribute (when not manually specified)
         if self._use_lane_heading is True:
-            self._pedestrian_attributes["Orientation"] = add_walker.get_pedestrian_heading(geopoint)
+            self._pedestrian_attributes["Orientation"] = HelperFunctions().get_pedestrian_heading(geopoint)
 
         # Add points only if user clicks within lane boundaries (Orientation is not None)
         if self._pedestrian_attributes["Orientation"] is not None:
@@ -328,63 +292,6 @@ class AddPedestrianAttribute():
     """
     Class for processing / acquiring pedestrian attributes.
     """
-    def get_pedestrian_heading(self, geopoint):
-        """
-        Acquires heading based on spawn position in map.
-        Prompts user to select lane if multiple lanes exist at spawn position.
-        Throws error if spawn position is not on lane.
-
-        Args:
-            geopoint: [AD Map GEOPoint] point of click event
-
-        Returns:
-            lane_heading: [float] heading of click point at selected lane ID
-            lane_heading: [None] if click point is not valid
-        """
-        dist = ad.physics.Distance(1)
-        admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
-
-        lanes_detected = 0
-        for point in admap_matched_points:
-            lanes_detected += 1
-
-        if lanes_detected == 0:
-            message = "Click point is too far from valid lane"
-            iface.messageBar().pushMessage("Error", message, level=Qgis.Critical)
-            QgsMessageLog.logMessage(message, level=Qgis.Critical)
-            return None
-        elif lanes_detected == 1:
-            for point in admap_matched_points:
-                lane_id = point.lanePoint.paraPoint.laneId
-                para_offset = point.lanePoint.paraPoint.parametricOffset
-                parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
-                lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
-                return lane_heading
-        else:
-            lane_ids_to_match = []
-            lane_id = []
-            para_offsets = []
-            for point in admap_matched_points:
-                lane_ids_to_match.append(str(point.lanePoint.paraPoint.laneId))
-                lane_id.append(point.lanePoint.paraPoint.laneId)
-                para_offsets.append(point.lanePoint.paraPoint.parametricOffset)
-
-            lane_id_selected, ok_pressed = QInputDialog.getItem(
-                QInputDialog(),
-                "Choose Lane ID",
-                "Lane ID",
-                tuple(lane_ids_to_match),
-                current=0,
-                editable=False)
-
-            if ok_pressed:
-                i = lane_ids_to_match.index(lane_id_selected)
-                lane_id = lane_id[i]
-                para_offset = para_offsets[i]
-                parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
-                lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
-                return lane_heading
-
     def spawn_pedestrian(self, enupoint, angle):
         """
         Spawns pedestrian on the map and draws bounding boxes

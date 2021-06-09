@@ -21,6 +21,8 @@ from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
 from qgis.utils import iface
 
+from .helper_functions import HelperFunctions
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_vehicles_widget.ui'))
 
@@ -45,53 +47,7 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._labels_on = True
         self._vehicle_layer_ego = None
         self._vehicle_layer = None
-        self.layer_setup()
-
-    def layer_setup(self):
-        """
-        Sets up layer for vehicles
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-        if (not QgsProject.instance().mapLayersByName("Vehicles") or
-            not QgsProject.instance().mapLayersByName("Vehicles - Ego")):
-            vehicle_layer_ego = QgsVectorLayer("Polygon", "Vehicles - Ego", "memory")
-            vehicle_layer = QgsVectorLayer("Polygon", "Vehicles", "memory")
-            QgsProject.instance().addMapLayer(vehicle_layer_ego, False)
-            QgsProject.instance().addMapLayer(vehicle_layer, False)
-            osc_layer.addLayer(vehicle_layer_ego)
-            osc_layer.addLayer(vehicle_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("id", QVariant.Int),
-                               QgsField("Vehicle Model", QVariant.String),
-                               QgsField("Orientation", QVariant.Double),
-                               QgsField("Pos X", QVariant.Double),
-                               QgsField("Pos Y", QVariant.Double),
-                               QgsField("Pos Z", QVariant.Double),
-                               QgsField("Init Speed", QVariant.String),
-                               QgsField("Agent", QVariant.String),
-                               QgsField("Agent Camera", QVariant.Bool),
-                               QgsField("Agent User Defined", QVariant.String)]
-            data_input_ego = vehicle_layer_ego.dataProvider()
-            data_input = vehicle_layer.dataProvider()
-            data_input_ego.addAttributes(data_attributes)
-            data_input.addAttributes(data_attributes)
-            vehicle_layer_ego.updateFields()
-            vehicle_layer.updateFields()
-
-            label_settings_ego = QgsPalLayerSettings()
-            label_settings_ego.isExpression = True
-            label_settings_ego.fieldName = "concat('Ego_', \"id\")"
-            vehicle_layer_ego.setLabeling(QgsVectorLayerSimpleLabeling(label_settings_ego))
-            vehicle_layer_ego.setLabelsEnabled(True)
-            label_settings = QgsPalLayerSettings()
-            label_settings.isExpression = True
-            label_settings.fieldName = "concat('Vehicle_', \"id\")"
-            vehicle_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-            vehicle_layer.setLabelsEnabled(True)
-
-            iface.messageBar().pushMessage("Info", "Vehicle layer added", level=Qgis.Info)
-            QgsMessageLog.logMessage("Vehicle layer added", level=Qgis.Info)
+        HelperFunctions().layer_setup_vehicle()
 
         self._vehicle_layer_ego = QgsProject.instance().mapLayersByName("Vehicles - Ego")[0]
         self._vehicle_layer = QgsProject.instance().mapLayersByName("Vehicles")[0]
