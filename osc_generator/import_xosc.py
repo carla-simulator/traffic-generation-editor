@@ -113,8 +113,12 @@ class ImportXOSC():
 
 
     def parse_enviroment_actions(self, env_node):        
-        print("Got da environment... MAKING A SEARCH ------------")
+        """
+        Parses environment information and saves into QGIS layer
 
+        Args:
+            env_node (XML element)
+        """
         environment = env_node.findall("Environment")
         for element in environment:
             time_of_day = element.find("TimeOfDay")
@@ -134,7 +138,6 @@ class ImportXOSC():
         sun_intensity = sun.attrib.get("intensity")
         precip_intensity = precipitation.attrib.get("intensity")
         precip_type = precipitation.attrib.get("precipitationType")
-
         friction_scale_factor = road_condition.attrib.get("frictionScaleFactor")
 
         if not QgsProject.instance().mapLayersByName("Environment"):
@@ -142,27 +145,25 @@ class ImportXOSC():
 
         env_layer = QgsProject.instance().mapLayersByName("Environment")[0]
         current_features = [feat.id() for feat in env_layer.getFeatures()]
-        env_data_provider = env_layer.dataProvider()
-        env_data_provider.deleteFeatures(current_features)
+        env_layer.dataProvider().deleteFeatures(current_features)
 
         feature = QgsFeature()
         feature.setAttributes([datetime, datatime_animation,
                                cloud, fog_range,
                                sun_intensity, sun_azimuth, sun_elevation,
                                precip_type, precip_intensity])
-        env_data_provider.addFeature(feature)
+        env_layer.dataProvider().addFeature(feature)
 
     def parse_entities(self, entity_node):
-        # for element in entity_node.iter():
-        #     print("NODE ELEMENTS:", element.tag, element.attrib)
-        
-        print(entity_node.attrib)
-        print("Playing with Parent-Child mapping")
-        print("---------------------------------")
+        """
+        Parses entity information and saves into QGIS layers
+
+        Args:
+            entity_node (XML element): Node that contains the entity
+        """
         parent_map = {c: p for p in entity_node.iter() for c in p}
         print(parent_map)
         for scenario_object in entity_node.iter("ScenarioObject"):
-            
             for pedestrian in scenario_object.iter("Pedestrian"):
                 print("Trying out mapping...")
                 parent = parent_map[pedestrian]
@@ -199,11 +200,20 @@ class ImportXOSC():
         query = f".//Private[@entityRef='{actor_name}']"
         found_init = self._root.find(query)
 
-        for world_pos in found_init.iter("WorldPosition"):
-            world_pos_x = world_pos.attrib.get("x")
-            world_pos_y = world_pos.attrib.get("y")
-            world_pos_z = world_pos.attrib.get("z")
-            world_pos_heading = world_pos.attrib.get("h")
+        world_pos = found_init.find(".//WorldPosition")
+        world_pos_x = world_pos.attrib.get("x")
+        world_pos_y = world_pos.attrib.get("y")
+        world_pos_z = world_pos.attrib.get("z")
+        world_pos_heading = world_pos.attrib.get("h")
+        
+        init_speed_tag = found_init.find(".//AbsoluteTargetSpeed")
+        if init_speed_tag is not None:
+            init_speed = init_speed_tag.attrib.get("value")
+            # Parse in declared parameter (remove the $)
+            if not HelperFunctions().is_float(init_speed):
+                init_speed = init_speed[1:]
+        else:
+            init_speed = 0
         
         model = pedestrian.attrib.get("model")
 
@@ -214,17 +224,18 @@ class ImportXOSC():
             world_pos_x, world_pos_y, world_pos_heading, "Pedestrian")
 
         walker_layer = QgsProject.instance().mapLayersByName("Pedestrians")[0]
-        walker_data_provider = walker_layer.dataProvider()
+        entity_id = self.get_entity_id(walker_layer)
         
         feature = QgsFeature()
-        feature.setAttributes([1, #TODO ID
+        feature.setAttributes([entity_id,
                                model,
                                world_pos_heading,
                                world_pos_x,
                                world_pos_y,
-                               0]) #TODO Init Speed
+                               world_pos_z,
+                               init_speed])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
-        walker_data_provider.addFeature(feature)
+        walker_layer.dataProvider().addFeature(feature)
     
     def parse_vehicle(self, vehicle, actor_name):
         """
@@ -238,12 +249,38 @@ class ImportXOSC():
         query = f".//Private[@entityRef='{actor_name}']"
         found_init = self._root.find(query)
 
-        for world_pos in found_init.iter("WorldPosition"):
-            world_pos_x = world_pos.attrib.get("x")
-            world_pos_y = world_pos.attrib.get("y")
-            world_pos_z = world_pos.attrib.get("z")
-            world_pos_heading = world_pos.attrib.get("h")
+        world_pos = found_init.find(".//WorldPosition")
+        world_pos_x = world_pos.attrib.get("x")
+        world_pos_y = world_pos.attrib.get("y")
+        world_pos_z = world_pos.attrib.get("z")
+        world_pos_heading = world_pos.attrib.get("h")
         
+        init_speed_tag = found_init.find(".//AbsoluteTargetSpeed")
+        if init_speed_tag is not None:
+            init_speed = init_speed_tag.attrib.get("value")
+            # Parse in declared parameter (remove the $)
+            if not HelperFunctions().is_float(init_speed):
+                init_speed = init_speed[1:]
+        else:
+            init_speed = 0
+
+        vehicle_controller_tag = found_init.find(".//AssignControllerAction")
+        if vehicle_controller_tag is not None:
+            agent_tag = vehicle_controller_tag.find(".//Property")
+            agent = agent_tag.attrib.get("value")
+            if agent == "simple_vehicle_control":
+                agent_tag = vehicle_controller_tag.find(".//Property[@name='attach_camera']")
+                agent_camera = agent_tag.attrib.get("value")
+                agent_camera = True if agent_camera == "true" else False
+            else:
+                agent_camera = False
+        else:
+            agent = "simple_vehicle_control"
+            message = (f"No vehicle controller agent defined for {actor_name}, using "
+                "'simple_vehicle_control'")
+            self._warning_message.append(message)
+            HelperFunctions().display_message(message)
+
         model = vehicle.attrib.get("name")
 
         if self._invert_y:
@@ -253,20 +290,20 @@ class ImportXOSC():
             world_pos_x, world_pos_y, world_pos_heading, "Vehicle")
 
         vehicle_layer = QgsProject.instance().mapLayersByName("Vehicles")[0]
-        vehicle_data_provider = vehicle_layer.dataProvider()
+        entity_id = self.get_entity_id(vehicle_layer)
         
         feature = QgsFeature()
-        feature.setAttributes([1, #TODO ID
+        feature.setAttributes([entity_id,
                                model,
                                world_pos_heading,
                                world_pos_x,
                                world_pos_y,
-                               0,  #TODO Init Speed
-                               "Nope", #TODO Agent
-                               False, #TODO Agent Camera
-                               "Nope"]) #TODO Agent User Defined
+                               world_pos_z,
+                               init_speed,
+                               agent,
+                               agent_camera])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
-        vehicle_data_provider.addFeature(feature)
+        vehicle_layer.dataProvider().addFeature(feature)
     
     def parse_prop(self, prop, actor_name):
         """
@@ -280,11 +317,11 @@ class ImportXOSC():
         query = f".//Private[@entityRef='{actor_name}']"
         found_init = self._root.find(query)
 
-        for world_pos in found_init.iter("WorldPosition"):
-            world_pos_x = world_pos.attrib.get("x")
-            world_pos_y = world_pos.attrib.get("y")
-            world_pos_z = world_pos.attrib.get("z")
-            world_pos_heading = world_pos.attrib.get("h")
+        world_pos = found_init.find(".//WorldPosition")
+        world_pos_x = world_pos.attrib.get("x")
+        world_pos_y = world_pos.attrib.get("y")
+        world_pos_z = world_pos.attrib.get("z")
+        world_pos_heading = world_pos.attrib.get("h")
         
         model = prop.attrib.get("name")
         model_type = prop.attrib.get("miscObjectCategory")
@@ -305,19 +342,40 @@ class ImportXOSC():
             world_pos_x, world_pos_y, world_pos_heading, "Prop")
 
         props_layer = QgsProject.instance().mapLayersByName("Static Objects")[0]
-        props_data_provider = props_layer.dataProvider()
+        entity_id = self.get_entity_id(props_layer)
         
         feature = QgsFeature()
-        feature.setAttributes([1, #TODO ID
+        feature.setAttributes([entity_id,
                                model,
                                model_type,
                                world_pos_heading,
                                mass,
                                world_pos_x,
                                world_pos_y,
+                               world_pos_z,
                                physics])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
-        props_data_provider.addFeature(feature)
+        props_layer.dataProvider().addFeature(feature)
+
+    def get_entity_id(self, layer):
+        """
+        Gets the largest entity ID from the layer.
+        If there are none, generates a new one.
+
+        Args:
+            layer (QGIS layer): Layer to get entity ID from
+
+        Returns:
+            [int]: Entity ID
+        """
+        if layer.featureCount() != 0:
+            idx = layer.fields().indexFromName("id")
+            largest_id = layer.maximumValue(idx)
+            entity_id = largest_id + 1
+        else:
+            entity_id = 1
+        
+        return entity_id
 
     def get_polygon_points(self, pos_x, pos_y, angle, entity_type):
 
@@ -362,11 +420,11 @@ class ImportXOSC():
             top_right = ad.map.point.toGeo(top_right)
 
             # Create polygon
-            polygon_points = [QgsPointXY(bot_left.longitude.mLongitude, bot_left.latitude.mLatitude),
-                              QgsPointXY(bot_right.longitude.mLongitude, bot_right.latitude.mLatitude),
-                              QgsPointXY(top_right.longitude.mLongitude, top_right.latitude.mLatitude),
-                              QgsPointXY(top_center.longitude.mLongitude, top_center.latitude.mLatitude),
-                              QgsPointXY(top_left.longitude.mLongitude, top_left.latitude.mLatitude)]
+            polygon_points = [QgsPointXY(bot_left.longitude, bot_left.latitude),
+                              QgsPointXY(bot_right.longitude, bot_right.latitude),
+                              QgsPointXY(top_right.longitude, top_right.latitude),
+                              QgsPointXY(top_center.longitude, top_center.latitude),
+                              QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
         
@@ -393,11 +451,9 @@ class ImportXOSC():
             top_right = ad.map.point.toGeo(top_right)
 
             # Create polygon
-            polygon_points = [QgsPointXY(bot_left.longitude.mLongitude, bot_left.latitude.mLatitude),
-                              QgsPointXY(bot_right.longitude.mLongitude, bot_right.latitude.mLatitude),
-                              QgsPointXY(top_right.longitude.mLongitude, top_right.latitude.mLatitude),
-                              QgsPointXY(top_left.longitude.mLongitude, top_left.latitude.mLatitude)]
+            polygon_points = [QgsPointXY(bot_left.longitude, bot_left.latitude),
+                              QgsPointXY(bot_right.longitude, bot_right.latitude),
+                              QgsPointXY(top_right.longitude, top_right.latitude),
+                              QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
-
-
