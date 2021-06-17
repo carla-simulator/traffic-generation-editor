@@ -49,7 +49,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="entityManeuvers">
        <attribute name="title">
@@ -72,7 +72,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-356</y>
+             <y>0</y>
              <width>410</width>
              <height>992</height>
             </rect>
@@ -888,9 +888,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-230</y>
              <width>363</width>
-             <height>1156</height>
+             <height>1179</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1134,6 +1134,13 @@
                      <string>Position Type</string>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_11">
+                     <item row="3" column="0">
+                      <widget class="QLabel" name="start_entity_position_x_label">
+                       <property name="text">
+                        <string>Coordinate X</string>
+                       </property>
+                      </widget>
+                     </item>
                      <item row="4" column="0">
                       <widget class="QLabel" name="start_entity_position_y_label">
                        <property name="text">
@@ -1169,14 +1176,14 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="0">
+                     <item row="7" column="0">
                       <widget class="QLabel" name="start_entity_heading_label">
                        <property name="text">
                         <string>Heading</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="0" colspan="2">
+                     <item row="8" column="0" colspan="2">
                       <widget class="QPushButton" name="start_entity_choose_position_button">
                        <property name="text">
                         <string>Choose position</string>
@@ -1192,14 +1199,7 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="3" column="0">
-                      <widget class="QLabel" name="start_entity_position_x_label">
-                       <property name="text">
-                        <string>Coordinate X</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="5" column="1">
+                     <item row="7" column="1">
                       <widget class="QLabel" name="start_entity_heading">
                        <property name="text">
                         <string>0</string>
@@ -1210,6 +1210,20 @@
                       <widget class="QLabel" name="start_entity_tolerance_label">
                        <property name="text">
                         <string>Tolerance</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="start_entity_position_z_label">
+                       <property name="text">
+                        <string>Coordinate Z</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QLabel" name="start_entity_position_z">
+                       <property name="text">
+                        <string>0</string>
                        </property>
                       </widget>
                      </item>
@@ -1343,7 +1357,7 @@
                     </property>
                     <property name="dateTime">
                      <datetime>
-                      <hour>20</hour>
+                      <hour>18</hour>
                       <minute>0</minute>
                       <second>0</second>
                       <year>2020</year>
@@ -1360,7 +1374,7 @@
                     </property>
                     <property name="time">
                      <time>
-                      <hour>20</hour>
+                      <hour>18</hour>
                       <minute>0</minute>
                       <second>0</second>
                      </time>
@@ -1576,9 +1590,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-463</y>
              <width>363</width>
-             <height>1156</height>
+             <height>1179</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -1863,14 +1877,14 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="0">
+                     <item row="7" column="0">
                       <widget class="QLabel" name="stop_entity_heading_label">
                        <property name="text">
                         <string>Heading</string>
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="0" colspan="2">
+                     <item row="8" column="0" colspan="2">
                       <widget class="QPushButton" name="stop_entity_choose_position_button">
                        <property name="text">
                         <string>Choose position</string>
@@ -1893,7 +1907,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="5" column="1">
+                     <item row="7" column="1">
                       <widget class="QLabel" name="stop_entity_heading">
                        <property name="text">
                         <string>0</string>
@@ -1904,6 +1918,20 @@
                       <widget class="QLabel" name="stop_entity_tolerance_label">
                        <property name="text">
                         <string>Tolerance</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="0">
+                      <widget class="QLabel" name="stop_entity_position_z_label">
+                       <property name="text">
+                        <string>Coordinate Z</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="5" column="1">
+                      <widget class="QLabel" name="stop_entity_position_z">
+                       <property name="text">
+                        <string>0</string>
                        </property>
                       </widget>
                      </item>
@@ -2037,7 +2065,7 @@
                     </property>
                     <property name="dateTime">
                      <datetime>
-                      <hour>18</hour>
+                      <hour>16</hour>
                       <minute>0</minute>
                       <second>0</second>
                       <year>2020</year>
@@ -2054,7 +2082,7 @@
                     </property>
                     <property name="time">
                      <time>
-                      <hour>18</hour>
+                      <hour>16</hour>
                       <minute>0</minute>
                       <second>0</second>
                      </time>
