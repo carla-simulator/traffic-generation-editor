@@ -16,7 +16,7 @@ from qgis.gui import QgsMapTool
 from qgis.utils import iface
 from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField,
     QgsFeature, QgsGeometry, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsTextFormat, QgsTextBackgroundSettings)
+    QgsTextFormat, QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QInputDialog
 
@@ -151,6 +151,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Start - WorldPos: Tolerance", QVariant.Double),
                                QgsField("Start - WorldPos: X", QVariant.Double),
                                QgsField("Start - WorldPos: Y", QVariant.Double),
+                               QgsField("Start - WorldPos: Z", QVariant.Double),
                                QgsField("Start - WorldPos: Heading", QVariant.Double),
                                # Stop Triggers
                                QgsField("Stop Trigger Enabled", QVariant.Bool),
@@ -178,6 +179,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Stop - WorldPos: Tolerance", QVariant.Double),
                                QgsField("Stop - WorldPos: X", QVariant.Double),
                                QgsField("Stop - WorldPos: Y", QVariant.Double),
+                               QgsField("Stop - WorldPos: Z", QVariant.Double),
                                QgsField("Stop - WorldPos: Heading", QVariant.Double)]
             data_input = maneuver_layer.dataProvider()
             data_input.addAttributes(data_attributes)
@@ -850,6 +852,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                float(self.start_entity_tolerance.text()),
                                float(self.start_entity_position_x.text()),
                                float(self.start_entity_position_y.text()),
+                               float(self.start_entity_position_z.text()),
                                float(self.start_entity_heading.text()),
                                # Stop Triggers
                                self.stop_triggers_group.isChecked(),
@@ -877,6 +880,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                float(self.stop_entity_tolerance.text()),
                                float(self.stop_entity_position_x.text()),
                                float(self.stop_entity_position_y.text()),
+                               float(self.stop_entity_position_z.text()),
                                float(self.stop_entity_heading.text())])
         self._maneuver_layer.dataProvider().addFeature(feature)
 
@@ -1109,10 +1113,42 @@ class PointTool(QgsMapTool):
         # Get the click
         x = event.pos().x()
         y = event.pos().y()
+
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
+        lane_edge_layer = QgsProject.instance().mapLayersByName("Lane Edge")[0]
+        lane_edge_data_provider = lane_edge_layer.dataProvider()
+        spatial_index = QgsSpatialIndex()
+        spatial_feature = QgsFeature()
+        lane_edge_features = lane_edge_data_provider.getFeatures()
+
+        while lane_edge_features.nextFeature(spatial_feature):
+            spatial_index.addFeature(spatial_feature)
+        
+        nearest_ids = spatial_index.nearestNeighbor(point, 5)
+
+        z_values = set()
+        for feat in lane_edge_layer.getFeatures(QgsFeatureRequest().setFilterFids(nearest_ids)):
+            feature_coordinates = feat.geometry().vertexAt(1)
+            z_values.add(round(feature_coordinates.z(), ndigits=4))
+
+        if max(z_values) - min(z_values) < 0.1:
+            altitude = max(z_values)
+        else:
+            stringified_z_values = [str(z_value) for z_value in z_values]
+            z_value_selected, ok_pressed = QInputDialog.getItem(
+                QInputDialog(),
+                "Choose Elevation",
+                "Elevation (meters)",
+                tuple(stringified_z_values),
+                current=0,
+                editable=False)
+            
+            if ok_pressed:
+                altitude = float(z_value_selected)
+
         # Converting to ENU points
-        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=0)
+        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
         enupoint = ad.map.point.toENU(geopoint)
         add_entity_attr = AddManeuverAttributes()
 
@@ -1183,7 +1219,7 @@ class AddManeuverAttributes():
             lane_heading: [float] heading of click point at selected lane ID
             lane_heading: [None] if click point is not valid
         """
-        dist = ad.physics.Distance(0.025)
+        dist = ad.physics.Distance(1)
         admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
 
         lanes_detected = 0
