@@ -49,7 +49,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="entityManeuvers">
        <attribute name="title">
@@ -843,7 +843,13 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QComboBox" name="traffic_light_id"/>
+            <widget class="QComboBox" name="traffic_light_id">
+             <item>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+            </widget>
            </item>
            <item row="0" column="0" colspan="2">
             <widget class="QPushButton" name="toggle_traffic_light_labels_button">
@@ -888,7 +894,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-230</y>
+             <y>0</y>
              <width>363</width>
              <height>1179</height>
             </rect>
@@ -1590,7 +1596,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-463</y>
+             <y>0</y>
              <width>363</width>
              <height>1179</height>
             </rect>

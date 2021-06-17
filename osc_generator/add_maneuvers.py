@@ -91,6 +91,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                QgsField("Orientation", QVariant.Double),
                                QgsField("Pos X", QVariant.Double),
                                QgsField("Pos Y", QVariant.Double),
+                               QgsField("Pos Z", QVariant.Double),
                                QgsField("Route Strategy", QVariant.String)]
             data_input = waypoint_layer.dataProvider()
             data_input.addAttributes(data_attributes)
@@ -365,6 +366,9 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             for feature in layer.getFeatures():
                 loaded_traffic_light_ids = str(feature["Id"])
                 traffic_light_ids.append(loaded_traffic_light_ids)
+            
+            if len(traffic_light_ids) == 0:
+                traffic_light_ids.append("0")
 
         self.traffic_light_id.addItems(traffic_light_ids)
 
@@ -1170,6 +1174,7 @@ class PointTool(QgsMapTool):
                                       float(processed_attrs["Orientation"]),
                                       float(enupoint.x),
                                       float(enupoint.y),
+                                      float(enupoint.z),
                                       processed_attrs["Route Strat"]])
                 feature.setGeometry(QgsGeometry.fromPointXY(point))
                 self._data_input.addFeature(feature)
@@ -1177,8 +1182,10 @@ class PointTool(QgsMapTool):
             heading = add_entity_attr.get_entity_heading(geopoint)
             self._parent.start_entity_position_x.setText(str(enupoint.x))
             self._parent.start_entity_position_y.setText(str(enupoint.y))
+            self._parent.start_entity_position_y.setText(str(enupoint.z))
             self._parent.start_entity_heading.setText(str(heading))
             self._parent.stop_entity_position_x.setText(str(enupoint.x))
+            self._parent.stop_entity_position_y.setText(str(enupoint.y))
             self._parent.stop_entity_position_y.setText(str(enupoint.y))
             self._parent.stop_entity_heading.setText(str(heading))
             self._canvas.unsetMapTool(self)
