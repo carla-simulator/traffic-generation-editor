@@ -19,6 +19,7 @@ from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField
     QgsTextFormat, QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QInputDialog
+from .helper_functions import HelperFunctions
 
 # AD Map plugin
 import ad_map_access as ad
@@ -60,207 +61,21 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.start_entity_choose_position_button.pressed.connect(self.get_world_position)
         self.stop_entity_choose_position_button.pressed.connect(self.get_world_position)
 
-        self._waypoint_layer = None
-        self._maneuver_layer = None
-        self._long_man_layer = None
-        self._lat_man_layer = None
+        HelperFunctions().layer_setup_maneuvers_waypoint()
+        HelperFunctions().layer_setup_maneuvers_and_triggers()
+        HelperFunctions().layer_setup_maneuvers_longitudinal()
+        HelperFunctions().layer_setup_maneuvers_lateral()
+        self._waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
+        self._maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
+        self._long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+        self._lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
         self._man_id = None
         self._traffic_labels_on = False
         self._traffic_labels_setup = False
         self._traffic_lights_layer = None
-        self.layer_setup()
+
         self.refresh_entity()
         self.refresh_traffic_lights()
-
-    def layer_setup(self):
-        """
-        Sets up layers for maneuvers
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-
-        # Waypoint maneuvers
-        if not QgsProject.instance().mapLayersByName("Waypoint Maneuvers"):
-            waypoint_layer = QgsVectorLayer("Point", "Waypoint Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(waypoint_layer, False)
-            osc_layer.addLayer(waypoint_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
-                               QgsField("Entity", QVariant.String),
-                               QgsField("Waypoint No", QVariant.Int),
-                               QgsField("Orientation", QVariant.Double),
-                               QgsField("Pos X", QVariant.Double),
-                               QgsField("Pos Y", QVariant.Double),
-                               QgsField("Pos Z", QVariant.Double),
-                               QgsField("Route Strategy", QVariant.String)]
-            data_input = waypoint_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            waypoint_layer.updateFields()
-
-            message = "Waypoint maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing waypoint maneuver layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
-        label_settings = QgsPalLayerSettings()
-        label_settings.isExpression = True
-        label_name = "concat('ManID: ', \"Maneuver ID\", ' ', \"Entity\", ' - ', \"Waypoint No\")"
-        label_settings.fieldName = label_name
-        self._waypoint_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-        self._waypoint_layer.setLabelsEnabled(True)
-
-        # Maneuvers + Start Triggers + Stop Triggers
-        if not QgsProject.instance().mapLayersByName("Maneuvers"):
-            maneuver_layer = QgsVectorLayer("None", "Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(maneuver_layer, False)
-            osc_layer.addLayer(maneuver_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("id", QVariant.Int),
-                               QgsField("Maneuver Type", QVariant.String),
-                               QgsField("Entity", QVariant.String),
-                               QgsField("Entity: Maneuver Type", QVariant.String),
-                               # Global Actions
-                               QgsField("Global: Act Type", QVariant.String),
-                               QgsField("Infra: Traffic Light ID", QVariant.Int),
-                               QgsField("Infra: Traffic Light State", QVariant.String),
-                               # Start Triggers
-                               QgsField("Start Trigger", QVariant.String),
-                               QgsField("Start - Entity: Condition", QVariant.String),
-                               QgsField("Start - Entity: Ref Entity", QVariant.String),
-                               QgsField("Start - Entity: Duration", QVariant.Double),
-                               QgsField("Start - Entity: Value", QVariant.Double),
-                               QgsField("Start - Entity: Rule", QVariant.String),
-                               QgsField("Start - Entity: RelDistType", QVariant.String),
-                               QgsField("Start - Entity: Freespace", QVariant.Bool),
-                               QgsField("Start - Entity: Along Route", QVariant.Bool),
-                               QgsField("Start - Value: Condition", QVariant.String),
-                               QgsField("Start - Value: Param Ref", QVariant.String),
-                               QgsField("Start - Value: Name", QVariant.String),
-                               QgsField("Start - Value: DateTime", QVariant.String),
-                               QgsField("Start - Value: Value", QVariant.Double),
-                               QgsField("Start - Value: Rule", QVariant.String),
-                               QgsField("Start - Value: State", QVariant.String),
-                               QgsField("Start - Value: Sboard Type", QVariant.String),
-                               QgsField("Start - Value: Sboard Element", QVariant.String),
-                               QgsField("Start - Value: Sboard State", QVariant.String),
-                               QgsField("Start - Value: TController Ref", QVariant.String),
-                               QgsField("Start - Value: TController Phase", QVariant.String),
-                               QgsField("Start - WorldPos: Tolerance", QVariant.Double),
-                               QgsField("Start - WorldPos: X", QVariant.Double),
-                               QgsField("Start - WorldPos: Y", QVariant.Double),
-                               QgsField("Start - WorldPos: Z", QVariant.Double),
-                               QgsField("Start - WorldPos: Heading", QVariant.Double),
-                               # Stop Triggers
-                               QgsField("Stop Trigger Enabled", QVariant.Bool),
-                               QgsField("Stop Trigger", QVariant.String),
-                               QgsField("Stop - Entity: Condition", QVariant.String),
-                               QgsField("Stop - Entity: Ref Entity", QVariant.String),
-                               QgsField("Stop - Entity: Duration", QVariant.Double),
-                               QgsField("Stop - Entity: Value", QVariant.Double),
-                               QgsField("Stop - Entity: Rule", QVariant.String),
-                               QgsField("Stop - Entity: RelDistType", QVariant.String),
-                               QgsField("Stop - Entity: Freespace", QVariant.Bool),
-                               QgsField("Stop - Entity: Along Route", QVariant.Bool),
-                               QgsField("Stop - Value: Condition", QVariant.String),
-                               QgsField("Stop - Value: Param Ref", QVariant.String),
-                               QgsField("Stop - Value: Name", QVariant.String),
-                               QgsField("Stop - Value: DateTime", QVariant.String),
-                               QgsField("Stop - Value: Value", QVariant.Double),
-                               QgsField("Stop - Value: Rule", QVariant.String),
-                               QgsField("Stop - Value: State", QVariant.String),
-                               QgsField("Stop - Value: Sboard Type", QVariant.String),
-                               QgsField("Stop - Value: Sboard Element", QVariant.String),
-                               QgsField("Stop - Value: Sboard State", QVariant.String),
-                               QgsField("Stop - Value: TController Ref", QVariant.String),
-                               QgsField("Stop - Value: TController Phase", QVariant.String),
-                               QgsField("Stop - WorldPos: Tolerance", QVariant.Double),
-                               QgsField("Stop - WorldPos: X", QVariant.Double),
-                               QgsField("Stop - WorldPos: Y", QVariant.Double),
-                               QgsField("Stop - WorldPos: Z", QVariant.Double),
-                               QgsField("Stop - WorldPos: Heading", QVariant.Double)]
-            data_input = maneuver_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            maneuver_layer.updateFields()
-
-            message = "Maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing maneuvers layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
-
-        # Longitudinal Maneuvers
-        if not QgsProject.instance().mapLayersByName("Longitudinal Maneuvers"):
-            long_man_layer = QgsVectorLayer("None", "Longitudinal Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(long_man_layer, False)
-            osc_layer.addLayer(long_man_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
-                               QgsField("Type", QVariant.String),
-                               QgsField("Speed Target", QVariant.String),
-                               QgsField("Ref Entity", QVariant.String),
-                               QgsField("Dynamics Shape", QVariant.String),
-                               QgsField("Dynamics Dimension", QVariant.String),
-                               QgsField("Dynamics Value", QVariant.String),
-                               QgsField("Target Type", QVariant.String),
-                               QgsField("Target Speed", QVariant.String),
-                               QgsField("Continuous", QVariant.Bool),
-                               QgsField("Freespace", QVariant.Bool),
-                               QgsField("Max Acceleration", QVariant.String),
-                               QgsField("Max Deceleration", QVariant.String),
-                               QgsField("Max Speed", QVariant.String)]
-            data_input = long_man_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            long_man_layer.updateFields()
-
-            message = "Longitudinal maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing longitudinal maneuvers layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
-
-        # Lateral Maneuvers
-        if not QgsProject.instance().mapLayersByName("Lateral Maneuvers"):
-            lat_man_layer = QgsVectorLayer("None", "Lateral Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(lat_man_layer, False)
-            osc_layer.addLayer(lat_man_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
-                               QgsField("Type", QVariant.String),
-                               QgsField("Lane Target", QVariant.String),
-                               QgsField("Ref Entity", QVariant.String),
-                               QgsField("Dynamics Shape", QVariant.String),
-                               QgsField("Dynamics Dimension", QVariant.String),
-                               QgsField("Dynamics Value", QVariant.String),
-                               QgsField("Lane Target Value", QVariant.String),
-                               QgsField("Max Lateral Acceleration", QVariant.String),
-                               QgsField("Max Acceleration", QVariant.String),
-                               QgsField("Max Deceleration", QVariant.String),
-                               QgsField("Max Speed", QVariant.String)]
-            data_input = lat_man_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            lat_man_layer.updateFields()
-
-            message = "Lateral maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing lateral maneuvers layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
 
     def refresh_entity(self):
         """
