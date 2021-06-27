@@ -28,6 +28,7 @@ from .osc_generator.import_xosc import ImportXOSCDialog
 from .osc_generator.edit_environment import EditEnvironmentDockWidget
 from .osc_generator.end_eval_criteria import EndEvalCriteriaDialog
 from .osc_generator.add_maneuvers import AddManeuversDockWidget
+from .osc_generator.parameter_declarations import ParameterDeclarationsDockWidget
 
 try:
     import carla

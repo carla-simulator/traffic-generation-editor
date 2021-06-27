@@ -469,9 +469,11 @@ class HelperFunctions():
             QgsProject.instance().addMapLayer(param_layer, False)
             osc_layer.addLayer(param_layer)
             # Setup layer attributes
-            data_attributes = [QgsField("Parameter Name", QVariant.String),
-                               QgsField("Type", QVariant.String),
-                               QgsField("Value", QVariant.String)]
+            data_attributes = [
+                QgsField("Parameter Name", QVariant.String),
+                QgsField("Type", QVariant.String),
+                QgsField("Value", QVariant.String)
+            ]
             param_layer.dataProvider().addAttributes(data_attributes)
             param_layer.updateFields()
 
