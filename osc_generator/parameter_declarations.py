@@ -8,6 +8,7 @@
 OpenSCENARIO Generator - Parameter Declarations
 """
 import os
+from osc_generator.helper_functions import HelperFunctions
 # pylint: disable=no-name-in-module, no-member
 from qgis.core import (Qgis, QgsFeature, QgsField, QgsMessageLog, QgsProject,
                        QgsVectorLayer, QgsExpression, QgsFeatureRequest)
@@ -16,6 +17,7 @@ from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
 from qgis.utils import iface
 from PyQt5.QtWidgets import QMessageBox
+from .helper_functions import HelperFunctions
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'parameter_declarations.ui'))
@@ -39,7 +41,9 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._param_layer_data_input = None
         self._canvas = iface.mapCanvas()
 
-        self.layer_setup()
+        HelperFunctions().layer_setup_parameters()
+        self._param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
+        self._param_layer_data_input = self._param_layer.dataProvider()
 
     def closeEvent(self, event):
         """
@@ -47,31 +51,6 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         """
         self.closingPlugin.emit()
         event.accept()
-
-    def layer_setup(self):
-        """
-        Sets up layer for storing parameter declarations
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-        if not QgsProject.instance().mapLayersByName("Parameter Declarations"):
-            param_layer = QgsVectorLayer("None", "Parameter Declarations", "memory")
-            QgsProject.instance().addMapLayer(param_layer, False)
-            osc_layer.addLayer(param_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Parameter Name", QVariant.String),
-                               QgsField("Type", QVariant.String),
-                               QgsField("Value", QVariant.String)]
-            data_input = param_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            param_layer.updateFields()
-
-            message = "Parameter declarations layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
-        self._param_layer_data_input = self._param_layer.dataProvider()
 
     def add_parameters(self):
         """

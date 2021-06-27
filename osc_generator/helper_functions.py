@@ -9,7 +9,7 @@ OpenSCENARIO Generator - Helper Functions
 """
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsProject, QgsMessageLog, QgsVectorLayer, QgsFeature,
-    QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling)
+    QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsFeatureRequest)
 from qgis.utils import iface
 from qgis.PyQt.QtCore import QVariant
 
@@ -453,6 +453,29 @@ class HelperFunctions():
             self.display_message(message, level="Info")
         else:
             message = "Using existing lateral maneuvers layer"
+            self.display_message(message, level="Info")
+
+    def layer_setup_parameters(self):
+        """
+        Set up parameter declarations layer
+        """
+        root_layer = QgsProject.instance().layerTreeRoot()
+        osc_layer = root_layer.findGroup("OpenSCENARIO")
+        if osc_layer is None:
+            osc_layer = root_layer.addGroup("OpenSCENARIO")
+        
+        if not QgsProject.instance().mapLayersByName("Parameter Declarations"):
+            param_layer = QgsVectorLayer("None", "Parameter Declarations", "memory")
+            QgsProject.instance().addMapLayer(param_layer, False)
+            osc_layer.addLayer(param_layer)
+            # Setup layer attributes
+            data_attributes = [QgsField("Parameter Name", QVariant.String),
+                               QgsField("Type", QVariant.String),
+                               QgsField("Value", QVariant.String)]
+            param_layer.dataProvider().addAttributes(data_attributes)
+            param_layer.updateFields()
+
+            message = "Parameter declarations layer added"
             self.display_message(message, level="Info")
 
     def verify_parameters(self, param):
