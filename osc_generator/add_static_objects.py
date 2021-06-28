@@ -22,6 +22,8 @@ from PyQt5.QtWidgets import QInputDialog
 # AD Map plugin
 import ad_map_access as ad
 
+from .helper_functions import HelperFunctions
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_static_objects_widget.ui'))
 
@@ -44,42 +46,7 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self._labels_on = True
         self._props_layer = None
-        self.layer_setup()
-
-    def layer_setup(self):
-        """
-        Sets up layer for pedestrians
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-        if not QgsProject.instance().mapLayersByName("Static Objects"):
-            props_layer = QgsVectorLayer("Polygon", "Static Objects", "memory")
-            QgsProject.instance().addMapLayer(props_layer, False)
-            osc_layer.addLayer(props_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("id", QVariant.Int),
-                               QgsField("Prop", QVariant.String),
-                               QgsField("Prop Type", QVariant.String),
-                               QgsField("Orientation", QVariant.Double),
-                               QgsField("Mass", QVariant.String),
-                               QgsField("Pos X", QVariant.Double),
-                               QgsField("Pos Y", QVariant.Double),
-                               QgsField("Pos Z", QVariant.Double),
-                               QgsField("Physics", QVariant.Bool)]
-            data_input = props_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            props_layer.updateFields()
-
-            label_settings = QgsPalLayerSettings()
-            label_settings.isExpression = True
-            label_settings.fieldName = "concat('Prop_', \"id\")"
-            props_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-            props_layer.setLabelsEnabled(True)
-
-            message = "Static objects layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
+        HelperFunctions().layer_setup_props()
         self._props_layer = QgsProject.instance().mapLayersByName("Static Objects")[0]
 
     def toggle_labels(self):
