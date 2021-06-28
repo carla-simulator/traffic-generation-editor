@@ -131,12 +131,16 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         canvas = iface.mapCanvas()
         layer = iface.mapCanvas().currentLayer()
 
+        if self.agent_selection.currentText() == "User Defined":
+            agent =  self.agent_user_defined.text()
+        else:
+            agent = self.agent_selection.currentText()
+
         vehicle_attributes = {"Model":self.vehicle_selection.currentText(),
                               "Orientation":orientation,
                               "InitSpeed":init_speed,
-                              "Agent": self.agent_selection.currentText(),
-                              "Agent Camera": self.agent_attach_camera.isChecked(),
-                              "Agent User": self.agent_user_defined.text()}
+                              "Agent": agent,
+                              "Agent Camera": self.agent_attach_camera.isChecked()}
         tool = PointTool(canvas, layer, vehicle_attributes)
         canvas.setMapTool(tool)
 
@@ -241,7 +245,7 @@ class PointTool(QgsMapTool):
         lane_edge_features = lane_edge_data_provider.getFeatures()
 
         while lane_edge_features.nextFeature(spatial_feature):
-            spatial_index.insertFeature(spatial_feature)
+            spatial_index.addFeature(spatial_feature)
         
         nearest_ids = spatial_index.nearestNeighbor(point, 5)
 
@@ -282,16 +286,17 @@ class PointTool(QgsMapTool):
 
             # Set vehicle attributes
             feature = QgsFeature()
-            feature.setAttributes([veh_attr["id"],
-                                   veh_attr["Model"],
-                                   veh_attr["Orientation"],
-                                   float(enupoint.x),
-                                   float(enupoint.y),
-                                   float(enupoint.z) + 0.2, # Avoid ground collision
-                                   veh_attr["InitSpeed"],
-                                   veh_attr["Agent"],
-                                   veh_attr["Agent Camera"],
-                                   veh_attr["Agent User"]])
+            feature.setAttributes([
+                veh_attr["id"],
+                veh_attr["Model"],
+                veh_attr["Orientation"],
+                float(enupoint.x),
+                float(enupoint.y),
+                float(enupoint.z) + 0.2, # Avoid ground collision
+                veh_attr["InitSpeed"],
+                veh_attr["Agent"],
+                veh_attr["Agent Camera"],
+            ])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
 
@@ -470,6 +475,5 @@ class AddVehicleAttribute():
                               "Orientation": orientation,
                               "InitSpeed": attributes["InitSpeed"],
                               "Agent": attributes["Agent"],
-                              "Agent Camera": attributes["Agent Camera"],
-                              "Agent User": attributes["Agent User"]}
+                              "Agent Camera": attributes["Agent Camera"]}
         return vehicle_attributes
