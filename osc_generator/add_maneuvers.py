@@ -997,11 +997,11 @@ class PointTool(QgsMapTool):
             heading = add_entity_attr.get_entity_heading(geopoint)
             self._parent.start_entity_position_x.setText(str(enupoint.x))
             self._parent.start_entity_position_y.setText(str(enupoint.y))
-            self._parent.start_entity_position_y.setText(str(enupoint.z))
+            self._parent.start_entity_position_z.setText(str(enupoint.z))
             self._parent.start_entity_heading.setText(str(heading))
             self._parent.stop_entity_position_x.setText(str(enupoint.x))
             self._parent.stop_entity_position_y.setText(str(enupoint.y))
-            self._parent.stop_entity_position_y.setText(str(enupoint.y))
+            self._parent.stop_entity_position_z.setText(str(enupoint.z))
             self._parent.stop_entity_heading.setText(str(heading))
             self._canvas.unsetMapTool(self)
 
