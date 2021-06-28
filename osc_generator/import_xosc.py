@@ -552,18 +552,26 @@ class ImportXOSC():
             
             waypoint_act = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction/RoutingAction")
             if waypoint_act is None:
-                private_act_type = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction")
-                child_tag = private_act_type.getchildren()
-                print(child_tag)
+                private_act_node = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction")
+                private_act_type = list(private_act_node.iter())[1]
+                if private_act_type == "LongitudinalAction":
+                    self.parse_maneuvers_longitudinal()
+                elif private_act_type == "LateralAction":
+                    self.parse_maneuvers_lateral()
             else:
                 self.parse_waypoints(waypoint_act, man_id, entity)
             
-            infra_act = maneuver_group.find(".//Maneuver/Event/Action/GlobalAction/InfrastructureAction")
-            if infra_act is None:
+            infra_act_node = maneuver_group.find(".//Maneuver/Event/Action/GlobalAction/InfrastructureAction")
+            if infra_act_node is None:
                 message = ("Infrastructure Action not found! "
                     "Import only supports infrastructure action currently.")
                 HelperFunctions().display_message(message, level="Info")
                 self._warning_message.append(message)
+            else:
+                man_type = "Global Actions"
+                traffic_signal_node = infra_act_node.find(".//TrafficSignalAction/TrafficSignalStateAction")
+                infra_traffic_id = traffic_signal_node.attrib.get("name")[3:]
+                infra_traffic_state = traffic_signal_node.attrib.get("state")
 
             # Start Triggers (Default Values)
             start_trigger = "by Entity"
@@ -700,6 +708,7 @@ class ImportXOSC():
 
             stop_trigger_node = maneuver_group.find(".//Maneuver/Event/StopTrigger")
             if stop_trigger_node is not None:
+                stop_trigger_enabled = True
                 # Check Entity Condition, if not, check Value Condition
                 condition_node = stop_trigger_node.find(".//ConditionGroup/Condition/ByEntityCondition")
                 if condition_node is not None:
