@@ -60,6 +60,7 @@ class ImportXOSC():
     def __init__(self, filepath):
         self._filepath = filepath
         self._invert_y = False
+        self._warning_message = []
 
         self.setup_qgis_layers()
     
@@ -71,7 +72,13 @@ class ImportXOSC():
         HelperFunctions().layer_setup_metadata()
         HelperFunctions().layer_setup_vehicle()
         HelperFunctions().layer_setup_walker()
+        HelperFunctions().layer_setup_props()
         HelperFunctions().layer_setup_end_eval()
+        HelperFunctions().layer_setup_maneuvers_and_triggers()
+        HelperFunctions().layer_setup_maneuvers_lateral()
+        HelperFunctions().layer_setup_maneuvers_longitudinal()
+        HelperFunctions().layer_setup_maneuvers_waypoint()
+        HelperFunctions().layer_setup_parameters()
 
     def import_xosc(self):
         tree = etree.parse(self._filepath)
@@ -90,6 +97,10 @@ class ImportXOSC():
         if self._root.findall(".//Storyboard/StopTrigger/ConditionGroup"):
             end_eval_node = self._root.findall(".//Storyboard/StopTrigger")[0]
             self.parse_end_evals(end_eval_node)
+
+        if self._root.findall(".//Story"):
+            story_node = self._root.findall(".//Story")[0]
+            self.parse_maneuvers(story_node)
 
     def parse_osc_metadata(self):
         """
@@ -357,15 +368,17 @@ class ImportXOSC():
         entity_id = self.get_entity_id(props_layer)
         
         feature = QgsFeature()
-        feature.setAttributes([entity_id,
-                               model,
-                               model_type,
-                               world_pos_heading,
-                               mass,
-                               world_pos_x,
-                               world_pos_y,
-                               world_pos_z,
-                               physics])
+        feature.setAttributes([
+            entity_id,
+            model,
+            model_type,
+            world_pos_heading,
+            mass,
+            world_pos_x,
+            world_pos_y,
+            world_pos_z,
+            physics
+        ])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
         props_layer.dataProvider().addFeature(feature)
 
@@ -492,8 +505,6 @@ class ImportXOSC():
             value = param_condition.attrib.get("value")
             rule = param_condition.attrib.get("rule")
 
-            print(cond_name)
-
             feature = QgsFeature()
             feature.setAttributes([
                 cond_name,
@@ -505,3 +516,315 @@ class ImportXOSC():
             ])
             
             end_eval_layer.dataProvider().addFeature(feature)
+
+    def parse_maneuvers(self, story_node):
+        """
+        Parses maneuver information and saves into QGIS layers
+
+        Args:
+            story_node (XML element): Node that contains the maneuvers
+        """
+        maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
+        long_man_layer =  QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+        lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
+
+        for maneuver_group in story_node.iter("ManeuverGroup"):
+            # Default values (so attributes can be saved into QGIS)
+            # Will be changed based on what is parsed from OpenSCENARIO file
+            # Irrelevant information will be handled during export
+            man_id = self.get_entity_id(maneuver_layer)
+            man_type = "Entity Maneuvers"
+            entity = None
+            entity_act_type = "Waypoint"
+            global_act_type = "InfrastructureAction"
+            infra_traffic_id = 0
+            infra_traffic_state = "green"            
+
+            entity_node = maneuver_group.find(".//Actors/EntityRef")
+            # For blank maneuvers / no maneuvers set
+            if entity_node is None:
+                message = ("Maneuver does not have an entity reference! "
+                    "This maneuver will be skipped.")
+                HelperFunctions().display_message(message, level="Info")
+                self._warning_message.append(message)
+                break
+            entity = entity_node.attrib.get("entityRef")
+            
+            waypoint_act = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction/RoutingAction")
+            if waypoint_act is None:
+                private_act_type = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction")
+                child_tag = private_act_type.getchildren()
+                print(child_tag)
+            else:
+                self.parse_waypoints(waypoint_act, man_id, entity)
+            
+            infra_act = maneuver_group.find(".//Maneuver/Event/Action/GlobalAction/InfrastructureAction")
+            if infra_act is None:
+                message = ("Infrastructure Action not found! "
+                    "Import only supports infrastructure action currently.")
+                HelperFunctions().display_message(message, level="Info")
+                self._warning_message.append(message)
+
+            # Start Triggers (Default Values)
+            start_trigger = "by Entity"
+            start_entity_cond = "EndOfRoadCondition"
+            start_entity_ref_entity = ""
+            start_entity_duration = 0
+            start_entity_value = 0
+            start_entity_rule = "lessThan"
+            start_entity_rel_dist_type = "cartesianDistance"
+            start_entity_frespace = False
+            start_entity_along_route = False
+            start_value_cond = "ParameterCondition"
+            start_value_param_ref = ""
+            start_value_name = ""
+            start_value_datetime = "2020-10-22T18:00:00"
+            start_value_value = 0
+            start_value_rule = "lessThan"
+            start_value_state = ""
+            start_value_storyboard_type = "story"
+            start_value_storyboard_element = ""
+            start_value_storyboard_state = "completeState"
+            start_value_traffic_controller_ref = ""
+            start_value_traffic_controller_phase = ""
+            start_world_pos_tolerance = 0
+            start_world_pos_x = 0
+            start_world_pos_y = 0
+            start_world_pos_z = 0
+            start_world_pos_heading = 0
+
+            start_trigger_node = maneuver_group.find(".//Maneuver/Event/StartTrigger")
+            if start_trigger_node is not None:
+                # Check Entity Condition, if not, check Value Condition
+                condition_node = start_trigger_node.find(".//ConditionGroup/Condition/ByEntityCondition")
+                if condition_node is not None:
+                    start_trigger = "by Entity"
+                    entity_ref_node = condition_node.find(".//TriggeringEntities/EntityRef")
+                    start_entity_ref_entity = entity_ref_node.attrib.get("entityRef")
+
+                    entity_cond_node = condition_node.find(".//EntityCondition")
+                    entity_cond_node = list(entity_cond_node.iter())[1]
+                    start_entity_cond = entity_cond_node.tag
+                    
+                    if "duration" in entity_cond_node.attrib:
+                        start_entity_duration = entity_cond_node.attrib.get("duration")
+                    
+                    if "entityRef" in entity_cond_node.attrib:
+                        start_entity_ref_entity = entity_cond_node.attrib.get("entityRef")
+
+                    if "value" in entity_cond_node.attrib:
+                        start_entity_value = entity_cond_node.attrib.get("value")
+                    
+                    if "freespace" in entity_cond_node.attrib:
+                        if entity_cond_node.attrib.get("freespace") == "true":
+                            start_entity_frespace = True
+                        else:
+                            start_entity_frespace = False
+                    
+                    if "alongRoute" in entity_cond_node.attrib:
+                        if entity_cond_node.attrib.get("alongRoute") == "true":
+                            start_entity_along_route = True
+                        else:
+                            start_entity_along_route = False
+                    
+                    if "rule" in entity_cond_node.attrib:
+                        start_entity_rule = entity_cond_node.attrib.get("rule")
+                    
+                    if "tolerance" in entity_cond_node.attrib:
+                        start_world_pos_tolerance = entity_cond_node.attrib.get("tolerance")
+                        world_pos_node = entity_cond_node.find(".//Position/WorldPosition")
+
+                        if world_pos_node is not None:
+                            start_world_pos_x = float(world_pos_node.attrib.get("x"))
+                            start_world_pos_y = float(world_pos_node.attrib.get("y"))
+                            start_world_pos_z = float(world_pos_node.attrib.get("z"))
+                            start_world_pos_heading = float(world_pos_node.attrib.get("h"))
+
+                else:
+                    condition_node = start_trigger_node.find(".//ConditionGroup/Condition/ByValueCondition")
+                    start_trigger = "by Value"
+                    value_cond_node = list(condition_node.iter())[1]
+                    start_value_cond = value_cond_node.tag
+                    
+                    if "parameterRef" in value_cond_node.attrib:
+                        start_value_param_ref = value_cond_node.attrib.get("parameterRef")
+                    
+                    if "name" in value_cond_node.attrib:
+                        start_value_name = value_cond_node.attrib.get("name")
+
+                    if "value" in value_cond_node.attrib:
+                        start_value_value = value_cond_node.attrib.get("value")
+                    
+                    if "rule" in value_cond_node.attrib:
+                        start_value_rule = value_cond_node.attrib.get("rule")
+                    
+                    if "state" in value_cond_node.attrib:
+                        start_value_state = value_cond_node.attrib.get("state")
+                    
+                    if "storyboardElementType" in value_cond_node.attrib:
+                        start_value_storyboard_type = value_cond_node.attrib.get("storyboardElementType")
+                        start_value_storyboard_element = value_cond_node.attrib.get("storyboardElementRef")
+                        start_value_storyboard_state = value_cond_node.attrib.get("state")
+                    
+                    if "trafficSignalControllerRef" in value_cond_node.attrib:
+                        start_value_traffic_controller_ref = value_cond_node.attrib.get("trafficSignalControllerRef")
+                        start_value_traffic_controller_phase = value_cond_node.attrib.get("phase")
+
+            # Stop Triggers (Default Values)
+            stop_trigger_enabled = False
+            stop_trigger = "by Entity"
+            stop_entity_cond = "EndOfRoadCondition"
+            stop_entity_ref_entity = ""
+            stop_entity_duration = 0
+            stop_entity_value = 0
+            stop_entity_rule = "lessThan"
+            stop_entity_rel_dist_type = "cartesianDistance"
+            stop_entity_freespace = False
+            stop_entity_along_route = False
+            stop_value_condition = "ParameterCondition"
+            stop_value_param_ref = ""
+            stop_value_name = ""
+            stop_value_datetime = "2020-10-22T18:00:00"
+            stop_value_value = 0
+            stop_value_rule = "lessThan"
+            stop_value_storyboard_type = "story"
+            stop_value_storyboard_element = ""
+            stop_value_storyboard_state = "completeState"
+            stop_value_traffic_controller_ref = ""
+            stop_value_traffic_controller_phase = ""
+            stop_world_pos_tolerance = 0
+            stop_world_pos_x = 0
+            stop_world_pos_y = 0
+            stop_world_pos_z = 0
+            stop_world_pos_heading = 0
+
+            stop_trigger_node = maneuver_group.find(".//Maneuver/Event/StopTrigger")
+            if stop_trigger_node is not None:
+                # Check Entity Condition, if not, check Value Condition
+                condition_node = stop_trigger_node.find(".//ConditionGroup/Condition/ByEntityCondition")
+                if condition_node is not None:
+                    stop_trigger = "by Entity"
+                    entity_ref_node = condition_node.find(".//TriggeringEntities/EntityRef")
+                    stop_entity_ref_entity = entity_ref_node.attrib.get("entityRef")
+
+                    entity_cond_node = condition_node.find(".//EntityCondition")
+                    entity_cond_node = list(entity_cond_node.iter())[1]
+                    stop_entity_cond = entity_cond_node.tag
+                    
+                    if "duration" in entity_cond_node.attrib:
+                        stop_entity_duration = entity_cond_node.attrib.get("duration")
+                    
+                    if "entityRef" in entity_cond_node.attrib:
+                        stop_entity_ref_entity = entity_cond_node.attrib.get("entityRef")
+
+                    if "value" in entity_cond_node.attrib:
+                        stop_entity_value = entity_cond_node.attrib.get("value")
+                    
+                    if "freespace" in entity_cond_node.attrib:
+                        if entity_cond_node.attrib.get("freespace") == "true":
+                            stop_entity_frespace = True
+                        else:
+                            stop_entity_frespace = False
+                    
+                    if "alongRoute" in entity_cond_node.attrib:
+                        if entity_cond_node.attrib.get("alongRoute") == "true":
+                            stop_entity_along_route = True
+                        else:
+                            stop_entity_along_route = False
+                    
+                    if "rule" in entity_cond_node.attrib:
+                        stop_entity_rule = entity_cond_node.attrib.get("rule")
+                    
+                    if "tolerance" in entity_cond_node.attrib:
+                        stop_world_pos_tolerance = entity_cond_node.attrib.get("tolerance")
+                        world_pos_node = entity_cond_node.find(".//Position/WorldPosition")
+
+                        if world_pos_node is not None:
+                            stop_world_pos_x = float(world_pos_node.attrib.get("x"))
+                            stop_world_pos_y = float(world_pos_node.attrib.get("y"))
+                            stop_world_pos_z = float(world_pos_node.attrib.get("z"))
+                            stop_world_pos_heading = float(world_pos_node.attrib.get("h"))
+
+                else:
+                    condition_node = stop_trigger_node.find(".//ConditionGroup/Condition/ByValueCondition")
+                    stop_trigger = "by Value"
+                    value_cond_node = list(condition_node.iter())[1]
+                    stop_value_cond = value_cond_node.tag
+                    
+                    if "parameterRef" in value_cond_node.attrib:
+                        stop_value_param_ref = value_cond_node.attrib.get("parameterRef")
+                    
+                    if "name" in value_cond_node.attrib:
+                        stop_value_name = value_cond_node.attrib.get("name")
+
+                    if "value" in value_cond_node.attrib:
+                        stop_value_value = value_cond_node.attrib.get("value")
+                    
+                    if "rule" in value_cond_node.attrib:
+                        stop_value_rule = value_cond_node.attrib.get("rule")
+                    
+                    if "state" in value_cond_node.attrib:
+                        stop_value_state = value_cond_node.attrib.get("state")
+                    
+                    if "storyboardElementType" in value_cond_node.attrib:
+                        stop_value_storyboard_type = value_cond_node.attrib.get("storyboardElementType")
+                        stop_value_storyboard_element = value_cond_node.attrib.get("storyboardElementRef")
+                        stop_value_storyboard_state = value_cond_node.attrib.get("state")
+                    
+                    if "trafficSignalControllerRef" in value_cond_node.attrib:
+                        stop_value_traffic_controller_ref = value_cond_node.attrib.get("trafficSignalControllerRef")
+                        stop_value_traffic_controller_phase = value_cond_node.attrib.get("phase")
+
+    def parse_waypoints(self, waypoint_node, man_id, entity):
+        """
+        Parses waypoint maneuvers and saves into QGIS layers 
+
+        Args:
+            waypoint_node (XML element): Node that contains RoutingAction
+            man_id (int): Maneuver ID to differentiate maneuvers
+            entity (str): Entity name for maneuver
+        """
+        waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
+
+        world_pos_x = 0
+        world_pos_y = 0
+        world_pos_z = 0
+        world_pos_heading = 0
+        waypoint_id = 1
+
+        for waypoint in waypoint_node.iter("Waypoint"):
+            route_strat = waypoint.attrib.get("routeStrategy")
+            world_pos_node = waypoint.find(".//Position/WorldPosition")
+            
+            if world_pos_node is not None:
+                world_pos_x = float(world_pos_node.attrib.get("x"))
+                world_pos_y = float(world_pos_node.attrib.get("y"))
+                world_pos_z = float(world_pos_node.attrib.get("z"))
+                world_pos_heading = float(world_pos_node.attrib.get("h"))
+            else:
+                message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
+                    f"{str(man_id)} Entity: {entity})")
+                HelperFunctions().display_message(message, level="Info")
+                self._warning_message.append(message)
+                break
+            
+            feature = QgsFeature()
+            feature.setAttributes([
+                man_id,
+                entity,
+                waypoint_id,
+                world_pos_heading,
+                world_pos_x,
+                world_pos_y,
+                world_pos_z,
+                route_strat
+            ])
+            
+            # Create ENU point and convert to GEO for display in QGIS
+            enupoint = ad.map.point.createENUPoint(world_pos_x, world_pos_y, world_pos_z)
+            geopoint = ad.map.point.toGeo(enupoint)
+            feature.setGeometry(
+                QgsGeometry.fromPointXY(QgsPointXY(geopoint.longitude, geopoint.latitude)))
+            waypoint_layer.dataProvider().addFeature(feature)
+
+            waypoint_id += 1
