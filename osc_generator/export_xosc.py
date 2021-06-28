@@ -946,7 +946,7 @@ class GenerateXML():
                 world_position = etree.SubElement(position, "WorldPosition")
                 world_position.set("x", str(feature["Start - WorldPos: X"]))
                 world_position.set("y", str(feature["Start - WorldPos: Y"]))
-                world_position.set("z", "0")
+                world_position.set("z", str(feature["Start - WorldPos: Z"]))
                 world_position.set("h", str(feature["Start - WorldPos: Heading"]))
 
         elif feature["Start Trigger"] == "by Value":
@@ -1046,7 +1046,7 @@ class GenerateXML():
                 world_position = etree.SubElement(position, "WorldPosition")
                 world_position.set("x", str(feature["Stop - WorldPos: X"]))
                 world_position.set("y", str(feature["Stop - WorldPos: Y"]))
-                world_position.set("z", "0")
+                world_position.set("z", str(feature["Stop - WorldPos: Z"]))
                 world_position.set("h", str(feature["Stop - WorldPos: Heading"]))
 
         elif feature["Stop Trigger"] == "by Value":
