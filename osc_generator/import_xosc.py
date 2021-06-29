@@ -989,3 +989,85 @@ class ImportXOSC():
             max_speed
         ])
         long_man_layer.dataProvider().addFeature(feature)
+
+    def parse_maneuvers_lateral(self, lat_act_node, man_id):
+        """
+        Parse longitudinal maneuvers and saves into QGIS layers
+
+        Args:
+            lat_act_node (XML element): XML node that contains LateralAction
+            man_id (int): Maneuver ID to differentiate maneuvers
+        """
+        lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
+
+        # Default values
+        lat_type = "LaneChangeAction"
+        lane_target = "RelativeTargetLane"
+        entity_ref = ""
+        dynamics_shape = "linear"
+        dynamics_dimension = "rate"
+        dynamics_value = "0"
+        lane_target_value = "0"
+        max_lat_accel = "0"
+        max_accel = "0"
+        max_decel = "0"
+        max_speed = "0"
+
+        lat_type_node = list(lat_act_node.iter())[1]
+        lat_type = lat_type_node.tag
+
+        if lat_type == "LaneChangeAction":
+            dynamics_node = lat_type_node.find(".//LaneChangeAction/LaneChangeActionDynamics")
+            dynamics_shape = dynamics_node.attrib.get("dynamicsShape")
+            dynamics_value = dynamics_node.attrib.get("value")
+            dynamics_dimension = dynamics_node.attrib.get("dynamicsDimension")
+
+            lane_target_node = lat_type_node.find(".//LaneChangeAction/LaneChangeTarget")
+            lane_target_choice_node = list(lane_target_node.iter())[1]
+            lane_target = lane_target_choice_node.tag
+            if lane_target == "RelativeTargetLane":
+                rel_target_node = lane_target_choice_node.find(".//RelativeTargetLane")
+                entity_ref = rel_target_node.attrib.get("entityRef")
+                lane_target_value = rel_target_node.attrib.get("value")
+            elif lane_target == "AbsoluteTargetLane":
+                abs_target_node = lane_target_choice_node.find(".//AbsoluteTargetLane")
+                lane_target_value = abs_target_node.attrib.get("value")
+
+        elif lat_type == "LaneOffsetAction":
+            dynamics_node = lat_type_node.find(".//LaneOffsetAction/LaneOffsetActionDynamics")
+            max_lat_accel = dynamics_node.attrib.get("maxLateralAcc")
+            dynamics_shape = dynamics_node.attrib.get("dynamicsShape")
+
+            lane_target_node = lat_act_node.find(".//LaneOffsetAction/LaneOffsetTarget")
+            lane_target_choice_node = list(lane_target_node.iter())[1]
+            lane_target = lane_target_choice_node.tag
+            if lane_target == "RelativeTargetLaneOffset":
+                rel_target_node = lane_target_choice_node.find(".//RelativeTargetLaneOffset")
+                entity_ref = rel_target_node.attrib.get("entityRef")
+                lane_target_value = rel_target_node.attrib.get("value")
+            elif lane_target == "AbsoluteTargetLaneOffset":
+                abs_target_node = lane_target_choice_node.find(".//AbsoluteTargetLaneOffset")
+                lane_target_value = abs_target_node.attrib.get("value")
+        
+        elif lat_type == "LateralDistanceAction":
+            dynamic_constrain_node = lat_type_node.find(".//LateralDistanceAction/DynamicConstraints")
+            max_accel = dynamic_constrain_node.attrib.get("maxAcceleration")
+            max_decel = dynamic_constrain_node.attrib.get("maxDeceleration")
+            max_speed = dynamic_constrain_node.attrib.get("maxSpeed")
+            
+        feature = QgsFeature()
+        feature.setAttributes([
+            man_id,
+            lat_type,
+            lane_target,
+            entity_ref,
+            dynamics_shape,
+            dynamics_dimension,
+            dynamics_value,
+            lane_target_value,
+            max_lat_accel,
+            max_accel,
+            max_decel,
+            max_speed
+        ])
+        lat_man_layer.dataProvider().addFeature(feature)
