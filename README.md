@@ -156,6 +156,7 @@ Icon | Description
 <img src="icons/icon_parameter.png" alt="Add parmeters" width="50"/> | Add parameters
 <img src="icons/icon_endEval.png" alt="Add end evaluation KPIs" width="50"/> | Add end evaluation KPIs (Specific for Scenario Runner)
 <img src="icons/icon_code.png" alt="Export OpenSCENARIO" width="50"/> | Export OpenSCENARIO file
+<img src="icons/icon_import.png" alt="Import OpenSCENARIO" width="50"/> | Import OpenSCENARIO file
 <img src="icons/carla_logo.png" alt="Connect to CARLA instance" width="50"/> | Connect to carla instance 
 <img src="icons/video_cam.png" alt="Insert camera" width="50"/> | Add bird eye view camera 
 
@@ -183,6 +184,12 @@ _Note: To change environment settings, simply adjust the parameters and press 'A
    
    ![Selecting Lane ID](Docs/OSCGenerator_Vehicles_LaneID.png)
 
+7. If click point contains lanes with multiple elevations, a dialog box will appear and ask to select the desired elevation.
+
+   ![Selection Elevation](Docs/OSCGenerator_Elevation.png)
+
+_Note: Sometimes there will be a "Click point too far from lane" error. Try choosing a different elevation._
+
 _Note: Currently you can insert vehicle one at a time._
 
 _Note: You can toggle labels on and off by clicking on the 'Label' button_
@@ -199,6 +206,12 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 6. If click point contains multiple lanes and 'Use lane heading' is enabled, a dialog box will appear and ask to select lane ID to use for lane heading.
    
    ![Selecting Lane ID](Docs/OSCGenerator_Vehicles_LaneID.png)
+
+7. If click point contains lanes with multiple elevations, a dialog box will appear and ask to select the desired elevation.
+
+   ![Selection Elevation](Docs/OSCGenerator_Elevation.png)
+
+_Note: Sometimes there will be a "Click point too far from lane" error. Try choosing a different elevation._
   
 _Note: You can insert as many pedestrians as you desire after pressing on 'Insert'_
 
