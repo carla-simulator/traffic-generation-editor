@@ -525,8 +525,6 @@ class ImportXOSC():
             story_node (XML element): Node that contains the maneuvers
         """
         maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
-        long_man_layer =  QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
-        lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
 
         for maneuver_group in story_node.iter("ManeuverGroup"):
             # Default values (so attributes can be saved into QGIS)
@@ -553,11 +551,14 @@ class ImportXOSC():
             waypoint_act = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction/RoutingAction")
             if waypoint_act is None:
                 private_act_node = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction")
-                private_act_type = list(private_act_node.iter())[1]
+                private_act_type_node = list(private_act_node.iter())[1]
+                private_act_type = private_act_type_node.tag
                 if private_act_type == "LongitudinalAction":
-                    self.parse_maneuvers_longitudinal()
+                    entity_act_type = "Longitudinal"
+                    self.parse_maneuvers_longitudinal(private_act_type, man_id)
                 elif private_act_type == "LateralAction":
-                    self.parse_maneuvers_lateral()
+                    entity_act_type = "Lateral"
+                    self.parse_maneuvers_lateral(private_act_type, man_id)
             else:
                 self.parse_waypoints(waypoint_act, man_id, entity)
             
@@ -689,12 +690,13 @@ class ImportXOSC():
             stop_entity_rel_dist_type = "cartesianDistance"
             stop_entity_freespace = False
             stop_entity_along_route = False
-            stop_value_condition = "ParameterCondition"
+            stop_value_cond = "ParameterCondition"
             stop_value_param_ref = ""
             stop_value_name = ""
             stop_value_datetime = "2020-10-22T18:00:00"
             stop_value_value = 0
             stop_value_rule = "lessThan"
+            stop_value_state = ""
             stop_value_storyboard_type = "story"
             stop_value_storyboard_element = ""
             stop_value_storyboard_state = "completeState"
@@ -783,6 +785,71 @@ class ImportXOSC():
                     if "trafficSignalControllerRef" in value_cond_node.attrib:
                         stop_value_traffic_controller_ref = value_cond_node.attrib.get("trafficSignalControllerRef")
                         stop_value_traffic_controller_phase = value_cond_node.attrib.get("phase")
+        
+            feature = QgsFeature()
+            feature.setAttributes([
+                man_id,
+                man_type,
+                entity,
+                entity_act_type,
+                global_act_type,
+                infra_traffic_id,
+                infra_traffic_state,
+                start_trigger,
+                start_entity_cond,
+                start_entity_ref_entity,
+                start_entity_duration,
+                start_entity_value,
+                start_entity_rule,
+                start_entity_rel_dist_type,
+                start_entity_frespace,
+                start_entity_along_route,
+                start_value_cond,
+                start_value_param_ref,
+                start_value_name,
+                start_value_datetime,
+                start_value_value,
+                start_value_rule,
+                start_value_state,
+                start_value_storyboard_type,
+                start_value_storyboard_element,
+                start_value_storyboard_state,
+                start_value_traffic_controller_ref,
+                start_value_traffic_controller_phase,
+                start_world_pos_tolerance,
+                start_world_pos_x,
+                start_world_pos_y,
+                start_world_pos_z,
+                start_world_pos_heading,
+                stop_trigger_enabled,
+                stop_trigger,
+                stop_entity_cond,
+                stop_entity_ref_entity,
+                stop_entity_duration,
+                stop_entity_value,
+                stop_entity_rule,
+                stop_entity_rel_dist_type,
+                stop_entity_freespace,
+                stop_entity_along_route,
+                stop_value_cond,
+                stop_value_param_ref,
+                stop_value_name,
+                stop_value_datetime,
+                stop_value_value,
+                stop_value_rule,
+                stop_value_state,
+                stop_value_storyboard_type,
+                stop_value_storyboard_element,
+                stop_value_storyboard_state,
+                stop_value_traffic_controller_ref,
+                stop_value_traffic_controller_phase,
+                stop_world_pos_tolerance,
+                stop_world_pos_x,
+                stop_world_pos_y,
+                stop_world_pos_z,
+                stop_world_pos_heading
+            ])
+            maneuver_layer.dataProvider().addFeature(feature)
 
     def parse_waypoints(self, waypoint_node, man_id, entity):
         """
@@ -837,3 +904,88 @@ class ImportXOSC():
             waypoint_layer.dataProvider().addFeature(feature)
 
             waypoint_id += 1
+
+    def parse_maneuvers_longitudinal(self, long_act_node, man_id):
+        """
+        Parse longitudinal maneuvers and saves into QGIS layers
+
+        Args:
+            long_act_node (XML element): XML node that contains LongiduinalAction
+            man_id (int): Maneuver ID to differentiate maneuvers
+        """
+        long_man_layer =  QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+
+        # Default values
+        long_type = "SpeedAction"
+        speed_target = "RelativeTargetSpeed"
+        entity_ref = ""
+        dynamics_shape = "linear"
+        dynamics_dimension = "rate"
+        dynamics_value = "0"
+        target_type = "delta"
+        target_speed = "0"
+        continuous = True
+        freespace = True
+        max_accel = "0"
+        max_decel = "0"
+        max_speed = "0"
+
+        long_type_node = list(long_act_node.iter())[1]
+        long_type = long_type_node.tag
+        if long_type == "SpeedAction":
+            speed_dynamics_node = long_type_node.find(".//SpeedAction/SpeedActionDynamics")
+            dynamics_shape = speed_dynamics_node.attrib.get("dynamicsShape")
+            dynamics_value = speed_dynamics_node.attrib.get("value")
+            dynamics_dimension = speed_dynamics_node.attrib.get("dynamicsDimension")
+
+            speed_target_node = long_act_node.find(".//SpeedAction/SpeedActionTarget")
+            speed_target_node = list(speed_target_node.iter())[1]
+            speed_target = speed_target_node.tag
+
+            if speed_target == "RelativeTargetSpeed":
+                rel_target_speed_node = speed_target_node.find(".//RelativeTargetSpeed")
+                entity_ref = rel_target_speed_node.attrib.get("entityRef")
+                target_speed = rel_target_speed_node.attrib.get("value")
+                target_type = rel_target_speed_node.attrib.get("speedTargetValueType")
+                if rel_target_speed_node.attrib.get("continuous") == "true":
+                    continuous = True
+                else:
+                    continuous = False
+            elif speed_target == "AbsoluteTargetSpeed":
+                abs_target_speed_node = speed_target_node.find(".//AbsoluteTargetSpeed")
+                target_speed = abs_target_speed_node.attrib.get("value")
+        
+        elif long_type == "LongitudinalDistanceAction":
+            entity_ref = long_act_node.attrib.get("entityRef")
+            if long_act_node.attrib.get("freespace") == "true":
+                freespace = True
+            else:
+                freespace = False
+            if long_act_node.attrib.get("continuous") == "true":
+                continuous = True
+            else:
+                continuous = False
+            
+            dynamic_constrain_node = long_act_node.find(".//LongitudinalDistanceAction/DynamicConstraints")
+            max_accel = dynamic_constrain_node.attrib.get("maxAcceleration")
+            max_decel = dynamic_constrain_node.attrib.get("maxDeceleration")
+            max_speed = dynamic_constrain_node.attrib.get("maxSpeed")
+
+        feature = QgsFeature()
+        feature.setAttributes([
+            man_id,
+            long_type,
+            speed_target,
+            entity_ref,
+            dynamics_shape,
+            dynamics_dimension,
+            dynamics_value,
+            target_type,
+            target_speed,
+            continuous,
+            freespace,
+            max_accel,
+            max_decel,
+            max_speed
+        ])
+        long_man_layer.dataProvider().addFeature(feature)
