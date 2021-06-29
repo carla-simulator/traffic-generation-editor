@@ -11,14 +11,9 @@ import os
 import math
 from qgis.PyQt import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog
-from qgis.utils import iface
-from qgis.core import Qgis, QgsMessageLog, QgsProject, QgsFeature, QgsPointXY, QgsGeometry
-
+from qgis.core import QgsProject, QgsFeature, QgsPointXY, QgsGeometry
 from defusedxml import ElementTree as etree
-# import xml.etree.ElementTree as etree
-
 from .helper_functions import HelperFunctions
-
 import ad_map_access as ad
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -185,30 +180,20 @@ class ImportXOSC():
             entity_node (XML element): Node that contains the entity
         """
         parent_map = {c: p for p in entity_node.iter() for c in p}
-        print(parent_map)
         for scenario_object in entity_node.iter("ScenarioObject"):
             for pedestrian in scenario_object.iter("Pedestrian"):
-                print("Trying out mapping...")
                 parent = parent_map[pedestrian]
-                print("Got the parent! -->", parent.tag, parent.attrib)
                 actor_name = parent.attrib.get("name")
-
                 self.parse_pedestrian(pedestrian, actor_name)
             
             for vehicle in scenario_object.iter("Vehicle"):
-                print("Trying out mapping...")
                 parent = parent_map[vehicle]
-                print("Got the parent! -->", parent.tag, parent.attrib)
                 actor_name = parent.attrib.get("name")
-
                 self.parse_vehicle(vehicle, actor_name)
 
             for props in scenario_object.iter("MiscObject"):
-                print("Trying out mapping...")
                 parent = parent_map[props]
-                print("Got the parent! -->", parent.tag, parent.attrib)
                 actor_name = parent.attrib.get("name")
-
                 self.parse_prop(props, actor_name)
         
     def parse_pedestrian(self, pedestrian, actor_name):
