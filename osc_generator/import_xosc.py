@@ -80,6 +80,7 @@ class ImportXOSC():
         self._root = tree.getroot()
 
         self.parse_osc_metadata()
+        self.parse_paremeter_declarations()
 
         if self._root.findall(".//EnvironmentAction"):
             env_node = self._root.findall(".//EnvironmentAction")[0]
@@ -150,6 +151,29 @@ class ImportXOSC():
             scene_graph_filepath
         ])
         metadata_layer.dataProvider().addFeature(feature)
+    
+    def parse_paremeter_declarations(self):
+        """
+        Parses parameter declarations
+        """
+        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
+        param_name = ""
+        param_type = ""
+        param_value = ""
+
+        param_group_node = self._root.find(".//ParameterDeclarations")
+        for param_node in param_group_node.iter("ParameterDeclaration"):
+            param_name = param_node.attrib.get("name")
+            param_type = param_node.attrib.get("type")
+            param_value = param_node.attrib.get("value")
+            
+            feature = QgsFeature()
+            feature.setAttributes([
+                param_name,
+                param_type,
+                param_value
+            ])
+            param_layer.dataProvider().addFeature(feature)
 
     def parse_enviroment_actions(self, env_node):        
         """
