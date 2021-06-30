@@ -13,7 +13,10 @@ from qgis.PyQt import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from qgis.core import QgsProject, QgsFeature, QgsPointXY, QgsGeometry
 from defusedxml import ElementTree as etree
-from .helper_functions import HelperFunctions
+from .helper_functions import (layer_setup_environment, layer_setup_metadata, layer_setup_vehicle,
+    layer_setup_walker, layer_setup_props, layer_setup_end_eval, layer_setup_maneuvers_and_triggers,
+    layer_setup_maneuvers_lateral, layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_waypoint,
+    layer_setup_parameters, is_float, display_message)
 import ad_map_access as ad
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -48,7 +51,7 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
             read_xosc.import_xosc()
         else:
             message = "No file path was given for importing"
-            HelperFunctions().display_message(message, level="Critical")
+            display_message(message, level="Critical")
 
 
 class ImportXOSC():
@@ -63,17 +66,17 @@ class ImportXOSC():
         """
         Initiates layers in QGIS if they are not already created.
         """
-        HelperFunctions().layer_setup_environment()
-        HelperFunctions().layer_setup_metadata()
-        HelperFunctions().layer_setup_vehicle()
-        HelperFunctions().layer_setup_walker()
-        HelperFunctions().layer_setup_props()
-        HelperFunctions().layer_setup_end_eval()
-        HelperFunctions().layer_setup_maneuvers_and_triggers()
-        HelperFunctions().layer_setup_maneuvers_lateral()
-        HelperFunctions().layer_setup_maneuvers_longitudinal()
-        HelperFunctions().layer_setup_maneuvers_waypoint()
-        HelperFunctions().layer_setup_parameters()
+        layer_setup_environment()
+        layer_setup_metadata()
+        layer_setup_vehicle()
+        layer_setup_walker()
+        layer_setup_props()
+        layer_setup_end_eval()
+        layer_setup_maneuvers_and_triggers()
+        layer_setup_maneuvers_lateral()
+        layer_setup_maneuvers_longitudinal()
+        layer_setup_maneuvers_waypoint()
+        layer_setup_parameters()
 
     def import_xosc(self):
         tree = etree.parse(self._filepath)
@@ -135,7 +138,7 @@ class ImportXOSC():
         scene_graph_filepath = scene_graph_file.attrib.get("filepath")
 
         if not QgsProject.instance().mapLayersByName("Metadata"):
-            HelperFunctions().layer_setup_metadata()
+            layer_setup_metadata()
         
         metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
         current_features = [feat.id() for feat in metadata_layer.getFeatures()]
@@ -260,7 +263,7 @@ class ImportXOSC():
         if init_speed_tag is not None:
             init_speed = init_speed_tag.attrib.get("value")
             # Parse in declared parameter (remove the $)
-            if not HelperFunctions().is_float(init_speed):
+            if not is_float(init_speed):
                 init_speed = init_speed[1:]
         else:
             init_speed = 0
@@ -309,7 +312,7 @@ class ImportXOSC():
         if init_speed_tag is not None:
             init_speed = init_speed_tag.attrib.get("value")
             # Parse in declared parameter (remove the $)
-            if not HelperFunctions().is_float(init_speed):
+            if not is_float(init_speed):
                 init_speed = init_speed[1:]
         else:
             init_speed = 0
@@ -329,7 +332,7 @@ class ImportXOSC():
             message = (f"No vehicle controller agent defined for {actor_name}, using "
                 "'simple_vehicle_control'")
             self._warning_message.append(message)
-            HelperFunctions().display_message(message)
+            display_message(message, level="Warning")
 
         model = vehicle.attrib.get("name")
 
@@ -343,15 +346,17 @@ class ImportXOSC():
         entity_id = self.get_entity_id(vehicle_layer)
         
         feature = QgsFeature()
-        feature.setAttributes([entity_id,
-                               model,
-                               world_pos_heading,
-                               world_pos_x,
-                               world_pos_y,
-                               world_pos_z,
-                               init_speed,
-                               agent,
-                               agent_camera])
+        feature.setAttributes([
+            entity_id,
+            model,
+            world_pos_heading,
+            world_pos_x,
+            world_pos_y,
+            world_pos_z,
+            init_speed,
+            agent,
+            agent_camera
+        ])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
         vehicle_layer.dataProvider().addFeature(feature)
     
@@ -570,7 +575,7 @@ class ImportXOSC():
             if entity_node is None:
                 message = ("Maneuver does not have an entity reference! "
                     "This maneuver will be skipped.")
-                HelperFunctions().display_message(message, level="Info")
+                display_message(message, level="Info")
                 self._warning_message.append(message)
                 break
             entity = entity_node.attrib.get("entityRef")
@@ -593,7 +598,7 @@ class ImportXOSC():
             if infra_act_node is None:
                 message = ("Infrastructure Action not found! "
                     "Import only supports infrastructure action currently.")
-                HelperFunctions().display_message(message, level="Info")
+                display_message(message, level="Info")
                 self._warning_message.append(message)
             else:
                 man_type = "Global Actions"
@@ -907,7 +912,7 @@ class ImportXOSC():
             else:
                 message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
                     f"{str(man_id)} Entity: {entity})")
-                HelperFunctions().display_message(message, level="Info")
+                display_message(message, level="Info")
                 self._warning_message.append(message)
                 break
             

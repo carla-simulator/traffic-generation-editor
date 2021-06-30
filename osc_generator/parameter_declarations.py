@@ -10,14 +10,12 @@ OpenSCENARIO Generator - Parameter Declarations
 import os
 from osc_generator.helper_functions import HelperFunctions
 # pylint: disable=no-name-in-module, no-member
-from qgis.core import (Qgis, QgsFeature, QgsField, QgsMessageLog, QgsProject,
-                       QgsVectorLayer, QgsExpression, QgsFeatureRequest)
-from qgis.gui import QgsMapTool
+from qgis.core import Qgis, QgsFeature, QgsProject, QgsFeatureRequest
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.utils import iface
 from PyQt5.QtWidgets import QMessageBox
-from .helper_functions import HelperFunctions
+from .helper_functions import layer_setup_parameters, display_message
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'parameter_declarations.ui'))
@@ -37,11 +35,9 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.setupUi(self)
         self.add_param_button.pressed.connect(self.add_parameters)
 
-        self._param_layer = None
-        self._param_layer_data_input = None
         self._canvas = iface.mapCanvas()
 
-        HelperFunctions().layer_setup_parameters()
+        layer_setup_parameters()
         self._param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
         self._param_layer_data_input = self._param_layer.dataProvider()
 
@@ -66,8 +62,7 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.insert_parameters(param_name, param_type, param_value)
         else:
             message = f"Parameter '{param_name}' exists!"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Warning)
-            QgsMessageLog.logMessage(message, level=Qgis.Warning)
+            display_message(message, level="Warning")
 
             query = f'"Parameter Name" = \'{param_name}\''
             request = QgsFeatureRequest().setFilterExpression(query)
@@ -117,9 +112,9 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         Inserts parameters into attributes table
 
         Args:
-            param_name ([string]): Parameter name
-            param_type ([string]): Parameter type
-            param_value ([string]): Parameter value
+            param_name (string): Parameter name
+            param_type (string): Parameter type
+            param_value (string): Parameter value
         """
         feature = QgsFeature()
         feature.setAttributes([param_name,
@@ -128,10 +123,15 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._param_layer_data_input.addFeature(feature)
 
         message = f"Parameter '{param_name}' added!"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
     def delete_existing_parameter(self, param_name):
+        """
+        Delete existing parameter from attributes table
+
+        Args:
+            param_name (string): Parameter name to be deleted
+        """
         query = f'"Parameter Name" = \'{param_name}\''
         feature_request = QgsFeatureRequest().setFilterExpression(query)
         features_to_delete = self._param_layer.getFeatures(feature_request)

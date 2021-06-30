@@ -12,15 +12,13 @@ import os
 import random
 # pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QInputDialog
-from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsMessageLog,
-    QgsPalLayerSettings, QgsPointXY, QgsProject, QgsVectorLayer,
-    QgsVectorLayerSimpleLabeling, QgsFeatureRequest, QgsSpatialIndex)
+from qgis.core import (Qgis, QgsFeature, QgsGeometry, QgsMessageLog, QgsPointXY,
+    QgsProject, QgsFeatureRequest, QgsSpatialIndex)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.utils import iface
-
-from .helper_functions import HelperFunctions
+from .helper_functions import layer_setup_walker, get_entity_heading, is_float, verify_parameters
 
 # AD Map plugin
 import ad_map_access as ad
@@ -47,40 +45,7 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.walker_labels_button.pressed.connect(self.toggle_labels)
 
         self._labels_on = True
-        self._walker_layer = None
-        self.layer_setup()
-
-    def layer_setup(self):
-        """
-        Sets up layer for pedestrians
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-        if not QgsProject.instance().mapLayersByName("Pedestrians"):
-            walker_layer = QgsVectorLayer("Polygon", "Pedestrians", "memory")
-            QgsProject.instance().addMapLayer(walker_layer, False)
-            osc_layer.addLayer(walker_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("id", QVariant.Int),
-                               QgsField("Walker", QVariant.String),
-                               QgsField("Orientation", QVariant.Double),
-                               QgsField("Pos X", QVariant.Double),
-                               QgsField("Pos Y", QVariant.Double),
-                               QgsField("Pos Z", QVariant.Double),
-                               QgsField("Init Speed", QVariant.String)]
-            data_input = walker_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            walker_layer.updateFields()
-
-            label_settings = QgsPalLayerSettings()
-            label_settings.isExpression = True
-            label_settings.fieldName = "concat('Pedestrian_', \"id\")"
-            walker_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-            walker_layer.setLabelsEnabled(True)
-
-            iface.messageBar().pushMessage("Info", "Pedestrian layer added", level=Qgis.Info)
-            QgsMessageLog.logMessage("Pedestrian layer added", level=Qgis.Info)
-
+        layer_setup_walker()
         self._walker_layer = QgsProject.instance().mapLayersByName("Pedestrians")[0]
 
     def toggle_labels(self):
@@ -122,11 +87,11 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if self.walker_orientation_use_lane.isChecked():
             orientation = None
         else:
-            if HelperFunctions().is_float(self.walker_orientation.text()):
+            if is_float(self.walker_orientation.text()):
                 walker_orientation = float(self.walker_orientation.text())
                 walker_orientation = math.radians(walker_orientation)
             else:
-                verification = HelperFunctions().verify_parameters(param=self.walker_orientation.text())
+                verification = verify_parameters(param=self.walker_orientation.text())
                 if len(verification) == 0:
                     # UI Information
                     message = f"Parameter {self.walker_orientation.text()} does not exist!"
@@ -137,10 +102,10 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     orientation = math.radians(orientation)
 
         init_speed = None
-        if HelperFunctions().is_float(self.walker_init_speed.text()):
+        if is_float(self.walker_init_speed.text()):
             init_speed = float(self.walker_init_speed.text())
         else:
-            verification = HelperFunctions().verify_parameters(param=self.walker_init_speed.text())
+            verification = verify_parameters(param=self.walker_init_speed.text())
             if len(verification) == 0:
                 # UI Information
                 message = f"Parameter {self.walker_init_speed.text()} does not exist!"
@@ -245,7 +210,7 @@ class PointTool(QgsMapTool):
 
         # Get lane heading and save attribute (when not manually specified)
         if self._use_lane_heading is True:
-            self._pedestrian_attributes["Orientation"] = HelperFunctions().get_pedestrian_heading(geopoint)
+            self._pedestrian_attributes["Orientation"] = get_entity_heading(geopoint)
 
         # Add points only if user clicks within lane boundaries (Orientation is not None)
         if self._pedestrian_attributes["Orientation"] is not None:

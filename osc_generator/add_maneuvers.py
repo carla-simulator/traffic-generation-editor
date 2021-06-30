@@ -11,15 +11,17 @@ import os
 import math
 # pylint: disable=no-name-in-module, no-member
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, pyqtSignal, QVariant
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.gui import QgsMapTool
 from qgis.utils import iface
-from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField,
-    QgsFeature, QgsGeometry, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsTextFormat, QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
+from qgis.core import (QgsProject, Qgis, QgsFeature, QgsGeometry, 
+    QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsTextFormat,
+    QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QInputDialog
-from .helper_functions import HelperFunctions
+from .helper_functions import (layer_setup_maneuvers_waypoint, layer_setup_maneuvers_and_triggers,
+    layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_lateral, verify_parameters, is_float,
+    display_message)
 
 # AD Map plugin
 import ad_map_access as ad
@@ -61,10 +63,10 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.start_entity_choose_position_button.pressed.connect(self.get_world_position)
         self.stop_entity_choose_position_button.pressed.connect(self.get_world_position)
 
-        HelperFunctions().layer_setup_maneuvers_waypoint()
-        HelperFunctions().layer_setup_maneuvers_and_triggers()
-        HelperFunctions().layer_setup_maneuvers_longitudinal()
-        HelperFunctions().layer_setup_maneuvers_lateral()
+        layer_setup_maneuvers_waypoint()
+        layer_setup_maneuvers_and_triggers()
+        layer_setup_maneuvers_longitudinal()
+        layer_setup_maneuvers_lateral()
         self._waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
         self._maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
         self._long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
@@ -704,65 +706,59 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._maneuver_layer.dataProvider().addFeature(feature)
 
         message = "Maneuver added"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
     def save_longitudinal_attributes(self):
         """
         Gets longudinal maneuver attributes and saves into QGIS attributes table.
         """
-        if self.is_float(self.long_dynamics_value.text()):
+        if is_float(self.long_dynamics_value.text()):
             long_dynamics_value = float(self.long_dynamics_value.text())
         else:
-            verification = self.verify_parameters(self.long_dynamics_value.text())
+            verification = verify_parameters(self.long_dynamics_value.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_dynamics_value.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_dynamics_value = self.long_dynamics_value.text()
 
-        if self.is_float(self.long_target_speed_value.text()):
+        if is_float(self.long_target_speed_value.text()):
             long_target_speed_value = float(self.long_target_speed_value.text())
         else:
-            verification = self.verify_parameters(self.long_target_speed_value.text())
+            verification = verify_parameters(self.long_target_speed_value.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_target_speed_value.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_target_speed_value = self.long_target_speed_value.text()
         
-        if self.is_float(self.long_max_accel.text()):
+        if is_float(self.long_max_accel.text()):
             long_max_accel = float(self.long_max_accel.text())
         else:
-            verification = self.verify_parameters(self.long_max_accel.text())
+            verification = verify_parameters(self.long_max_accel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_max_accel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_max_accel = self.long_max_accel.text()
 
-        if self.is_float(self.long_max_decel.text()):
+        if is_float(self.long_max_decel.text()):
             long_max_decel = float(self.long_max_decel.text())
         else:
-            verification = self.verify_parameters(self.long_max_decel.text())
+            verification = verify_parameters(self.long_max_decel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_max_decel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_max_decel = self.long_max_decel.text()
 
-        if self.is_float(self.long_max_speed.text()):
+        if is_float(self.long_max_speed.text()):
             long_max_speed = float(self.long_max_speed.text())
         else:
-            verification = self.verify_parameters(self.long_max_speed.text())
+            verification = verify_parameters(self.long_max_speed.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_max_speed.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_max_speed = self.long_max_speed.text()
 
@@ -784,65 +780,59 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._long_man_layer.dataProvider().addFeature(feature)
 
         message = "Maneuver added"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
     def save_lateral_attributes(self):
         """
         Gets lateral maneuver attributes and saves into QGIS attributes table.
         """
-        if self.is_float(self.lateral_dynamics_value.text()):
+        if is_float(self.lateral_dynamics_value.text()):
             lateral_dynamics_value = float(self.lateral_dynamics_value.text())
         else:
-            verification = self.verify_parameters(self.lateral_dynamics_value.text())
+            verification = verify_parameters(self.lateral_dynamics_value.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_dynamics_value.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_dynamics_value = self.lateral_dynamics_value.text()
 
-        if self.is_float(self.lateral_max_lat_accel.text()):
+        if is_float(self.lateral_max_lat_accel.text()):
             lateral_max_lat_accel = float(self.lateral_max_lat_accel.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_lat_accel.text())
+            verification = verify_parameters(self.lateral_max_lat_accel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_lat_accel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_lat_accel = self.lateral_max_lat_accel.text()
 
-        if self.is_float(self.lateral_max_accel.text()):
+        if is_float(self.lateral_max_accel.text()):
             lateral_max_accel = float(self.lateral_max_accel.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_accel.text())
+            verification = verify_parameters(self.lateral_max_accel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_accel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_accel = self.lateral_max_accel.text()
 
-        if self.is_float(self.lateral_max_decel.text()):
+        if is_float(self.lateral_max_decel.text()):
             lateral_max_decel = float(self.lateral_max_decel.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_decel.text())
+            verification = verify_parameters(self.lateral_max_decel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_decel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_decel = self.lateral_max_decel.text()
 
-        if self.is_float(self.lateral_max_speed.text()):
+        if is_float(self.lateral_max_speed.text()):
             lateral_max_speed = float(self.lateral_max_speed.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_speed.text())
+            verification = verify_parameters(self.lateral_max_speed.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_speed.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_speed = self.lateral_max_speed.text()
 
@@ -862,46 +852,8 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._lat_man_layer.dataProvider().addFeature(feature)
 
         message = "Maneuver added"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
-    def verify_parameters(self, param):
-        """
-        Checks Parameter Declarations attribute table to verify parameter exists
-
-        Args:
-            param (string): name of parameter to check against
-
-        Returns:
-            feature (dict): parameter definitions
-        """
-        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
-        query = f'"Parameter Name" = \'{param}\''
-        feature_request = QgsFeatureRequest().setFilterExpression(query)
-        features = param_layer.getFeatures(feature_request)
-        feature = {}
-
-        for feat in features:
-            feature["Type"] = feat["Type"]
-            feature["Value"] = feat["Value"]
-
-        return feature
-
-    def is_float(self, value):
-        """
-        Checks value if it can be converted to float.
-
-        Args:
-            value (string): value to check if can be converted to float
-
-        Returns:
-            bool: True if float, False if not
-        """
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
 
 #pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):
@@ -1050,8 +1002,7 @@ class AddManeuverAttributes():
 
         if lanes_detected == 0:
             message = "Click point is too far from valid lane"
-            iface.messageBar().pushMessage("Error", message, level=Qgis.Critical)
-            QgsMessageLog.logMessage(message, level=Qgis.Critical)
+            display_message(message, level="Critical")
             return None
         elif lanes_detected == 1:
             for point in admap_matched_points:

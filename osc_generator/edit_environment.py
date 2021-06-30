@@ -9,11 +9,11 @@ OpenSCENARIO Generator - Edit Environment
 """
 import os
 # pylint: disable=no-name-in-module, no-member
-from qgis.core import (Qgis, QgsFeature, QgsField, QgsMessageLog,
-                       QgsProject, QgsVectorLayer)
+from qgis.core import Qgis, QgsFeature, QgsProject
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import QVariant, pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 from qgis.utils import iface
+from .helper_functions import layer_setup_environment, display_message
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'edit_environment_widget.ui'))
@@ -37,36 +37,8 @@ class EditEnvironmentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._layer = None
         self._data_provider = None
 
-        self.layer_setup()
+        layer_setup_environment()
         self.set_layer()
-
-    def layer_setup(self):
-        """
-        Sets up layer for environment
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-        if not QgsProject.instance().mapLayersByName("Environment"):
-            env_layer = QgsVectorLayer("None", "Environment", "memory")
-            QgsProject.instance().addMapLayer(env_layer, False)
-            osc_layer.addLayer(env_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Datetime", QVariant.String),
-                               QgsField("Datetime Animation", QVariant.Bool),
-                               QgsField("Cloud State", QVariant.String),
-                               QgsField("Fog Visual Range", QVariant.Double),
-                               QgsField("Sun Intensity", QVariant.Double),
-                               QgsField("Sun Azimuth", QVariant.Double),
-                               QgsField("Sun Elevation", QVariant.Double),
-                               QgsField("Precipitation Type", QVariant.String),
-                               QgsField("Precipitation Intensity", QVariant.Double)]
-            data_input = env_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            env_layer.updateFields()
-            # UI Information
-            message = "Environment layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
 
     def closeEvent(self, event):
         """QtDockWidget signals for closing"""
@@ -112,3 +84,6 @@ class EditEnvironmentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                sun_intensity, sun_azimuth, sun_elevation,
                                percip_type, percip_intensity])
         self._data_provider.addFeature(feature)
+
+        message = "Environment variables added!"
+        display_message(message, level="Info")

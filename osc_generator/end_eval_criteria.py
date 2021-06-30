@@ -10,12 +10,11 @@ OpenSCENARIO Generator - Add End Evaluation KPIs
 import os.path
 
 # pylint: disable=no-name-in-module, no-member
-from qgis.core import Qgis, QgsFeature, QgsField, QgsMessageLog, QgsProject, QgsVectorLayer
+from qgis.core import Qgis, QgsFeature, QgsProject
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import QVariant
 from qgis.utils import iface
+from .helper_functions import layer_setup_end_eval
 
-from .helper_functions import HelperFunctions
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'end_eval_criteria_dialog.ui'))
@@ -60,7 +59,7 @@ class EndEvalCriteriaDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def save_end_eval_kpis(self):
         """Executes ingestion of dialog form data into QGIS layer"""
-        HelperFunctions().layer_setup_end_eval()
+        layer_setup_end_eval()
         layer = QgsProject.instance().mapLayersByName("End Evaluation KPIs")[0]
         self._data_provider = layer.dataProvider()
         # Clear existing attributes

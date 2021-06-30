@@ -11,17 +11,16 @@ import math
 import os
 
 # pylint: disable=no-name-in-module, no-member
-import ad_map_access as ad
 from PyQt5.QtWidgets import QInputDialog
-from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry, QgsMessageLog, QgsPointXY, 
-    QgsProject, QgsVectorLayer, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsFeatureRequest, QgsSpatialIndex)
+from qgis.core import (Qgis, QgsFeature, QgsGeometry, QgsMessageLog, QgsPointXY, 
+    QgsProject, QgsFeatureRequest, QgsSpatialIndex)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.utils import iface
+from .helper_functions import layer_setup_vehicle
 
-from .helper_functions import HelperFunctions
+import ad_map_access as ad
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_vehicles_widget.ui'))
@@ -47,7 +46,7 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._labels_on = True
         self._vehicle_layer_ego = None
         self._vehicle_layer = None
-        HelperFunctions().layer_setup_vehicle()
+        layer_setup_vehicle()
 
         self._vehicle_layer_ego = QgsProject.instance().mapLayersByName("Vehicles - Ego")[0]
         self._vehicle_layer = QgsProject.instance().mapLayersByName("Vehicles")[0]
