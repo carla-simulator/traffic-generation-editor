@@ -101,23 +101,18 @@ class ImportXOSC():
             story_node = self._root.findall(".//Story")[0]
             self.parse_maneuvers(story_node)
         
-        text = f"Successfully imported OpenSCENARIO file {self._filepath}"
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
+        if self._warning_message:
+            msg.setIcon(QMessageBox.Warning)
+            text = f"Imported OpenSCENARIO file {self._filepath} has warnings!\n\n"
+            text += "\n".join(self._warning_message)
+        else:
+            msg.setIcon(QMessageBox.Information)
+            text = f"Successfully imported OpenSCENARIO file {self._filepath}"
         msg.setText(text)
         msg.setWindowTitle("OpenSCENARIO Import")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec()
-
-        if self._warning_message:
-            warn_msg = QMessageBox()
-            warn_msg.setIcon(QMessageBox.Warning)
-            warn_msg_text = "Imported OpenSCENARIO file has warnings!\n\n"
-            warn_msg_text += "\n".join(self._warning_message)
-            warn_msg.setText(warn_msg_text)
-            warn_msg.setWindowTitle("OpenSCENARIO Import Warnings")
-            warn_msg.setStandardButtons(QMessageBox.Ok)
-            warn_msg.exec()
 
     def parse_osc_metadata(self):
         """
