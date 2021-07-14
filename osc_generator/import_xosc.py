@@ -256,11 +256,21 @@ class ImportXOSC():
         query = f".//Private[@entityRef='{actor_name}']"
         found_init = self._root.find(query)
 
+        world_pos_x = 0
+        world_pos_y = 0
+        world_pos_z = 0
+        world_pos_heading = 0
         world_pos = found_init.find(".//WorldPosition")
-        world_pos_x = world_pos.attrib.get("x")
-        world_pos_y = world_pos.attrib.get("y")
-        world_pos_z = world_pos.attrib.get("z")
-        world_pos_heading = world_pos.attrib.get("h")
+        if world_pos is not None:
+            world_pos_x = world_pos.attrib.get("x")
+            world_pos_y = world_pos.attrib.get("y")
+            world_pos_z = world_pos.attrib.get("z")
+            world_pos_heading = world_pos.attrib.get("h")
+        else:
+            message = (f"Non WorldPosition waypoints are not supported (Entity: {actor_name})"
+                "Defaulting to WorldPos 0, 0, 0")
+            display_message(message, level="Info")
+            self._warning_message.append(message)
         
         init_speed_tag = found_init.find(".//AbsoluteTargetSpeed")
         if init_speed_tag is not None:
@@ -305,11 +315,21 @@ class ImportXOSC():
         query = f".//Private[@entityRef='{actor_name}']"
         found_init = self._root.find(query)
 
+        world_pos_x = 0
+        world_pos_y = 0
+        world_pos_z = 0
+        world_pos_heading = 0
         world_pos = found_init.find(".//WorldPosition")
-        world_pos_x = world_pos.attrib.get("x")
-        world_pos_y = world_pos.attrib.get("y")
-        world_pos_z = world_pos.attrib.get("z")
-        world_pos_heading = world_pos.attrib.get("h")
+        if world_pos is not None:
+            world_pos_x = world_pos.attrib.get("x")
+            world_pos_y = world_pos.attrib.get("y")
+            world_pos_z = world_pos.attrib.get("z")
+            world_pos_heading = world_pos.attrib.get("h")
+        else:
+            message = (f"Non WorldPosition waypoints are not supported (Entity: {actor_name})"
+                "Defaulting to WorldPos 0, 0, 0")
+            display_message(message, level="Info")
+            self._warning_message.append(message)
         
         init_speed_tag = found_init.find(".//AbsoluteTargetSpeed")
         if init_speed_tag is not None:
@@ -375,12 +395,22 @@ class ImportXOSC():
         query = f".//Private[@entityRef='{actor_name}']"
         found_init = self._root.find(query)
 
+        world_pos_x = 0
+        world_pos_y = 0
+        world_pos_z = 0
+        world_pos_heading = 0
         world_pos = found_init.find(".//WorldPosition")
-        world_pos_x = world_pos.attrib.get("x")
-        world_pos_y = world_pos.attrib.get("y")
-        world_pos_z = world_pos.attrib.get("z")
-        world_pos_heading = world_pos.attrib.get("h")
-        
+        if world_pos is not None:
+            world_pos_x = world_pos.attrib.get("x")
+            world_pos_y = world_pos.attrib.get("y")
+            world_pos_z = world_pos.attrib.get("z")
+            world_pos_heading = world_pos.attrib.get("h")
+        else:
+            message = (f"Non WorldPosition waypoints are not supported (Entity: {actor_name})"
+                "Defaulting to WorldPos 0, 0, 0")
+            display_message(message, level="Info")
+            self._warning_message.append(message)
+
         model = prop.attrib.get("name")
         model_type = prop.attrib.get("miscObjectCategory")
         mass = prop.attrib.get("mass")
@@ -683,6 +713,11 @@ class ImportXOSC():
                             start_world_pos_y = float(world_pos_node.attrib.get("y"))
                             start_world_pos_z = float(world_pos_node.attrib.get("z"))
                             start_world_pos_heading = float(world_pos_node.attrib.get("h"))
+                        else:
+                            message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
+                                f"{str(man_id)} Entity: {entity}) Defaulting to WorldPos 0, 0, 0")
+                            display_message(message, level="Info")
+                            self._warning_message.append(message)
 
                 else:
                     condition_node = start_trigger_node.find(".//ConditionGroup/Condition/ByValueCondition")
@@ -790,6 +825,11 @@ class ImportXOSC():
                             stop_world_pos_y = float(world_pos_node.attrib.get("y"))
                             stop_world_pos_z = float(world_pos_node.attrib.get("z"))
                             stop_world_pos_heading = float(world_pos_node.attrib.get("h"))
+                        else:
+                            message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
+                                f"{str(man_id)} Entity: {entity}) Defaulting to WorldPos 0, 0, 0")
+                            display_message(message, level="Info")
+                            self._warning_message.append(message)
 
                 else:
                     condition_node = stop_trigger_node.find(".//ConditionGroup/Condition/ByValueCondition")
