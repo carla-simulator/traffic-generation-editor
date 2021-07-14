@@ -88,18 +88,26 @@ class ImportXOSC():
         if self._root.findall(".//EnvironmentAction"):
             env_node = self._root.findall(".//EnvironmentAction")[0]
             self.parse_enviroment_actions(env_node)
+        else:
+            self._warning_message.append("No environment actions found")
         
         if self._root.findall(".//Entities"):
             entity_node = self._root.findall(".//Entities")[0]
             self.parse_entities(entity_node)
+        else:
+            self._warning_message.append("No entities found")
         
         if self._root.findall(".//Storyboard/StopTrigger/ConditionGroup"):
             end_eval_node = self._root.findall(".//Storyboard/StopTrigger")[0]
             self.parse_end_evals(end_eval_node)
+        else:
+            self._warning_message.append("No end evaluation KPIs found")
 
         if self._root.findall(".//Story"):
             story_node = self._root.findall(".//Story")[0]
             self.parse_maneuvers(story_node)
+        else:
+            self._warning_message.append("No maneuvers found")
         
         msg = QMessageBox()
         if self._warning_message:
