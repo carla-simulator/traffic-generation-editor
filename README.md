@@ -39,7 +39,7 @@
 ### Prerequisites
 - Python 3.6
 - [QGIS 3](https://www.qgis.org/)
-- [CARLA AD Map plugin version 2.4.2 and above](https://github.com/carla-simulator/map/releases)
+- [CARLA AD Map plugin version 2.4.5 and above](https://github.com/carla-simulator/map/releases)
 - [CARLA](https://github.com/carla-simulator/carla/releases/) (Version >= 0.9.10)
 - [CARLA Scenario Runner](https://github.com/carla-simulator/scenario_runner/releases)
 
