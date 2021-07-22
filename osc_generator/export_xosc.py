@@ -31,6 +31,7 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
         # UI element signals
         self.select_path_button.pressed.connect(self.select_output)
         self.map_selection.currentTextChanged.connect(self.user_defined_map)
+        self.load_road_network()
 
     def select_output(self):
         """Prompts user to select output file"""
@@ -63,6 +64,21 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
             self.map_selection_user_defined.setEnabled(True)
         else:
             self.map_selection_user_defined.setDisabled(True)
+
+    def load_road_network(self):
+        """Auto populates road network if available"""
+        if QgsProject.instance().mapLayersByName("Metadata"):
+            metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
+            for feature in metadata_layer.getFeatures():
+                road_network = feature["Road Network"]
+            
+            index = self.map_selection.findText(road_network)
+            if index == -1:
+                self.map_selection.setCurrentText("User Defined")
+                self.map_selection_user_defined.setText(road_network)
+            else:
+                self.map_selection.setCurrentIndex(index)
+
 
 class GenerateXML():
     """
@@ -335,6 +351,7 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
                 init_speed = feature["Init Speed"]
                 agent = feature["Agent"]
                 agent_camera = str(feature["Agent Camera"]).lower()
@@ -344,7 +361,7 @@ class GenerateXML():
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
                 self.vehicle_controller(entity, str(feature["id"]), agent, agent_camera, is_ego=True)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
@@ -357,6 +374,7 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
                 init_speed = feature["Init Speed"]
                 agent = feature["Agent"]
                 agent_camera = str(feature["Agent Camera"]).lower()
@@ -366,7 +384,7 @@ class GenerateXML():
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", str(veh_id))
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
                 self.vehicle_controller(entity, str(feature["id"]), agent, agent_camera, is_ego=False)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
@@ -379,11 +397,12 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
                 init_speed = feature["Init Speed"]
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", ped_id)
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
                 if init_speed != 0:
                     self.set_init_speed(entity, init_speed)
 
@@ -395,12 +414,13 @@ class GenerateXML():
                 orientation = feature["Orientation"]
                 pos_x = feature["Pos X"]
                 pos_y = feature["Pos Y"]
+                pos_z = feature["Pos Z"]
 
                 entity = etree.SubElement(init_act, "Private")
                 entity.set("entityRef", prop_id)
-                self.entity_teleport_action(entity, orientation, pos_x, pos_y)
+                self.entity_teleport_action(entity, orientation, pos_x, pos_y, pos_z)
 
-    def entity_teleport_action(self, entity, orientation, pos_x, pos_y):
+    def entity_teleport_action(self, entity, orientation, pos_x, pos_y, pos_z):
         """
         Writes OpenSCENARIO tags for entity teleport action
 
@@ -409,6 +429,7 @@ class GenerateXML():
             orientation: [double] orientation of entity
             pos_x: [double] position x of entity (in meters)
             pos_y: [double] position y of entity (in meters)
+            pos_z: [double] position z of entity (in meters)
         """
         private_act = etree.SubElement(entity, "PrivateAction")
         teleport_action = etree.SubElement(private_act, "TeleportAction")
@@ -416,7 +437,7 @@ class GenerateXML():
         teleport_worldpos = etree.SubElement(teleport_pos, "WorldPosition")
         teleport_worldpos.set("x", str(pos_x))
         teleport_worldpos.set("y", str(pos_y))
-        teleport_worldpos.set("z", "0.2")
+        teleport_worldpos.set("z", str(pos_z))
         teleport_worldpos.set("h", str(orientation))
 
     def vehicle_controller(self, entity, veh_id, agent, agent_camera, is_ego):
@@ -925,7 +946,7 @@ class GenerateXML():
                 world_position = etree.SubElement(position, "WorldPosition")
                 world_position.set("x", str(feature["Start - WorldPos: X"]))
                 world_position.set("y", str(feature["Start - WorldPos: Y"]))
-                world_position.set("z", "0")
+                world_position.set("z", str(feature["Start - WorldPos: Z"]))
                 world_position.set("h", str(feature["Start - WorldPos: Heading"]))
 
         elif feature["Start Trigger"] == "by Value":
@@ -1025,7 +1046,7 @@ class GenerateXML():
                 world_position = etree.SubElement(position, "WorldPosition")
                 world_position.set("x", str(feature["Stop - WorldPos: X"]))
                 world_position.set("y", str(feature["Stop - WorldPos: Y"]))
-                world_position.set("z", "0")
+                world_position.set("z", str(feature["Stop - WorldPos: Z"]))
                 world_position.set("h", str(feature["Stop - WorldPos: Heading"]))
 
         elif feature["Stop Trigger"] == "by Value":
@@ -1061,7 +1082,6 @@ class GenerateXML():
             if feature["Stop - Value: Condition"] == "TrafficSignalControllerCondition":
                 value_cond_element.set("trafficSignalControllerRef", feature["Value: TController Ref"])
                 value_cond_element.set("phase", feature["Stop - Value: TController Phase"])
-
 
     def get_story_start_trigger(self, act):
         """
@@ -1147,20 +1167,15 @@ class GenerateXML():
         xosc_file.write(reparsed_xml)
         xosc_file.close()
 
-        text = f"Successfully exported OpenSCENARIO file to {self._filepath}"
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
+        if self._warning_message:
+            msg.setIcon(QMessageBox.Warning)
+            text = f"Exported OpenSCENARIO file {self._filepath} has warnings!\n\n"
+            text += "\n".join(self._warning_message)
+        else:
+            msg.setIcon(QMessageBox.Information)
+            text = f"Successfully exported OpenSCENARIO file to {self._filepath}"
         msg.setText(text)
         msg.setWindowTitle("OpenSCENARIO Export")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec()
-
-        if self._warning_message:
-            warn_msg = QMessageBox()
-            warn_msg.setIcon(QMessageBox.Warning)
-            warn_msg_text = "Exported OpenSCENARIO file has warnings!\n\n"
-            warn_msg_text += "\n".join(self._warning_message)
-            warn_msg.setText(warn_msg_text)
-            warn_msg.setWindowTitle("OpenSCENARIO Export Warnings")
-            warn_msg.setStandardButtons(QMessageBox.Ok)
-            warn_msg.exec()

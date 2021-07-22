@@ -11,14 +11,17 @@ import os
 import math
 # pylint: disable=no-name-in-module, no-member
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, pyqtSignal, QVariant
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.gui import QgsMapTool
 from qgis.utils import iface
-from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField,
-    QgsFeature, QgsGeometry, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsTextFormat, QgsTextBackgroundSettings)
+from qgis.core import (QgsProject, Qgis, QgsFeature, QgsGeometry, 
+    QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsTextFormat,
+    QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QInputDialog
+from .helper_functions import (layer_setup_maneuvers_waypoint, layer_setup_maneuvers_and_triggers,
+    layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_lateral, verify_parameters, is_float,
+    display_message)
 
 # AD Map plugin
 import ad_map_access as ad
@@ -60,204 +63,21 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.start_entity_choose_position_button.pressed.connect(self.get_world_position)
         self.stop_entity_choose_position_button.pressed.connect(self.get_world_position)
 
-        self._waypoint_layer = None
-        self._maneuver_layer = None
-        self._long_man_layer = None
-        self._lat_man_layer = None
+        layer_setup_maneuvers_waypoint()
+        layer_setup_maneuvers_and_triggers()
+        layer_setup_maneuvers_longitudinal()
+        layer_setup_maneuvers_lateral()
+        self._waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
+        self._maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
+        self._long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+        self._lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
         self._man_id = None
         self._traffic_labels_on = False
         self._traffic_labels_setup = False
         self._traffic_lights_layer = None
-        self.layer_setup()
+
         self.refresh_entity()
         self.refresh_traffic_lights()
-
-    def layer_setup(self):
-        """
-        Sets up layers for maneuvers
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-
-        # Waypoint maneuvers
-        if not QgsProject.instance().mapLayersByName("Waypoint Maneuvers"):
-            waypoint_layer = QgsVectorLayer("Point", "Waypoint Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(waypoint_layer, False)
-            osc_layer.addLayer(waypoint_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
-                               QgsField("Entity", QVariant.String),
-                               QgsField("Waypoint No", QVariant.Int),
-                               QgsField("Orientation", QVariant.Double),
-                               QgsField("Pos X", QVariant.Double),
-                               QgsField("Pos Y", QVariant.Double),
-                               QgsField("Route Strategy", QVariant.String)]
-            data_input = waypoint_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            waypoint_layer.updateFields()
-
-            message = "Waypoint maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing waypoint maneuver layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._waypoint_layer = QgsProject.instance().mapLayersByName("Waypoint Maneuvers")[0]
-        label_settings = QgsPalLayerSettings()
-        label_settings.isExpression = True
-        label_name = "concat('ManID: ', \"Maneuver ID\", ' ', \"Entity\", ' - ', \"Waypoint No\")"
-        label_settings.fieldName = label_name
-        self._waypoint_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-        self._waypoint_layer.setLabelsEnabled(True)
-
-        # Maneuvers + Start Triggers + Stop Triggers
-        if not QgsProject.instance().mapLayersByName("Maneuvers"):
-            maneuver_layer = QgsVectorLayer("None", "Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(maneuver_layer, False)
-            osc_layer.addLayer(maneuver_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("id", QVariant.Int),
-                               QgsField("Maneuver Type", QVariant.String),
-                               QgsField("Entity", QVariant.String),
-                               QgsField("Entity: Maneuver Type", QVariant.String),
-                               # Global Actions
-                               QgsField("Global: Act Type", QVariant.String),
-                               QgsField("Infra: Traffic Light ID", QVariant.Int),
-                               QgsField("Infra: Traffic Light State", QVariant.String),
-                               # Start Triggers
-                               QgsField("Start Trigger", QVariant.String),
-                               QgsField("Start - Entity: Condition", QVariant.String),
-                               QgsField("Start - Entity: Ref Entity", QVariant.String),
-                               QgsField("Start - Entity: Duration", QVariant.Double),
-                               QgsField("Start - Entity: Value", QVariant.Double),
-                               QgsField("Start - Entity: Rule", QVariant.String),
-                               QgsField("Start - Entity: RelDistType", QVariant.String),
-                               QgsField("Start - Entity: Freespace", QVariant.Bool),
-                               QgsField("Start - Entity: Along Route", QVariant.Bool),
-                               QgsField("Start - Value: Condition", QVariant.String),
-                               QgsField("Start - Value: Param Ref", QVariant.String),
-                               QgsField("Start - Value: Name", QVariant.String),
-                               QgsField("Start - Value: DateTime", QVariant.String),
-                               QgsField("Start - Value: Value", QVariant.Double),
-                               QgsField("Start - Value: Rule", QVariant.String),
-                               QgsField("Start - Value: State", QVariant.String),
-                               QgsField("Start - Value: Sboard Type", QVariant.String),
-                               QgsField("Start - Value: Sboard Element", QVariant.String),
-                               QgsField("Start - Value: Sboard State", QVariant.String),
-                               QgsField("Start - Value: TController Ref", QVariant.String),
-                               QgsField("Start - Value: TController Phase", QVariant.String),
-                               QgsField("Start - WorldPos: Tolerance", QVariant.Double),
-                               QgsField("Start - WorldPos: X", QVariant.Double),
-                               QgsField("Start - WorldPos: Y", QVariant.Double),
-                               QgsField("Start - WorldPos: Heading", QVariant.Double),
-                               # Stop Triggers
-                               QgsField("Stop Trigger Enabled", QVariant.Bool),
-                               QgsField("Stop Trigger", QVariant.String),
-                               QgsField("Stop - Entity: Condition", QVariant.String),
-                               QgsField("Stop - Entity: Ref Entity", QVariant.String),
-                               QgsField("Stop - Entity: Duration", QVariant.Double),
-                               QgsField("Stop - Entity: Value", QVariant.Double),
-                               QgsField("Stop - Entity: Rule", QVariant.String),
-                               QgsField("Stop - Entity: RelDistType", QVariant.String),
-                               QgsField("Stop - Entity: Freespace", QVariant.Bool),
-                               QgsField("Stop - Entity: Along Route", QVariant.Bool),
-                               QgsField("Stop - Value: Condition", QVariant.String),
-                               QgsField("Stop - Value: Param Ref", QVariant.String),
-                               QgsField("Stop - Value: Name", QVariant.String),
-                               QgsField("Stop - Value: DateTime", QVariant.String),
-                               QgsField("Stop - Value: Value", QVariant.Double),
-                               QgsField("Stop - Value: Rule", QVariant.String),
-                               QgsField("Stop - Value: State", QVariant.String),
-                               QgsField("Stop - Value: Sboard Type", QVariant.String),
-                               QgsField("Stop - Value: Sboard Element", QVariant.String),
-                               QgsField("Stop - Value: Sboard State", QVariant.String),
-                               QgsField("Stop - Value: TController Ref", QVariant.String),
-                               QgsField("Stop - Value: TController Phase", QVariant.String),
-                               QgsField("Stop - WorldPos: Tolerance", QVariant.Double),
-                               QgsField("Stop - WorldPos: X", QVariant.Double),
-                               QgsField("Stop - WorldPos: Y", QVariant.Double),
-                               QgsField("Stop - WorldPos: Heading", QVariant.Double)]
-            data_input = maneuver_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            maneuver_layer.updateFields()
-
-            message = "Maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing maneuvers layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._maneuver_layer = QgsProject.instance().mapLayersByName("Maneuvers")[0]
-
-        # Longitudinal Maneuvers
-        if not QgsProject.instance().mapLayersByName("Longitudinal Maneuvers"):
-            long_man_layer = QgsVectorLayer("None", "Longitudinal Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(long_man_layer, False)
-            osc_layer.addLayer(long_man_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
-                               QgsField("Type", QVariant.String),
-                               QgsField("Speed Target", QVariant.String),
-                               QgsField("Ref Entity", QVariant.String),
-                               QgsField("Dynamics Shape", QVariant.String),
-                               QgsField("Dynamics Dimension", QVariant.String),
-                               QgsField("Dynamics Value", QVariant.String),
-                               QgsField("Target Type", QVariant.String),
-                               QgsField("Target Speed", QVariant.String),
-                               QgsField("Continuous", QVariant.Bool),
-                               QgsField("Freespace", QVariant.Bool),
-                               QgsField("Max Acceleration", QVariant.String),
-                               QgsField("Max Deceleration", QVariant.String),
-                               QgsField("Max Speed", QVariant.String)]
-            data_input = long_man_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            long_man_layer.updateFields()
-
-            message = "Longitudinal maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing longitudinal maneuvers layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
-
-        # Lateral Maneuvers
-        if not QgsProject.instance().mapLayersByName("Lateral Maneuvers"):
-            lat_man_layer = QgsVectorLayer("None", "Lateral Maneuvers", "memory")
-            QgsProject.instance().addMapLayer(lat_man_layer, False)
-            osc_layer.addLayer(lat_man_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("Maneuver ID", QVariant.Int),
-                               QgsField("Type", QVariant.String),
-                               QgsField("Lane Target", QVariant.String),
-                               QgsField("Ref Entity", QVariant.String),
-                               QgsField("Dynamics Shape", QVariant.String),
-                               QgsField("Dynamics Dimension", QVariant.String),
-                               QgsField("Dynamics Value", QVariant.String),
-                               QgsField("Lane Target Value", QVariant.String),
-                               QgsField("Max Lateral Acceleration", QVariant.String),
-                               QgsField("Max Acceleration", QVariant.String),
-                               QgsField("Max Deceleration", QVariant.String),
-                               QgsField("Max Speed", QVariant.String)]
-            data_input = lat_man_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            lat_man_layer.updateFields()
-
-            message = "Lateral maneuvers layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-        else:
-            message = "Using existing lateral maneuvers layer"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
-        self._lat_man_layer = QgsProject.instance().mapLayersByName("Lateral Maneuvers")[0]
 
     def refresh_entity(self):
         """
@@ -363,6 +183,9 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             for feature in layer.getFeatures():
                 loaded_traffic_light_ids = str(feature["Id"])
                 traffic_light_ids.append(loaded_traffic_light_ids)
+            
+            if len(traffic_light_ids) == 0:
+                traffic_light_ids.append("0")
 
         self.traffic_light_id.addItems(traffic_light_ids)
 
@@ -850,6 +673,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                float(self.start_entity_tolerance.text()),
                                float(self.start_entity_position_x.text()),
                                float(self.start_entity_position_y.text()),
+                               float(self.start_entity_position_z.text()),
                                float(self.start_entity_heading.text()),
                                # Stop Triggers
                                self.stop_triggers_group.isChecked(),
@@ -877,69 +701,64 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                                float(self.stop_entity_tolerance.text()),
                                float(self.stop_entity_position_x.text()),
                                float(self.stop_entity_position_y.text()),
+                               float(self.stop_entity_position_z.text()),
                                float(self.stop_entity_heading.text())])
         self._maneuver_layer.dataProvider().addFeature(feature)
 
         message = "Maneuver added"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
     def save_longitudinal_attributes(self):
         """
         Gets longudinal maneuver attributes and saves into QGIS attributes table.
         """
-        if self.is_float(self.long_dynamics_value.text()):
+        if is_float(self.long_dynamics_value.text()):
             long_dynamics_value = float(self.long_dynamics_value.text())
         else:
-            verification = self.verify_parameters(self.long_dynamics_value.text())
+            verification = verify_parameters(self.long_dynamics_value.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_dynamics_value.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_dynamics_value = self.long_dynamics_value.text()
 
-        if self.is_float(self.long_target_speed_value.text()):
+        if is_float(self.long_target_speed_value.text()):
             long_target_speed_value = float(self.long_target_speed_value.text())
         else:
-            verification = self.verify_parameters(self.long_target_speed_value.text())
+            verification = verify_parameters(self.long_target_speed_value.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_target_speed_value.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_target_speed_value = self.long_target_speed_value.text()
         
-        if self.is_float(self.long_max_accel.text()):
+        if is_float(self.long_max_accel.text()):
             long_max_accel = float(self.long_max_accel.text())
         else:
-            verification = self.verify_parameters(self.long_max_accel.text())
+            verification = verify_parameters(self.long_max_accel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_max_accel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_max_accel = self.long_max_accel.text()
 
-        if self.is_float(self.long_max_decel.text()):
+        if is_float(self.long_max_decel.text()):
             long_max_decel = float(self.long_max_decel.text())
         else:
-            verification = self.verify_parameters(self.long_max_decel.text())
+            verification = verify_parameters(self.long_max_decel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_max_decel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_max_decel = self.long_max_decel.text()
 
-        if self.is_float(self.long_max_speed.text()):
+        if is_float(self.long_max_speed.text()):
             long_max_speed = float(self.long_max_speed.text())
         else:
-            verification = self.verify_parameters(self.long_max_speed.text())
+            verification = verify_parameters(self.long_max_speed.text())
             if len(verification) == 0:
                 message = f"Parameter {self.long_max_speed.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 long_max_speed = self.long_max_speed.text()
 
@@ -961,65 +780,59 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._long_man_layer.dataProvider().addFeature(feature)
 
         message = "Maneuver added"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
     def save_lateral_attributes(self):
         """
         Gets lateral maneuver attributes and saves into QGIS attributes table.
         """
-        if self.is_float(self.lateral_dynamics_value.text()):
+        if is_float(self.lateral_dynamics_value.text()):
             lateral_dynamics_value = float(self.lateral_dynamics_value.text())
         else:
-            verification = self.verify_parameters(self.lateral_dynamics_value.text())
+            verification = verify_parameters(self.lateral_dynamics_value.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_dynamics_value.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_dynamics_value = self.lateral_dynamics_value.text()
 
-        if self.is_float(self.lateral_max_lat_accel.text()):
+        if is_float(self.lateral_max_lat_accel.text()):
             lateral_max_lat_accel = float(self.lateral_max_lat_accel.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_lat_accel.text())
+            verification = verify_parameters(self.lateral_max_lat_accel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_lat_accel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_lat_accel = self.lateral_max_lat_accel.text()
 
-        if self.is_float(self.lateral_max_accel.text()):
+        if is_float(self.lateral_max_accel.text()):
             lateral_max_accel = float(self.lateral_max_accel.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_accel.text())
+            verification = verify_parameters(self.lateral_max_accel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_accel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_accel = self.lateral_max_accel.text()
 
-        if self.is_float(self.lateral_max_decel.text()):
+        if is_float(self.lateral_max_decel.text()):
             lateral_max_decel = float(self.lateral_max_decel.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_decel.text())
+            verification = verify_parameters(self.lateral_max_decel.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_decel.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_decel = self.lateral_max_decel.text()
 
-        if self.is_float(self.lateral_max_speed.text()):
+        if is_float(self.lateral_max_speed.text()):
             lateral_max_speed = float(self.lateral_max_speed.text())
         else:
-            verification = self.verify_parameters(self.lateral_max_speed.text())
+            verification = verify_parameters(self.lateral_max_speed.text())
             if len(verification) == 0:
                 message = f"Parameter {self.lateral_max_speed.text()} does not exist!"
-                iface.messageBar().pushMessage("Critical", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 lateral_max_speed = self.lateral_max_speed.text()
 
@@ -1039,46 +852,8 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._lat_man_layer.dataProvider().addFeature(feature)
 
         message = "Maneuver added"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
-    def verify_parameters(self, param):
-        """
-        Checks Parameter Declarations attribute table to verify parameter exists
-
-        Args:
-            param (string): name of parameter to check against
-
-        Returns:
-            feature (dict): parameter definitions
-        """
-        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
-        query = f'"Parameter Name" = \'{param}\''
-        feature_request = QgsFeatureRequest().setFilterExpression(query)
-        features = param_layer.getFeatures(feature_request)
-        feature = {}
-
-        for feat in features:
-            feature["Type"] = feat["Type"]
-            feature["Value"] = feat["Value"]
-
-        return feature
-
-    def is_float(self, value):
-        """
-        Checks value if it can be converted to float.
-
-        Args:
-            value (string): value to check if can be converted to float
-
-        Returns:
-            bool: True if float, False if not
-        """
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
 
 #pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):
@@ -1109,10 +884,42 @@ class PointTool(QgsMapTool):
         # Get the click
         x = event.pos().x()
         y = event.pos().y()
+
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
+        lane_edge_layer = QgsProject.instance().mapLayersByName("Lane Edge")[0]
+        lane_edge_data_provider = lane_edge_layer.dataProvider()
+        spatial_index = QgsSpatialIndex()
+        spatial_feature = QgsFeature()
+        lane_edge_features = lane_edge_data_provider.getFeatures()
+
+        while lane_edge_features.nextFeature(spatial_feature):
+            spatial_index.addFeature(spatial_feature)
+        
+        nearest_ids = spatial_index.nearestNeighbor(point, 5)
+
+        z_values = set()
+        for feat in lane_edge_layer.getFeatures(QgsFeatureRequest().setFilterFids(nearest_ids)):
+            feature_coordinates = feat.geometry().vertexAt(1)
+            z_values.add(round(feature_coordinates.z(), ndigits=4))
+
+        if max(z_values) - min(z_values) < 0.1:
+            altitude = max(z_values)
+        else:
+            stringified_z_values = [str(z_value) for z_value in z_values]
+            z_value_selected, ok_pressed = QInputDialog.getItem(
+                QInputDialog(),
+                "Choose Elevation",
+                "Elevation (meters)",
+                tuple(stringified_z_values),
+                current=0,
+                editable=False)
+            
+            if ok_pressed:
+                altitude = float(z_value_selected)
+
         # Converting to ENU points
-        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=0)
+        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
         enupoint = ad.map.point.toENU(geopoint)
         add_entity_attr = AddManeuverAttributes()
 
@@ -1134,6 +941,7 @@ class PointTool(QgsMapTool):
                                       float(processed_attrs["Orientation"]),
                                       float(enupoint.x),
                                       float(enupoint.y),
+                                      float(enupoint.z),
                                       processed_attrs["Route Strat"]])
                 feature.setGeometry(QgsGeometry.fromPointXY(point))
                 self._data_input.addFeature(feature)
@@ -1141,9 +949,11 @@ class PointTool(QgsMapTool):
             heading = add_entity_attr.get_entity_heading(geopoint)
             self._parent.start_entity_position_x.setText(str(enupoint.x))
             self._parent.start_entity_position_y.setText(str(enupoint.y))
+            self._parent.start_entity_position_z.setText(str(enupoint.z))
             self._parent.start_entity_heading.setText(str(heading))
             self._parent.stop_entity_position_x.setText(str(enupoint.x))
             self._parent.stop_entity_position_y.setText(str(enupoint.y))
+            self._parent.stop_entity_position_z.setText(str(enupoint.z))
             self._parent.stop_entity_heading.setText(str(heading))
             self._canvas.unsetMapTool(self)
 
@@ -1183,7 +993,7 @@ class AddManeuverAttributes():
             lane_heading: [float] heading of click point at selected lane ID
             lane_heading: [None] if click point is not valid
         """
-        dist = ad.physics.Distance(0.025)
+        dist = ad.physics.Distance(1)
         admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
 
         lanes_detected = 0
@@ -1192,8 +1002,7 @@ class AddManeuverAttributes():
 
         if lanes_detected == 0:
             message = "Click point is too far from valid lane"
-            iface.messageBar().pushMessage("Error", message, level=Qgis.Critical)
-            QgsMessageLog.logMessage(message, level=Qgis.Critical)
+            display_message(message, level="Critical")
             return None
         elif lanes_detected == 1:
             for point in admap_matched_points:

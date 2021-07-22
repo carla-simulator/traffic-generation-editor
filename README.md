@@ -39,7 +39,7 @@
 ### Prerequisites
 - Python 3.6
 - [QGIS 3](https://www.qgis.org/)
-- [CARLA AD Map plugin version 2.4.2 and above](https://github.com/carla-simulator/map/releases)
+- [CARLA AD Map plugin version 2.4.5 and above](https://github.com/carla-simulator/map/releases)
 - [CARLA](https://github.com/carla-simulator/carla/releases/) (Version >= 0.9.10)
 - [CARLA Scenario Runner](https://github.com/carla-simulator/scenario_runner/releases)
 
@@ -79,63 +79,65 @@ pip3 install --user -r /path/to/requirements.txt
 
 ## OpenSCENARIO Support List
 
+_For the full support list, visit [OpenSCENARIO Tags Support](Docs/OpenSCENARIO_Support.md)_
+
 ✅ - Supported
 
 ❌ - Not supported
 
 ### Environment
-Description | Support | Notes
--- | -- | --
-Time of day | ✅ | Includes enabling animation of time
-Cloud state | ✅ | 
-Fog visual range | ✅ | 
-Sun | ✅ | Includes intensity, azimuth, elevation
-Precipitation | ✅ | Includes precipitation type and intensity
+| Description      | Support | Notes                                     |
+| ---------------- | ------- | ----------------------------------------- |
+| Time of day      | ✅       | Includes enabling animation of time       |
+| Cloud state      | ✅       |
+| Fog visual range | ✅       |
+| Sun              | ✅       | Includes intensity, azimuth, elevation    |
+| Precipitation    | ✅       | Includes precipitation type and intensity |
 
 ### Actors
-Description | Support | Notes
--- | -- | --
-Spawn with World Position | ✅ | 
-Set initial speed | ✅ | 
-Set orientation | ✅ | Can either use lane heading, or manually specified
-Set as ego vehicle | ✅ | Only for vehicles
-Agent selection | ✅ | Only for ego vehicles (manual_control will require manually changing `Ego_1` tag to `hero`)
-Agent parameter overrides | ❌ | Only for ego vehicles (overriding throttle, brake, clutch, parking brake, steering, gear)
+| Description               | Support | Notes                                                                                       |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------- |
+| Spawn with World Position | ✅       |
+| Set initial speed         | ✅       |
+| Set orientation           | ✅       | Can either use lane heading, or manually specified                                          |
+| Set as ego vehicle        | ✅       | Only for vehicles                                                                           |
+| Agent selection           | ✅       | Only for ego vehicles (manual_control will require manually changing `Ego_1` tag to `hero`) |
+| Agent parameter overrides | ❌       | Only for ego vehicles (overriding throttle, brake, clutch, parking brake, steering, gear)   |
 
 ### Static Objects (Props)
-Description | Support | Notes
--- | -- | --
-Spawn with World Position | ✅ | 
-Set object type | ✅ | 
-Set object mass | ✅ | 
-Set orientation | ✅ | Can either use lane heading, or manually specified
-Enable/Disable physics | ✅ | 
+| Description               | Support | Notes                                              |
+| ------------------------- | ------- | -------------------------------------------------- |
+| Spawn with World Position | ✅       |
+| Set object type           | ✅       |
+| Set object mass           | ✅       |
+| Set orientation           | ✅       | Can either use lane heading, or manually specified |
+| Enable/Disable physics    | ✅       |
 
 ### End Evaluation KPIs
-Description | Support | Notes
--- | -- | --
-Running stop test | ✅ | 
-Running red light test | ✅ | 
-Wrong lane test | ✅ | 
-On sidewalk test | ✅ | 
-Keep lane test | ✅ | 
-Collision test | ✅ | 
-Driven distance test | ✅ | 
+| Description            | Support | Notes |
+| ---------------------- | ------- | ----- |
+| Running stop test      | ✅       |
+| Running red light test | ✅       |
+| Wrong lane test        | ✅       |
+| On sidewalk test       | ✅       |
+| Keep lane test         | ✅       |
+| Collision test         | ✅       |
+| Driven distance test   | ✅       |
 
 ### Entity Maneuvers
-Description | Support | Notes
--- | -- | --
-Waypoints | ✅ | 
-Longitudinal | ✅ | 
-Lateral | ✅ | 
-Synchronize Action | ❌ | 
-Teleport Action | ❌ | 
+| Description        | Support | Notes |
+| ------------------ | ------- | ----- |
+| Waypoints          | ✅       |
+| Longitudinal       | ✅       |
+| Lateral            | ✅       |
+| Synchronize Action | ❌       |
+| Teleport Action    | ❌       |
 
 ### Global Maneuvers
-Description | Support | Notes
--- | -- | --
-Environment | ❌ | 
-Infrastructure Action | ✅ | Traffic light signal control
+| Description           | Support | Notes                        |
+| --------------------- | ------- | ---------------------------- |
+| Environment           | ❌       |
+| Infrastructure Action | ✅       | Traffic light signal control |
 
 
 ## Guide
@@ -146,18 +148,19 @@ Infrastructure Action | ✅ | Traffic light signal control
 
 ![OpenSCENARIO Generator Toolbar](Docs/OSCGenerator_Toolbar.png)
 
-Icon | Description
--- | --
-<img src="icons/icon_weather.png" alt="Edit environment" width="50"/> | Edit environment
-<img src="icons/icon_vehicle.png" alt="Add vehicles" width="50"/> | Add vehicles
-<img src="icons/icon_pedestrian.png" alt="Add pedestrians" width="50"/> | Add pedestrians
-<img src="icons/icon_static.png" alt="Add static objects" width="50"/> | Add static objects
-<img src="icons/icon_maneuver.png" alt="Add maneuvers" width="50"/> | Add maneuvers
-<img src="icons/icon_parameter.png" alt="Add parmeters" width="50"/> | Add parameters
-<img src="icons/icon_endEval.png" alt="Add end evaluation KPIs" width="50"/> | Add end evaluation KPIs (Specific for Scenario Runner)
-<img src="icons/icon_code.png" alt="Export OpenSCENARIO" width="50"/> | Export OpenSCENARIO file
-<img src="icons/carla_logo.png" alt="Connect to CARLA instance" width="50"/> | Connect to carla instance 
-<img src="icons/video_cam.png" alt="Insert camera" width="50"/> | Add bird eye view camera 
+| Icon                                                                         | Description                                            |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------ |
+| <img src="icons/icon_weather.png" alt="Edit environment" width="50"/>        | Edit environment                                       |
+| <img src="icons/icon_vehicle.png" alt="Add vehicles" width="50"/>            | Add vehicles                                           |
+| <img src="icons/icon_pedestrian.png" alt="Add pedestrians" width="50"/>      | Add pedestrians                                        |
+| <img src="icons/icon_static.png" alt="Add static objects" width="50"/>       | Add static objects                                     |
+| <img src="icons/icon_maneuver.png" alt="Add maneuvers" width="50"/>          | Add maneuvers                                          |
+| <img src="icons/icon_parameter.png" alt="Add parmeters" width="50"/>         | Add parameters                                         |
+| <img src="icons/icon_endEval.png" alt="Add end evaluation KPIs" width="50"/> | Add end evaluation KPIs (Specific for Scenario Runner) |
+| <img src="icons/icon_code.png" alt="Export OpenSCENARIO" width="50"/>        | Export OpenSCENARIO file                               |
+| <img src="icons/icon_import.png" alt="Import OpenSCENARIO" width="50"/>      | Import OpenSCENARIO file                               |
+| <img src="icons/carla_logo.png" alt="Connect to CARLA instance" width="50"/> | Connect to carla instance                              |
+| <img src="icons/video_cam.png" alt="Insert camera" width="50"/>              | Add bird eye view camera                               |
 
 
 ### Adding Environment Variables
@@ -183,6 +186,12 @@ _Note: To change environment settings, simply adjust the parameters and press 'A
    
    ![Selecting Lane ID](Docs/OSCGenerator_Vehicles_LaneID.png)
 
+7. If click point contains lanes with multiple elevations, a dialog box will appear and ask to select the desired elevation.
+
+   ![Selection Elevation](Docs/OSCGenerator_Elevation.png)
+
+_Note: Sometimes there will be a "Click point too far from lane" error. Try choosing a different elevation._
+
 _Note: Currently you can insert vehicle one at a time._
 
 _Note: You can toggle labels on and off by clicking on the 'Label' button_
@@ -199,6 +208,12 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 6. If click point contains multiple lanes and 'Use lane heading' is enabled, a dialog box will appear and ask to select lane ID to use for lane heading.
    
    ![Selecting Lane ID](Docs/OSCGenerator_Vehicles_LaneID.png)
+
+7. If click point contains lanes with multiple elevations, a dialog box will appear and ask to select the desired elevation.
+
+   ![Selection Elevation](Docs/OSCGenerator_Elevation.png)
+
+_Note: Sometimes there will be a "Click point too far from lane" error. Try choosing a different elevation._
   
 _Note: You can insert as many pedestrians as you desire after pressing on 'Insert'_
 

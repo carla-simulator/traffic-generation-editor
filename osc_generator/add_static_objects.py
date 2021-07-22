@@ -11,16 +11,17 @@ import os
 import math
 # pylint: disable=no-name-in-module, no-member
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, pyqtSignal, QVariant
+from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.gui import QgsMapTool
 from qgis.utils import iface
-from qgis.core import (QgsProject, QgsVectorLayer, QgsMessageLog, Qgis, QgsField,
-    QgsFeature, QgsGeometry, QgsPointXY, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling,
-    QgsFeatureRequest)
+from qgis.core import (QgsProject, Qgis, QgsFeature, QgsGeometry, QgsPointXY,
+    QgsFeatureRequest, QgsSpatialIndex)
 from PyQt5.QtWidgets import QInputDialog
+from .helper_functions import layer_setup_props, display_message, is_float, verify_parameters
 
 # AD Map plugin
 import ad_map_access as ad
+
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_static_objects_widget.ui'))
@@ -43,42 +44,7 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.props_labels_button.pressed.connect(self.toggle_labels)
 
         self._labels_on = True
-        self._props_layer = None
-        self.layer_setup()
-
-    def layer_setup(self):
-        """
-        Sets up layer for pedestrians
-        """
-        root_layer = QgsProject.instance().layerTreeRoot()
-        osc_layer = root_layer.findGroup("OpenSCENARIO")
-        if not QgsProject.instance().mapLayersByName("Static Objects"):
-            props_layer = QgsVectorLayer("Polygon", "Static Objects", "memory")
-            QgsProject.instance().addMapLayer(props_layer, False)
-            osc_layer.addLayer(props_layer)
-            # Setup layer attributes
-            data_attributes = [QgsField("id", QVariant.Int),
-                               QgsField("Prop", QVariant.String),
-                               QgsField("Prop Type", QVariant.String),
-                               QgsField("Orientation", QVariant.Double),
-                               QgsField("Mass", QVariant.String),
-                               QgsField("Pos X", QVariant.Double),
-                               QgsField("Pos Y", QVariant.Double),
-                               QgsField("Physics", QVariant.Bool)]
-            data_input = props_layer.dataProvider()
-            data_input.addAttributes(data_attributes)
-            props_layer.updateFields()
-
-            label_settings = QgsPalLayerSettings()
-            label_settings.isExpression = True
-            label_settings.fieldName = "concat('Prop_', \"id\")"
-            props_layer.setLabeling(QgsVectorLayerSimpleLabeling(label_settings))
-            props_layer.setLabelsEnabled(True)
-
-            message = "Static objects layer added"
-            iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-            QgsMessageLog.logMessage(message, level=Qgis.Info)
-
+        layer_setup_props()
         self._props_layer = QgsProject.instance().mapLayersByName("Static Objects")[0]
 
     def toggle_labels(self):
@@ -109,8 +75,7 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # UI Information
         message = "Using existing static objects layer"
-        iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
-        QgsMessageLog.logMessage(message, level=Qgis.Info)
+        display_message(message, level="Info")
 
         # Set map tool to point tool
         canvas = iface.mapCanvas()
@@ -121,30 +86,28 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if self.props_orientation_use_lane.isChecked():
             orientation = None
         else:
-            if self.is_float(self.props_orientation.text()):
+            if is_float(self.props_orientation.text()):
                 orientation = float(self.props_orientation.text())
                 orientation = math.radians(orientation)
             else:
-                verification = self.verify_parameters(param=self.props_orientation.text())
+                verification = verify_parameters(param=self.props_orientation.text())
                 if len(verification) == 0:
                     # UI Information
                     message = f"Parameter {self.props_orientation.text()} does not exist!"
-                    iface.messageBar().pushMessage("Info", message, level=Qgis.Critical)
-                    QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                    display_message(message, level="Critical")
                 else:
                     orientation = float(verification["Value"])
                     orientation = math.radians(orientation)
 
         mass = None
-        if self.is_float(self.props_mass.text()):
+        if is_float(self.props_mass.text()):
             mass = float(self.props_mass.text())
         else:
-            verification = self.verify_parameters(param=self.props_mass.text())
+            verification = verify_parameters(param=self.props_mass.text())
             if len(verification) == 0:
                 # UI Information
                 message = f"Parameter {self.props_mass.text()} does not exist!"
-                iface.messageBar().pushMessage("Info", message, level=Qgis.Critical)
-                QgsMessageLog.logMessage(message, level=Qgis.Critical)
+                display_message(message, level="Critical")
             else:
                 mass = self.props_mass.text()
 
@@ -164,44 +127,6 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.props_orientation.setDisabled(True)
         else:
             self.props_orientation.setEnabled(True)
-
-    def verify_parameters(self, param):
-        """
-        Checks Parameter Declarations attribute table to verify parameter exists
-
-        Args:
-            param (string): name of parameter to check against
-
-        Returns:
-            feature (dict): parameter definitions
-        """
-        param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
-        query = f'"Parameter Name" = \'{param}\''
-        feature_request = QgsFeatureRequest().setFilterExpression(query)
-        features = param_layer.getFeatures(feature_request)
-        feature = {}
-
-        for feat in features:
-            feature["Type"] = feat["Type"]
-            feature["Value"] = feat["Value"]
-
-        return feature
-
-    def is_float(self, value):
-        """
-        Checks value if it can be converted to float.
-
-        Args:
-            value (string): value to check if can be converted to float
-
-        Returns:
-            bool: True if float, False if not
-        """
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
 
 
 #pylint: disable=missing-function-docstring
@@ -230,8 +155,39 @@ class PointTool(QgsMapTool):
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
+        lane_edge_layer = QgsProject.instance().mapLayersByName("Lane Edge")[0]
+        lane_edge_data_provider = lane_edge_layer.dataProvider()
+        spatial_index = QgsSpatialIndex()
+        spatial_feature = QgsFeature()
+        lane_edge_features = lane_edge_data_provider.getFeatures()
+
+        while lane_edge_features.nextFeature(spatial_feature):
+            spatial_index.insertFeature(spatial_feature)
+        
+        nearest_ids = spatial_index.nearestNeighbor(point, 5)
+
+        z_values = set()
+        for feat in lane_edge_layer.getFeatures(QgsFeatureRequest().setFilterFids(nearest_ids)):
+            feature_coordinates = feat.geometry().vertexAt(1)
+            z_values.add(round(feature_coordinates.z(), ndigits=4))
+
+        if max(z_values) - min(z_values) < 0.1:
+            altitude = max(z_values)
+        else:
+            stringified_z_values = [str(z_value) for z_value in z_values]
+            z_value_selected, ok_pressed = QInputDialog.getItem(
+                QInputDialog(),
+                "Choose Elevation",
+                "Elevation (meters)",
+                tuple(stringified_z_values),
+                current=0,
+                editable=False)
+            
+            if ok_pressed:
+                altitude = float(z_value_selected)
+
         # Converting to ENU points
-        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=0)
+        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
         enupoint = ad.map.point.toENU(geopoint)
         add_props = AddPropAttribute()
 
@@ -256,6 +212,7 @@ class PointTool(QgsMapTool):
                                    prop_attr["Mass"],
                                    float(enupoint.x),
                                    float(enupoint.y),
+                                   float(enupoint.z) + 0.2, # Avoid ground collision
                                    prop_attr["Physics"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
@@ -293,7 +250,7 @@ class AddPropAttribute():
         Args:
             geopoint: [AD Map GEOPoint] point of click event
         """
-        dist = ad.physics.Distance(0.025)
+        dist = ad.physics.Distance(1)
         admap_matched_points = ad.map.match.AdMapMatching.findLanes(geopoint, dist)
 
         lanes_detected = 0
@@ -302,8 +259,7 @@ class AddPropAttribute():
 
         if lanes_detected == 0:
             message = "Click point is too far from valid lane"
-            iface.messageBar().pushMessage("Error", message, level=Qgis.Critical)
-            QgsMessageLog.logMessage(message, level=Qgis.Critical)
+            display_message(message, level="Critical")
             return None
         elif lanes_detected == 1:
             for point in admap_matched_points:
