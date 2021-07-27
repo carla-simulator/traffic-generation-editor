@@ -276,13 +276,11 @@ class ImageProcessor():
     '''
     class to set up py_gam window and process image
     '''
-    def __init__(self, world):
-        self.world = world
-        self.actor_list = self.world.get_actors()
-        self.width = 1200
-        self.height = 1200
+    width = 1200
+    height = 1200
 
-    def py_game_setup(self):
+    @staticmethod
+    def py_game_setup():
         '''
         Function to read data from camera sensor
         '''
@@ -291,22 +289,13 @@ class ImageProcessor():
             for sensor in actors:
                 pygame.init()
                 pygame.font.init()
-                display = pygame.display.set_mode((self.width, self.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
-                sensor.listen(lambda data: self.render(data, display))
+                display = pygame.display.set_mode((ImageProcessor.width, ImageProcessor.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
+                sensor.listen(lambda data: ImageProcessor.render(data, display))
 
-    def render(self, image, display):
+    @staticmethod
+    def render(image, display):
         '''
         Function to plot data in Pygame
-        '''
-        self.process_img(display, image)
-        pygame.display.flip()
-
-    def process_img(self, display, image):
-        '''
-        function to render the data from camera sensor.
-        argv:
-        display: display set
-        image: data from sensor
         '''
         array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
         array = np.reshape(array, (image.height, image.width, 4))
@@ -314,19 +303,19 @@ class ImageProcessor():
         array = array[:, :, ::-1]
         surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
         display.blit(surface, (0, 0))
+        pygame.display.flip()
     
-class DestroySensors():
-    '''
-    class that destorys all sensors and py game window
-    '''
-    def __init__(self, world):
-        self.world = world
-        self.actor_list = self.world.get_actors()
-
-    def destroy_all_window(self):
+    @staticmethod
+    def destroy_all_window():
         '''
         method to destroy camera and exit pygame
         '''
+        camera_list = Spawn.actor_list
+        for actors in camera_list:
+            for sensor in actors:
+                sensor.stop()
+
         pygame.display.quit()
         pygame.quit()
-        Spawn.actor_list = []
+
+
