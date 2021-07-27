@@ -8,7 +8,6 @@
 OpenSCENARIO Generator - Parameter Declarations
 """
 import os
-from osc_generator.helper_functions import HelperFunctions
 # pylint: disable=no-name-in-module, no-member
 from qgis.core import Qgis, QgsFeature, QgsProject, QgsFeatureRequest
 from qgis.PyQt import QtWidgets, uic
