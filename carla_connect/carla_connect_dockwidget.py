@@ -17,7 +17,7 @@ from qgis.utils import iface
 from qgis.core import Qgis
 from .mapupdate import MapUpdate
 from .export_xosc import Exportxosc
-from .addcam import ImageProcessor, DestroySensors
+from .addcam import ImageProcessor
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'carla_connect_dockwidget_base.ui'))
@@ -48,7 +48,6 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.selected_town = None
         self._scenario_runner_process = None
         self.world = self.update_map.get_world()
-        self.camera_visualization = ImageProcessor(self.world)
 
     def _get_maps(self):
         self.maps_available = self.update_map.get_available_map()
@@ -91,7 +90,7 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         road_network = str(self.world.get_map())
         export_file = Exportxosc(road_network[9:15])
         export_file.save_file()
-        self.camera_visualization.py_game_setup()
+        ImageProcessor.py_game_setup()
         if environ.get('SCENARIO_RUNNER_ROOT') is not None:
             scenario_runner_file = "/scenario_runner.py"
             scenario_path = os.environ['SCENARIO_RUNNER_ROOT']
@@ -100,7 +99,6 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             if file.exists():
                 try:
                     self._scenario_runner_process = Popen(['python3', scenario_runner_path,
-                                                           '--reloadWorld',
                                                            '--openscenario', '/tmp/scenariogenerator1.xosc',
                                                            '--host', self.host,
                                                            '--port', str(self.port)])
@@ -117,7 +115,9 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         '''
         Method to destroy all actors
         '''
-        self._scenario_runner_process.kill()
-        destroyall = DestroySensors(self.world)
-        destroyall.destroy_all_window()
+        ImageProcessor.destroy_all_window()
+        if self._scenario_runner_process.poll() is None:
+          self._scenario_runner_process.communicate()
+          self._scenario_runner_process.kill()
+          self._scenario_runner_process.communicate()
         
