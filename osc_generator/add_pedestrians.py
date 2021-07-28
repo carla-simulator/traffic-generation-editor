@@ -13,15 +13,15 @@ import random
 # pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsFeature, QgsGeometry, QgsMessageLog, QgsPointXY,
-    QgsProject, QgsFeatureRequest, QgsSpatialIndex)
+                       QgsProject, QgsFeatureRequest, QgsSpatialIndex)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.utils import iface
-from .helper_functions import layer_setup_walker, get_entity_heading, is_float, verify_parameters
-
 # AD Map plugin
 import ad_map_access as ad
+
+from .helper_functions import layer_setup_walker, get_entity_heading, is_float, verify_parameters
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_pedestrians_widget.ui'))
@@ -61,7 +61,7 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self._walker_layer.triggerRepaint()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
         """
         Closes dockwidget
         """
@@ -144,6 +144,8 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.walker_orientation.setEnabled(True)
 
 #pylint: disable=missing-function-docstring
+
+
 class PointTool(QgsMapTool):
     """Enables Point Addition"""
 
@@ -159,16 +161,10 @@ class PointTool(QgsMapTool):
         else:
             self._use_lane_heading = False
 
-    def canvasPressEvent(self, event):
-        pass
-
-    def canvasMoveEvent(self, event):
-        pass
-
-    def canvasReleaseEvent(self, event):
+    def canvasReleaseEvent(self, event):    # pylint: disable=invalid-name
         # Get the click
-        x = event.pos().x()
-        y = event.pos().y()
+        x = event.pos().x()  # pylint: disable=invalid-name
+        y = event.pos().y()  # pylint: disable=invalid-name
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
@@ -180,7 +176,7 @@ class PointTool(QgsMapTool):
 
         while lane_edge_features.nextFeature(spatial_feature):
             spatial_index.insertFeature(spatial_feature)
-        
+
         nearest_ids = spatial_index.nearestNeighbor(point, 5)
 
         z_values = set()
@@ -199,7 +195,7 @@ class PointTool(QgsMapTool):
                 tuple(stringified_z_values),
                 current=0,
                 editable=False)
-            
+
             if ok_pressed:
                 altitude = float(z_value_selected)
 
@@ -227,28 +223,13 @@ class PointTool(QgsMapTool):
                                    pedestrian_attr["Orientation"],
                                    float(enupoint.x),
                                    float(enupoint.y),
-                                   float(enupoint.z) + 0.2, # Avoid ground collision
+                                   float(enupoint.z) + 0.2,  # Avoid ground collision
                                    pedestrian_attr["Init Speed"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
 
         self._layer.updateExtents()
         self._canvas.refreshAllLayers()
-
-    def activate(self):
-        pass
-
-    def deactivate(self):
-        pass
-
-    def isZoomTool(self):
-        return False
-
-    def isTransient(self):
-        return True
-
-    def isEditTool(self):
-        return True
 
 #pylint: enable=missing-function-docstring
 
@@ -257,6 +238,7 @@ class AddPedestrianAttribute():
     """
     Class for processing / acquiring pedestrian attributes.
     """
+
     def spawn_pedestrian(self, enupoint, angle):
         """
         Spawns pedestrian on the map and draws bounding boxes
@@ -269,7 +251,7 @@ class AddPedestrianAttribute():
             bot_left_x = float(enupoint.x) + (-0.3 * math.cos(angle) - 0.35 * math.sin(angle))
             bot_left_y = float(enupoint.y) + (-0.3 * math.sin(angle) + 0.35 * math.cos(angle))
             bot_right_x = float(enupoint.x) + (-0.3 * math.cos(angle) + 0.35 * math.sin(angle))
-            bot_right_y =  float(enupoint.y) + (-0.3 * math.sin(angle) - 0.35 * math.cos(angle))
+            bot_right_y = float(enupoint.y) + (-0.3 * math.sin(angle) - 0.35 * math.cos(angle))
             top_left_x = float(enupoint.x) + (0.3 * math.cos(angle) - 0.35 * math.sin(angle))
             top_left_y = float(enupoint.y) + (0.3 * math.sin(angle) + 0.35 * math.cos(angle))
             top_center_x = float(enupoint.x) + 0.4 * math.cos(angle)
@@ -299,6 +281,7 @@ class AddPedestrianAttribute():
                               QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
+        return None
 
     def get_pedestrian_attributes(self, layer, attributes):
         """
@@ -317,21 +300,21 @@ class AddPedestrianAttribute():
         else:
             ped_id = 1
         # Match pedestrian model
-        walker_dict={"Walker 0001": "walker.pedestrian.0001",
-                     "Walker 0002": "walker.pedestrian.0002",
-                     "Walker 0003": "walker.pedestrian.0003",
-                     "Walker 0004": "walker.pedestrian.0004",
-                     "Walker 0005": "walker.pedestrian.0005",
-                     "Walker 0006": "walker.pedestrian.0006",
-                     "Walker 0007": "walker.pedestrian.0007",
-                     "Walker 0008": "walker.pedestrian.0008",
-                     "Walker 0009": "walker.pedestrian.0009",
-                     "Walker 0010": "walker.pedestrian.0010",
-                     "Walker 0011": "walker.pedestrian.0011",
-                     "Walker 0012": "walker.pedestrian.0012",
-                     "Walker 0013": "walker.pedestrian.0013",
-                     "Walker 0014": "walker.pedestrian.0014",
-                     "Walker 0015": "walker.pedestrian.0015"}
+        walker_dict = {"Walker 0001": "walker.pedestrian.0001",
+                       "Walker 0002": "walker.pedestrian.0002",
+                       "Walker 0003": "walker.pedestrian.0003",
+                       "Walker 0004": "walker.pedestrian.0004",
+                       "Walker 0005": "walker.pedestrian.0005",
+                       "Walker 0006": "walker.pedestrian.0006",
+                       "Walker 0007": "walker.pedestrian.0007",
+                       "Walker 0008": "walker.pedestrian.0008",
+                       "Walker 0009": "walker.pedestrian.0009",
+                       "Walker 0010": "walker.pedestrian.0010",
+                       "Walker 0011": "walker.pedestrian.0011",
+                       "Walker 0012": "walker.pedestrian.0012",
+                       "Walker 0013": "walker.pedestrian.0013",
+                       "Walker 0014": "walker.pedestrian.0014",
+                       "Walker 0015": "walker.pedestrian.0015"}
         if attributes["Walker Type"] is None:
             walker_entries = list(walker_dict.items())
             random_walker = random.choice(walker_entries)

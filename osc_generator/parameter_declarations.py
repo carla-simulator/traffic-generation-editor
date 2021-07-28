@@ -9,9 +9,9 @@ OpenSCENARIO Generator - Parameter Declarations
 """
 import os
 # pylint: disable=no-name-in-module, no-member
-from qgis.core import Qgis, QgsFeature, QgsProject, QgsFeatureRequest
+from qgis.core import QgsFeature, QgsProject, QgsFeatureRequest
 from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 from qgis.utils import iface
 from PyQt5.QtWidgets import QMessageBox
 from .helper_functions import layer_setup_parameters, display_message
@@ -40,7 +40,7 @@ class ParameterDeclarationsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._param_layer = QgsProject.instance().mapLayersByName("Parameter Declarations")[0]
         self._param_layer_data_input = self._param_layer.dataProvider()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
         """
         Closes dockwidget
         """

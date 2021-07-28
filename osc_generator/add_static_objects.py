@@ -14,14 +14,13 @@ from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.gui import QgsMapTool
 from qgis.utils import iface
-from qgis.core import (QgsProject, Qgis, QgsFeature, QgsGeometry, QgsPointXY,
-    QgsFeatureRequest, QgsSpatialIndex)
+from qgis.core import (QgsProject, QgsFeature, QgsGeometry, QgsPointXY,
+                       QgsFeatureRequest, QgsSpatialIndex)
 from PyQt5.QtWidgets import QInputDialog
-from .helper_functions import layer_setup_props, display_message, is_float, verify_parameters
-
 # AD Map plugin
 import ad_map_access as ad
 
+from .helper_functions import layer_setup_props, display_message, is_float, verify_parameters
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_static_objects_widget.ui'))
@@ -60,7 +59,7 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         self._props_layer.triggerRepaint()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
         """
         Closes dockwidget
         """
@@ -145,13 +144,13 @@ class PointTool(QgsMapTool):
         else:
             self._use_lane_heading = False
 
-    def canvasReleaseEvent(self, event):
+    def canvasReleaseEvent(self, event):    # pylint: disable=invalid-name
         """
         Function when map canvas is clicked
         """
         # Get the click
-        x = event.pos().x()
-        y = event.pos().y()
+        x = event.pos().x()  # pylint: disable=invalid-name
+        y = event.pos().y()  # pylint: disable=invalid-name
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
@@ -163,7 +162,7 @@ class PointTool(QgsMapTool):
 
         while lane_edge_features.nextFeature(spatial_feature):
             spatial_index.insertFeature(spatial_feature)
-        
+
         nearest_ids = spatial_index.nearestNeighbor(point, 5)
 
         z_values = set()
@@ -182,7 +181,7 @@ class PointTool(QgsMapTool):
                 tuple(stringified_z_values),
                 current=0,
                 editable=False)
-            
+
             if ok_pressed:
                 altitude = float(z_value_selected)
 
@@ -212,28 +211,13 @@ class PointTool(QgsMapTool):
                                    prop_attr["Mass"],
                                    float(enupoint.x),
                                    float(enupoint.y),
-                                   float(enupoint.z) + 0.2, # Avoid ground collision
+                                   float(enupoint.z) + 0.2,  # Avoid ground collision
                                    prop_attr["Physics"]])
             feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
             self._data_input.addFeature(feature)
 
         self._layer.updateExtents()
         self._canvas.refreshAllLayers()
-
-    def activate(self):
-        pass
-
-    def deactivate(self):
-        pass
-
-    def isZoomTool(self):
-        return False
-
-    def isTransient(self):
-        return True
-
-    def isEditTool(self):
-        return True
 #pylint: enable=missing-function-docstring
 
 
@@ -241,6 +225,7 @@ class AddPropAttribute():
     """
     Class for processing / acquiring static object attributes.
     """
+
     def get_prop_heading(self, geopoint):
         """
         Acquires heading based on spawn position in map.
@@ -278,7 +263,8 @@ class AddPropAttribute():
                 para_offsets.append(point.lanePoint.paraPoint.parametricOffset)
 
             lane_id_selected, ok_pressed = QInputDialog.getItem(QInputDialog(), "Choose Lane ID",
-                "Lane ID", tuple(lane_ids_to_match), current=0, editable=False)
+                                                                "Lane ID", tuple(lane_ids_to_match),
+                                                                current=0, editable=False)
 
             if ok_pressed:
                 i = lane_ids_to_match.index(lane_id_selected)
@@ -287,6 +273,8 @@ class AddPropAttribute():
                 parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
                 lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
                 return lane_heading
+
+        return None
 
     def spawn_props(self, enupoint, angle):
         """
@@ -300,7 +288,7 @@ class AddPropAttribute():
             bot_left_x = float(enupoint.x) + (-0.5 * math.cos(angle) - 0.5 * math.sin(angle))
             bot_left_y = float(enupoint.y) + (-0.5 * math.sin(angle) + 0.5 * math.cos(angle))
             bot_right_x = float(enupoint.x) + (-0.5 * math.cos(angle) + 0.5 * math.sin(angle))
-            bot_right_y =  float(enupoint.y) + (-0.5 * math.sin(angle) - 0.5 * math.cos(angle))
+            bot_right_y = float(enupoint.y) + (-0.5 * math.sin(angle) - 0.5 * math.cos(angle))
             top_left_x = float(enupoint.x) + (0.5 * math.cos(angle) - 0.5 * math.sin(angle))
             top_left_y = float(enupoint.y) + (0.5 * math.sin(angle) + 0.5 * math.cos(angle))
             top_right_x = float(enupoint.x) + (0.5 * math.cos(angle) + 0.5 * math.sin(angle))
@@ -325,6 +313,7 @@ class AddPropAttribute():
                               QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
+        return None
 
     def get_prop_attributes(self, layer, attributes):
         """

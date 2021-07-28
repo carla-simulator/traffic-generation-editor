@@ -12,15 +12,15 @@ import os
 
 # pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QInputDialog
-from qgis.core import (Qgis, QgsFeature, QgsGeometry, QgsMessageLog, QgsPointXY, 
-    QgsProject, QgsFeatureRequest, QgsSpatialIndex)
+from qgis.core import (Qgis, QgsFeature, QgsGeometry, QgsMessageLog, QgsPointXY,
+                       QgsProject, QgsFeatureRequest, QgsSpatialIndex)
 from qgis.gui import QgsMapTool
 from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.utils import iface
-from .helper_functions import layer_setup_vehicle
-
 import ad_map_access as ad
+
+from .helper_functions import layer_setup_vehicle
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'add_vehicles_widget.ui'))
@@ -67,7 +67,7 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._vehicle_layer.triggerRepaint()
         self._vehicle_layer_ego.triggerRepaint()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
         """
         Closes dockwidget
         """
@@ -131,13 +131,13 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         layer = iface.mapCanvas().currentLayer()
 
         if self.agent_selection.currentText() == "User Defined":
-            agent =  self.agent_user_defined.text()
+            agent = self.agent_user_defined.text()
         else:
             agent = self.agent_selection.currentText()
 
-        vehicle_attributes = {"Model":self.vehicle_selection.currentText(),
-                              "Orientation":orientation,
-                              "InitSpeed":init_speed,
+        vehicle_attributes = {"Model": self.vehicle_selection.currentText(),
+                              "Orientation": orientation,
+                              "InitSpeed": init_speed,
                               "Agent": agent,
                               "Agent Camera": self.agent_attach_camera.isChecked()}
         tool = PointTool(canvas, layer, vehicle_attributes)
@@ -209,6 +209,8 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             return False
 
 #pylint: disable=missing-function-docstring
+
+
 class PointTool(QgsMapTool):
     """Enables Point Addition"""
 
@@ -224,16 +226,10 @@ class PointTool(QgsMapTool):
         else:
             self._use_lane_heading = False
 
-    def canvasPressEvent(self, event):
-        pass
-
-    def canvasMoveEvent(self, event):
-        pass
-
-    def canvasReleaseEvent(self, event):
+    def canvasReleaseEvent(self, event):    # pylint: disable=invalid-name
         # Get the click
-        x = event.pos().x()
-        y = event.pos().y()
+        x = event.pos().x()  # pylint: disable=invalid-name
+        y = event.pos().y()  # pylint: disable=invalid-name
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
@@ -245,7 +241,7 @@ class PointTool(QgsMapTool):
 
         while lane_edge_features.nextFeature(spatial_feature):
             spatial_index.addFeature(spatial_feature)
-        
+
         nearest_ids = spatial_index.nearestNeighbor(point, 5)
 
         z_values = set()
@@ -264,7 +260,7 @@ class PointTool(QgsMapTool):
                 tuple(stringified_z_values),
                 current=0,
                 editable=False)
-            
+
             if ok_pressed:
                 altitude = float(z_value_selected)
 
@@ -279,7 +275,7 @@ class PointTool(QgsMapTool):
 
         # Add points only if user clicks within lane boundaries (Orientation is not None)
         if self._vehicle_attributes["Orientation"] is not None:
-            polygon_points = add_veh.spawnVehicle(enupoint, self._vehicle_attributes["Orientation"])
+            polygon_points = add_veh.spawn_vehicle(enupoint, self._vehicle_attributes["Orientation"])
             # Pass attributes to process
             veh_attr = add_veh.get_vehicle_attributes(self._layer, self._vehicle_attributes)
 
@@ -291,7 +287,7 @@ class PointTool(QgsMapTool):
                 veh_attr["Orientation"],
                 float(enupoint.x),
                 float(enupoint.y),
-                float(enupoint.z) + 0.2, # Avoid ground collision
+                float(enupoint.z) + 0.2,  # Avoid ground collision
                 veh_attr["InitSpeed"],
                 veh_attr["Agent"],
                 veh_attr["Agent Camera"],
@@ -303,20 +299,6 @@ class PointTool(QgsMapTool):
         self._canvas.refreshAllLayers()
         self._canvas.unsetMapTool(self)
 
-    def activate(self):
-        pass
-
-    def deactivate(self):
-        pass
-
-    def isZoomTool(self):
-        return False
-
-    def isTransient(self):
-        return True
-
-    def isEditTool(self):
-        return True
 #pylint: enable=missing-function-docstring
 
 
@@ -324,6 +306,7 @@ class AddVehicleAttribute():
     """
     Handles processing of vehicle attributes.
     """
+
     def get_vehicle_heading(self, geopoint):
         """
         Acquires heading based on spawn position in map.
@@ -376,8 +359,9 @@ class AddVehicleAttribute():
                 parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
                 lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
                 return lane_heading
+        return None
 
-    def spawnVehicle(self, enupoint, angle):
+    def spawn_vehicle(self, enupoint, angle):
         """
         Spawns vehicle on the map and draws bounding boxes
 
@@ -389,7 +373,7 @@ class AddVehicleAttribute():
             bot_left_x = float(enupoint.x) + (-2 * math.cos(angle) - 1 * math.sin(angle))
             bot_left_y = float(enupoint.y) + (-2 * math.sin(angle) + 1 * math.cos(angle))
             bot_right_x = float(enupoint.x) + (-2 * math.cos(angle) + 1 * math.sin(angle))
-            bot_right_y =  float(enupoint.y) + (-2 * math.sin(angle) - 1 * math.cos(angle))
+            bot_right_y = float(enupoint.y) + (-2 * math.sin(angle) - 1 * math.cos(angle))
             top_left_x = float(enupoint.x) + (2 * math.cos(angle) - 1 * math.sin(angle))
             top_left_y = float(enupoint.y) + (2 * math.sin(angle) + 1 * math.cos(angle))
             top_center_x = float(enupoint.x) + 2.5 * math.cos(angle)
@@ -419,6 +403,7 @@ class AddVehicleAttribute():
                               QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
+        return None
 
     def get_vehicle_attributes(self, layer, attributes):
         """
@@ -438,34 +423,34 @@ class AddVehicleAttribute():
             veh_id = 1
 
         # Match vehicle model
-        vehicle_dict={"Audi A2": "vehicle.audi.a2",
-                      "Audi eTron": "vehicle.audi.etron",
-                       "Audi TT": "vehicle.audi.tt",
-                      "BH Crossbike": "vehicle.bh.crossbike",
-                      "BMW Grandtourer": "vehicle.bmw.grandtourer",
-                      "BMW iSetta": "vehicle.bmw.isetta",
-                      "Carla Cola Truck": "vehicle.carlamotors.carlacola",
-                      "Chevrolet Impala": "vehicle.chevrolet.impala",
-                      "Citroen C3": "vehicle.citroen.c3",
-                      "Diamondback Century": "vehicle.diamondback.century",
-                      "Dodge Charger Police": "vehicle.dodge_charger.police",
-                      "Gazelle Omafiets": "vehicle.gazelle.omafiets",
-                      "Harley Davidson Low Rider": "vehicle.harley-davidson.low_rider",
-                      "Jeep Wrangler": "vehicle.jeep.wrangler_rubicon",
-                      "Kawasaki Ninja": "vehicle.kawasaki.ninja",
-                      "Lincoln MKZ 2017": "vehicle.lincoln.mkz2017",
-                      "Lincoln MKZ 2020": "vehicle.lincoln2020.mkz2020",
-                      "Mercedes Benz Coupe": "vehicle.mercedes-benz.coupe",
-                      "Mini Cooper ST": "vehicle.mini.cooperst",
-                      "Ford Mustang": "vehicle.mustang.mustang",
-                      "Nissan Micra": "vehicle.nissan.micra",
-                      "Nissan Patrol": "vehicle.nissan.patrol",
-                      "Seat Leon": "vehicle.seat.leon",
-                      "Tesla Cybertruck": "vehicle.tesla.cybertruck",
-                      "Tesla Model 3": "vehicle.tesla.model3",
-                      "Toyota Prius": "vehicle.toyota.prius",
-                      "Volkswagen T2": "vehicle.volkswagen.t2",
-                      "Yamaha YZF": "vehicle.yamaha.yzf"}
+        vehicle_dict = {"Audi A2": "vehicle.audi.a2",
+                        "Audi eTron": "vehicle.audi.etron",
+                        "Audi TT": "vehicle.audi.tt",
+                        "BH Crossbike": "vehicle.bh.crossbike",
+                        "BMW Grandtourer": "vehicle.bmw.grandtourer",
+                        "BMW iSetta": "vehicle.bmw.isetta",
+                        "Carla Cola Truck": "vehicle.carlamotors.carlacola",
+                        "Chevrolet Impala": "vehicle.chevrolet.impala",
+                        "Citroen C3": "vehicle.citroen.c3",
+                        "Diamondback Century": "vehicle.diamondback.century",
+                        "Dodge Charger Police": "vehicle.dodge_charger.police",
+                        "Gazelle Omafiets": "vehicle.gazelle.omafiets",
+                        "Harley Davidson Low Rider": "vehicle.harley-davidson.low_rider",
+                        "Jeep Wrangler": "vehicle.jeep.wrangler_rubicon",
+                        "Kawasaki Ninja": "vehicle.kawasaki.ninja",
+                        "Lincoln MKZ 2017": "vehicle.lincoln.mkz2017",
+                        "Lincoln MKZ 2020": "vehicle.lincoln2020.mkz2020",
+                        "Mercedes Benz Coupe": "vehicle.mercedes-benz.coupe",
+                        "Mini Cooper ST": "vehicle.mini.cooperst",
+                        "Ford Mustang": "vehicle.mustang.mustang",
+                        "Nissan Micra": "vehicle.nissan.micra",
+                        "Nissan Patrol": "vehicle.nissan.patrol",
+                        "Seat Leon": "vehicle.seat.leon",
+                        "Tesla Cybertruck": "vehicle.tesla.cybertruck",
+                        "Tesla Model 3": "vehicle.tesla.model3",
+                        "Toyota Prius": "vehicle.toyota.prius",
+                        "Volkswagen T2": "vehicle.volkswagen.t2",
+                        "Yamaha YZF": "vehicle.yamaha.yzf"}
         vehicle_model = vehicle_dict[attributes["Model"]]
         orientation = float(attributes["Orientation"])
 

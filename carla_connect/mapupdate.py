@@ -9,15 +9,16 @@ Carla_connect - map update
 '''
 
 import glob
+import os.path
 import os
 import sys
-import os.path
 import numpy as np
 import carla
-import ad_map_access as ad
+# pylint: disable=no-name-in-module, import-error
 from qgis.utils import iface
 from qgis.core import Qgis
-from ad_map_access_qgis import ADMapQgs
+import ad_map_access as ad
+from ad_map_access_qgis import ADMapQgs, Globs
 
 try:
     sys.path.append(glob.glob('**/carla-*%d.%d-%s.egg' % (
@@ -26,6 +27,7 @@ try:
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 except IndexError:
     pass
+
 
 class MapUpdate():
     '''
@@ -49,6 +51,10 @@ class MapUpdate():
         self.iface = iface
         self.current_map = None
         self.open_drive_map = None
+        self.admap = None
+        self.world = None
+        self.init_map_succeeded = False
+        self.available_map = []
 
     def get_available_map(self):
         '''
@@ -97,7 +103,8 @@ class MapUpdate():
             ad.map.landmark.TrafficLightType.UNKNOWN)
         if self.init_map_succeeded and not ad.map.access.isENUReferencePointSet():
             ad.map.access.setENUReferencePoint(ad.map.point.createGeoPoint(ad.map.point.Longitude(8.4421163),
-            ad.map.point.Latitude(49.0192671), ad.map.point.Altitude(0.)))
+                                                                           ad.map.point.Latitude(49.0192671),
+                                                                           ad.map.point.Altitude(0.)))
             Globs.log.warning("OpenDrive file '{}' doesn't provide GEO reference point. Setting a default at {}".format(
                 file_name, ad.map.access.getENUReferencePoint()))
 
@@ -118,6 +125,7 @@ class MapUpdate():
         self.admap.layers.remove_all()
         self.admap = None
 
+
 class CameraSetup():
     '''
     Class to setup camera.
@@ -127,6 +135,7 @@ class CameraSetup():
     camposy: y coordinate where the camera has to be placed
     sensor_defination_file-path: the path of file infrastrcutre which contanins attributes of camera.
     '''
+
     def __init__(self, world, camposx, camposy, height):
         '''
         initialize the variables.
@@ -162,25 +171,25 @@ class CameraSetup():
         bp_library = self.world.get_blueprint_library()
         calibration = None
         try:
-            bp = bp_library.find("sensor.camera.rgb")
+            bp = bp_library.find("sensor.camera.rgb")   # pylint: disable=invalid-name
             bp.set_attribute('role_name', str("CAM_TOP"))
             bp.set_attribute('image_size_x', str(1600))
             bp.set_attribute('image_size_y', str(1600))
             bp.set_attribute('fov', str(100))
             sensor_location = carla.Location(x=float(self.camera_position_x), y=abs((float(self.camera_position_y))),
-                                                z=float(self.height))
+                                             z=float(self.height))
             sensor_rotation = carla.Rotation(pitch=-90, roll=0, yaw=0)
             calibration = np.identity(3)
             calibration[0, 2] = 1600 / 2.0
             calibration[1, 2] = 1600 / 2.0
             calibration[0, 0] = calibration[1, 1] = 1600 / (2.0 * np.tan(0.5 * np.radians(100)))
-        except KeyError as e:
+        except KeyError as e:   # pylint: disable=invalid-name
             print("Sensor will not be spawned, because sensor spec is invalid: '{}'".format(e))
 
         sensor_transform = carla.Transform(sensor_location, sensor_rotation)
         sensor = self.world.spawn_actor(bp, sensor_transform)
         actor_list = self.world.get_actors()
-        print("Camera Added at height " + str(self.height) +"meters")
+        print("Camera Added at height " + str(self.height) + "meters")
         for actor in actor_list.filter('sensor.camera.rgb'):
             print("Camera " + str(actor.get_location()))
         if calibration is not None:

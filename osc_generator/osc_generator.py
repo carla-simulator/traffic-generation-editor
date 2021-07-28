@@ -26,10 +26,11 @@ from .export_xosc import ExportXOSCDialog
 from .edit_environment import EditEnvironmentDockWidget
 from .end_eval_criteria import EndEvalCriteriaDialog
 from .add_maneuvers import AddManeuversDockWidget
-from .resources import *
 
-class OSC_Generator:
+
+class OSC_Generator:    # pylint: disable=invalid-name
     """QGIS Plugin Implementation."""
+
     def __init__(self, iface):
         """Constructor.
 
@@ -74,9 +75,9 @@ class OSC_Generator:
         self._dockwidget_maneuvers = None
         self._root_layer = QgsProject.instance().layerTreeRoot()
 
-
     # noinspection PyMethodMayBeStatic
-    def tr(self, message):
+
+    def tr(self, message):  # pylint: disable=invalid-name
         """Get the translation for a string using Qt translation API.
 
         We implement this ourselves since we do not inherit QObject.
@@ -90,18 +91,17 @@ class OSC_Generator:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('OSC_Generator', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -164,8 +164,7 @@ class OSC_Generator:
 
         return action
 
-
-    def initGui(self):
+    def initGui(self):  # pylint: disable=invalid-name
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
         self.add_action(
@@ -210,9 +209,9 @@ class OSC_Generator:
             callback=self.export_xosc,
             parent=self.iface.mainWindow())
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
-    def onClosePlugin(self):
+    def onClosePlugin(self):    # pylint: disable=invalid-name
         """Cleanup necessary items here when plugin dockwidget is closed"""
         if self._plugin_is_active_vehicles:
             self._dockwidget_vehicles.closingPlugin.disconnect(self.onClosePlugin)
@@ -234,8 +233,7 @@ class OSC_Generator:
             self._dockwidget_props.closingPlugin.disconnect(self.onClosePlugin)
             self._plugin_is_active_props = False
 
-
-    def unload(self):
+    def unload(self):   # pylint: disable=invalid-name
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
@@ -245,7 +243,7 @@ class OSC_Generator:
         # remove the toolbar
         del self.toolbar
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def add_vehicles(self):
         """

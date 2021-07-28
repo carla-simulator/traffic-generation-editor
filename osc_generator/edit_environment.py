@@ -9,7 +9,7 @@ OpenSCENARIO Generator - Edit Environment
 """
 import os
 # pylint: disable=no-name-in-module, no-member
-from qgis.core import Qgis, QgsFeature, QgsProject
+from qgis.core import QgsFeature, QgsProject
 from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.utils import iface
@@ -32,7 +32,7 @@ class EditEnvironmentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         super(EditEnvironmentDockWidget, self).__init__(parent)
         self.setupUi(self)
         # UI element signals
-        self.AddEnvironment_Button.pressed.connect(self.AddEnvironment)
+        self.AddEnvironment_Button.pressed.connect(self.add_environment)
 
         self._layer = None
         self._data_provider = None
@@ -40,7 +40,7 @@ class EditEnvironmentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         layer_setup_environment()
         self.set_layer()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
         """QtDockWidget signals for closing"""
         self.closingPlugin.emit()
         event.accept()
@@ -62,7 +62,7 @@ class EditEnvironmentDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self._data_provider = self._layer.dataProvider()
         self._data_provider.deleteFeatures(current_features)
 
-    def AddEnvironment(self):
+    def add_environment(self):
         """
         Inserts environment variables into dimensionless QGIS layer.
         """

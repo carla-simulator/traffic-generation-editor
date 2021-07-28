@@ -16,10 +16,12 @@ from qgis.utils import iface
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'carla_connect_to_host_dialog.ui'))
 
+
 class CarlaConnectToHostDialog(QtWidgets.QDialog, FORM_CLASS):
     """
     Dialog class for connecting to CARLA.
     """
+
     def __init__(self, parent=None):
         """Initialization of CarlaConnectToHostDialog"""
         super(CarlaConnectToHostDialog, self).__init__(parent)
@@ -29,13 +31,13 @@ class CarlaConnectToHostDialog(QtWidgets.QDialog, FORM_CLASS):
         """Returns host and port selection from GUI"""
         host = "localhost"
         port = 2000
-        if self.host_selection.text() is not "":
+        if self.host_selection.text() != "":
             host = str(self.host_selection.text())
         else:
             message = "No CARLA host was selected, defaulting to 'localhost'"
             iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
             QgsMessageLog.logMessage(message, level=Qgis.Info)
-        if self.port_selection.text() is not "":
+        if self.port_selection.text() != "":
             port = int(self.port_selection.text())
         else:
             message = "No CARLA port was selected, defaulting to 2000"
