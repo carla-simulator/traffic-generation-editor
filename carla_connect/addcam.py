@@ -9,33 +9,38 @@ Carla_Connect - Add Camera
 import math
 import os
 import os.path
-import numpy as np
 import sys
-if not hasattr(sys, 'argv'):
-    sys.argv  = ['']
+import numpy as np
 import pygame
-import ad_map_access as ad
+# pylint: disable=no-name-in-module
+from qgis.utils import iface
+from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
+from qgis.PyQt import QtWidgets, uic
+from qgis.gui import QgsMapTool
 from qgis.core import (Qgis, QgsFeature, QgsField, QgsGeometry,
                        QgsMessageLog, QgsPointXY, QgsProject,
                        QgsVectorLayer, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling)
-from qgis.gui import QgsMapTool
-from qgis.PyQt import QtWidgets, uic
-from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
-from qgis.utils import iface
-from .mapupdate import CameraSetup
-from .mapupdate import MapUpdate
+import ad_map_access as ad
+from .mapupdate import MapUpdate    # pylint: disable=import-error
+from .mapupdate import CameraSetup  # pylint: disable=import-error
+
+if not hasattr(sys, 'argv'):
+    sys.argv = ['']
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'camera.ui'))
 
+
 class CameraDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     '''class for Qtwidget of camera placement'''
     closingPlugin = pyqtSignal()
+
     def __init__(self, parent=None, host='localhost', port=2000):
         self.camera_layer = None
         super(CameraDockWidget, self).__init__(parent)
         self.setupUi(self)
         self.height = None
+        self.selected_height = None
         self.world = MapUpdate(host, port).get_world()
         self.auto_cam_placement = AutoCamera(self.world)
         self.AddCameraposition.pressed.connect(self._insert_camera)
@@ -85,6 +90,7 @@ class CameraDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         tool = PointTool(canvas, layer, self.height, self.world)
         canvas.setMapTool(tool)
 
+
 class PointTool(QgsMapTool):
     '''
     class that provides position of the click(placement of the camera)
@@ -92,22 +98,18 @@ class PointTool(QgsMapTool):
     canvas: iface map canvas.
     layers: iface current layer.
     '''
+
     def __init__(self, canvas, layer, height, world):
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.layer = layer
         self.height = height
         self.world = world
+        self.spawn_cam = None
         self.data_input = layer.dataProvider()
         self.canvas.setCursor(Qt.CrossCursor)
 
-    def canvasPressEvent(self, event):
-        pass
-
-    def canvasMoveEvent(self, event):
-        pass
-
-    def canvasReleaseEvent(self, event):
+    def canvasReleaseEvent(self, event):    # pylint: disable=invalid-name
         '''
         method to dertermine camera positon for manual camera placement
         '''
@@ -131,21 +133,6 @@ class PointTool(QgsMapTool):
         self.canvas.refreshAllLayers()
         self.canvas.unsetMapTool(self)
 
-    def activate(self):
-        pass
-
-    def deactivate(self):
-        pass
-
-    def isZoomTool(self):
-        return False
-
-    def isTransient(self):
-        return True
-
-    def isEditTool(self):
-        return True
-
     def _spawn_marker(self, enupoint):
         '''
         Method to calculated the makers points
@@ -156,38 +143,43 @@ class PointTool(QgsMapTool):
         '''
         camera_orientation = 90
         angle = math.radians(camera_orientation)
-        if angle is not None:
-            botleftx = float(enupoint.x) + (-2 * math.cos(angle) - 1 * math.sin(angle))
-            botlefty = float(enupoint.y) + (-2 * math.sin(angle) + 1 * math.cos(angle))
-            botrightx = float(enupoint.x) + (-2 * math.cos(angle) + 1 * math.sin(angle))
-            botrighty = float(enupoint.y) + (-2 * math.sin(angle) - 1 * math.cos(angle))
-            topleftx = float(enupoint.x) + (1 * math.cos(angle) - 1 * math.sin(angle))
-            toplefty = float(enupoint.y) + (1 * math.sin(angle) + 1 * math.cos(angle))
-            topcenterx = float(enupoint.x) + 1 * math.cos(angle)
-            topcentery = float(enupoint.y) + 1 * math.sin(angle)
-            toprightx = float(enupoint.x) + (1* math.cos(angle) + 1 * math.sin(angle))
-            toprighty = float(enupoint.y) + (1 * math.sin(angle) - 1 * math.cos(angle))
 
-            botleft = ad.map.point.createENUPoint(x=botleftx, y=botlefty, z=0)
-            botright = ad.map.point.createENUPoint(x=botrightx, y=botrighty, z=0)
-            topleft = ad.map.point.createENUPoint(x=topleftx, y=toplefty, z=0)
-            topcenter = ad.map.point.createENUPoint(x=topcenterx, y=topcentery, z=0)
-            topright = ad.map.point.createENUPoint(x=toprightx, y=toprighty, z=0)
+        botleftx = float(enupoint.x) + (-2 * math.cos(angle) - 1 * math.sin(angle))
+        botlefty = float(enupoint.y) + (-2 * math.sin(angle) + 1 * math.cos(angle))
+        botrightx = float(enupoint.x) + (-2 * math.cos(angle) + 1 * math.sin(angle))
+        botrighty = float(enupoint.y) + (-2 * math.sin(angle) - 1 * math.cos(angle))
+        topleftx = float(enupoint.x) + (1 * math.cos(angle) - 1 * math.sin(angle))
+        toplefty = float(enupoint.y) + (1 * math.sin(angle) + 1 * math.cos(angle))
+        topcenterx = float(enupoint.x) + 1 * math.cos(angle)
+        topcentery = float(enupoint.y) + 1 * math.sin(angle)
+        toprightx = float(enupoint.x) + (1 * math.cos(angle) + 1 * math.sin(angle))
+        toprighty = float(enupoint.y) + (1 * math.sin(angle) - 1 * math.cos(angle))
 
-            botleft = ad.map.point.toGeo(botleft)
-            botright = ad.map.point.toGeo(botright)
-            topleft = ad.map.point.toGeo(topleft)
-            topcenter = ad.map.point.toGeo(topcenter)
-            topright = ad.map.point.toGeo(topright)
+        botleft = ad.map.point.createENUPoint(x=botleftx, y=botlefty, z=0)
+        botright = ad.map.point.createENUPoint(x=botrightx, y=botrighty, z=0)
+        topleft = ad.map.point.createENUPoint(x=topleftx, y=toplefty, z=0)
+        topcenter = ad.map.point.createENUPoint(x=topcenterx, y=topcentery, z=0)
+        topright = ad.map.point.createENUPoint(x=toprightx, y=toprighty, z=0)
 
-            squarepoints = [QgsPointXY(botleft.longitude, botleft.latitude),
-                            QgsPointXY(botright.longitude, botright.latitude),
-                            QgsPointXY(topright.longitude, topright.latitude),
-                            QgsPointXY(topcenter.longitude, topcenter.latitude),
-                            QgsPointXY(topleft.longitude, topleft.latitude)]
-            return squarepoints
+        botleft = ad.map.point.toGeo(botleft)
+        botright = ad.map.point.toGeo(botright)
+        topleft = ad.map.point.toGeo(topleft)
+        topcenter = ad.map.point.toGeo(topcenter)
+        topright = ad.map.point.toGeo(topright)
+
+        squarepoints = [QgsPointXY(botleft.longitude, botleft.latitude),
+                        QgsPointXY(botright.longitude, botright.latitude),
+                        QgsPointXY(topright.longitude, topright.latitude),
+                        QgsPointXY(topcenter.longitude, topcenter.latitude),
+                        QgsPointXY(topleft.longitude, topleft.latitude)]
+        return squarepoints
+
 
 class AutoCamera():
+    """
+    Class to automatically spawn and place an observer camera
+    """
+
     def __init__(self, world):
         '''
         Initilize the variable.
@@ -248,6 +240,7 @@ class AutoCamera():
         spawn_cam = Spawn(self.world)
         spawn_cam.spawn_camera(cameraposition.x, cameraposition.y, 50)
 
+
 class Spawn():
     '''
     class to spawn camera at provided position
@@ -257,6 +250,7 @@ class Spawn():
     height = how high the camera has to be placed
     '''
     actor_list = []
+
     def __init__(self, world):
         '''
         initialize variable
@@ -289,8 +283,9 @@ class ImageProcessor():
             for sensor in actors:
                 pygame.init()
                 pygame.font.init()
-                display = pygame.display.set_mode((ImageProcessor.width, ImageProcessor.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
-                sensor.listen(lambda data: ImageProcessor.render(data, display))
+                display = pygame.display.set_mode(
+                    (ImageProcessor.width, ImageProcessor.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
+                sensor.listen(lambda data: ImageProcessor.render(data, display))    # pylint: disable=cell-var-from-loop
 
     @staticmethod
     def render(image, display):
@@ -304,7 +299,7 @@ class ImageProcessor():
         surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
         display.blit(surface, (0, 0))
         pygame.display.flip()
-    
+
     @staticmethod
     def destroy_all_window():
         '''
@@ -317,5 +312,3 @@ class ImageProcessor():
 
         pygame.display.quit()
         pygame.quit()
-
-

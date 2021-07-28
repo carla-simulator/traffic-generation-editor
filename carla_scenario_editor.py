@@ -17,7 +17,6 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 from qgis.core import QgsProject, Qgis, QgsMessageLog
-from PyQt5.QtWidgets import QToolBar
 
 # pylint: disable=relative-beyond-top-level
 from .osc_generator.add_vehicles import AddVehiclesDockWidget
@@ -31,17 +30,20 @@ from .osc_generator.add_maneuvers import AddManeuversDockWidget
 from .osc_generator.parameter_declarations import ParameterDeclarationsDockWidget
 
 try:
-    import carla
+    # test import here to avoid exception later
+    import carla    # pylint: disable=unused-import
     from .carla_connect.mapupdate import MapUpdate
     from .carla_connect.addcam import CameraDockWidget
     from .carla_connect.carla_connect_dockwidget import CarlaConnectDockWidget
     from .carla_connect.carla_connect_to_host import CarlaConnectToHostDialog
-    carla_available = True
-except:
-    carla_available = False
+    carla_available = True  # pylint: disable=invalid-name
+except:     # pylint: disable=bare-except
+    carla_available = False  # pylint: disable=invalid-name
 
-class OSC_Generator:
+
+class OSC_Generator:    # pylint: disable=invalid-name
     """QGIS Plugin Implementation."""
+
     def __init__(self, iface):
         """Constructor.
 
@@ -89,9 +91,14 @@ class OSC_Generator:
         self._root_layer = QgsProject.instance().layerTreeRoot()
         self.ui = QGISUI(self.iface, "OSC_Generator", True)
         self.action_tool = {}
-
+        self.host = None
+        self.port = None
+        self.update_map = None
+        self.dockwidget = None
+        self.camera_dock_widget = None
 
     # noinspection PyMethodMayBeStatic
+
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
 
@@ -106,18 +113,17 @@ class OSC_Generator:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('OSC_Generator', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -199,7 +205,7 @@ class OSC_Generator:
         code_export_info = "Export OpenSCENARIO file"
         code_import = "icon_import"
         code_import_info = "Import OpenSCENARIO file"
-        carla = "carla_logo"
+        carla_logo = "carla_logo"
         carla_info = "Connect to CARLA"
         cam = "video_cam"
         cam_info = "Add bird eye camera"
@@ -213,7 +219,7 @@ class OSC_Generator:
         self.__add_action__(endeval, endeval_info, self.end_evaluation)
         self.__add_action__(code_export, code_export_info, self.export_xosc)
         self.__add_action__(code_import, code_import_info, self.import_xosc)
-        self.__add_action__(carla, carla_info, self.run_scenario)
+        self.__add_action__(carla_logo, carla_info, self.run_scenario)
         self.__add_action__(cam, cam_info, self.add_camera_position)
 
     def __add_action__(self, icon_file, info, callback):
@@ -228,7 +234,7 @@ class OSC_Generator:
         action = self.ui.add_action(icon_file, info, callback)
         self.action_tool[icon_file] = (action, None)
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin dockwidget is closed"""
@@ -267,7 +273,7 @@ class OSC_Generator:
         # remove the toolbar
         del self.toolbar
 
-    #--------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
 
     def add_vehicles(self):
         """
@@ -337,7 +343,7 @@ class OSC_Generator:
         return_value = dlg.exec_()
         if return_value:
             ExportXOSCDialog.save_file(dlg)
-    
+
     def import_xosc(self):
         """
         Opens "Import OpenSCENARIO" dialog.
@@ -488,13 +494,15 @@ class OSC_Generator:
             self.iface.messageBar().pushMessage("Info", message, level=Qgis.Info)
             QgsMessageLog.logMessage(message, level=Qgis.Info)
             return
-            
+
         self.camera_dock_widget = CameraDockWidget(host=self.host, port=self.port)
         self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.camera_dock_widget)
         self.camera_dock_widget.show()
 
+
 class QGISUI(object):
     "..."
+
     def __init__(self, iface, title, toolbar_too=False):
         "..."
         self.iface = iface

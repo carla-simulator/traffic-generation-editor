@@ -9,13 +9,15 @@ OpenSCENARIO Generator - Helper Functions
 
 A collection of helper functions used throughout the plugin
 """
+# pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QInputDialog
-from qgis.core import (Qgis, QgsProject, QgsMessageLog, QgsVectorLayer, QgsFeature,
-    QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsFeatureRequest)
+from qgis.core import (Qgis, QgsProject, QgsMessageLog, QgsVectorLayer,
+                       QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsFeatureRequest)
 from qgis.utils import iface
 from qgis.PyQt.QtCore import QVariant
 
 import ad_map_access as ad
+
 
 def display_message(message, level):
     """
@@ -28,15 +30,16 @@ def display_message(message, level):
     status = level
 
     # Convert into QGIS message levels
-    if level is "Info":
+    if level == "Info":
         level = Qgis.Info
-    elif level is "Warning":
+    elif level == "Warning":
         level = Qgis.Warning
-    elif level is "Critical":
+    elif level == "Critical":
         level = Qgis.Critical
 
     iface.messageBar().pushMessage(status, message, level=level)
     QgsMessageLog.logMessage(message, level=level)
+
 
 def layer_setup_metadata():
     """
@@ -67,6 +70,7 @@ def layer_setup_metadata():
         message = "Metadata layer added"
         display_message(message, level="Info")
 
+
 def layer_setup_end_eval():
     """
     Set up OpenSCENARIO end evaluation KPIs layer
@@ -75,7 +79,7 @@ def layer_setup_end_eval():
     osc_layer = root_layer.findGroup("OpenSCENARIO")
     if osc_layer is None:
         osc_layer = root_layer.addGroup("OpenSCENARIO")
-    
+
     if not QgsProject.instance().mapLayersByName("End Evaluation KPIs"):
         end_eval_layer = QgsVectorLayer("None", "End Evaluation KPIs", "memory")
         QgsProject.instance().addMapLayer(end_eval_layer, False)
@@ -96,6 +100,7 @@ def layer_setup_end_eval():
         message = "End evaluation KPIs layer added"
         display_message(message, level="Info")
 
+
 def layer_setup_environment():
     """
     Set up environment layer
@@ -109,7 +114,7 @@ def layer_setup_environment():
         env_layer = QgsVectorLayer("None", "Environment", "memory")
         QgsProject.instance().addMapLayer(env_layer, False)
         osc_layer.addLayer(env_layer)
-        
+
         # Setup layer attributes
         data_attributes = [
             QgsField("Datetime", QVariant.String),
@@ -128,6 +133,7 @@ def layer_setup_environment():
         message = "Environment layer added"
         display_message(message, level="Info")
 
+
 def layer_setup_walker():
     """
     Set up pedestrian layer
@@ -141,7 +147,7 @@ def layer_setup_walker():
         walker_layer = QgsVectorLayer("Polygon", "Pedestrians", "memory")
         QgsProject.instance().addMapLayer(walker_layer, False)
         osc_layer.addLayer(walker_layer)
-        
+
         # Setup layer attributes
         data_attributes = [
             QgsField("id", QVariant.Int),
@@ -164,6 +170,7 @@ def layer_setup_walker():
         message = "Pedestrian layer added"
         display_message(message, level="Info")
 
+
 def layer_setup_vehicle():
     """
     Set up vehicle layer
@@ -174,24 +181,24 @@ def layer_setup_vehicle():
         osc_layer = root_layer.addGroup("OpenSCENARIO")
 
     if (not QgsProject.instance().mapLayersByName("Vehicles") or
-        not QgsProject.instance().mapLayersByName("Vehicles - Ego")):
+            not QgsProject.instance().mapLayersByName("Vehicles - Ego")):
         vehicle_layer_ego = QgsVectorLayer("Polygon", "Vehicles - Ego", "memory")
         vehicle_layer = QgsVectorLayer("Polygon", "Vehicles", "memory")
         QgsProject.instance().addMapLayer(vehicle_layer_ego, False)
         QgsProject.instance().addMapLayer(vehicle_layer, False)
         osc_layer.addLayer(vehicle_layer_ego)
         osc_layer.addLayer(vehicle_layer)
-        
+
         # Setup layer attributes
         data_attributes = [QgsField("id", QVariant.Int),
-                            QgsField("Vehicle Model", QVariant.String),
-                            QgsField("Orientation", QVariant.Double),
-                            QgsField("Pos X", QVariant.Double),
-                            QgsField("Pos Y", QVariant.Double),
-                            QgsField("Pos Z", QVariant.Double),
-                            QgsField("Init Speed", QVariant.String),
-                            QgsField("Agent", QVariant.String),
-                            QgsField("Agent Camera", QVariant.Bool)]
+                           QgsField("Vehicle Model", QVariant.String),
+                           QgsField("Orientation", QVariant.Double),
+                           QgsField("Pos X", QVariant.Double),
+                           QgsField("Pos Y", QVariant.Double),
+                           QgsField("Pos Z", QVariant.Double),
+                           QgsField("Init Speed", QVariant.String),
+                           QgsField("Agent", QVariant.String),
+                           QgsField("Agent Camera", QVariant.Bool)]
 
         vehicle_layer_ego.dataProvider().addAttributes(data_attributes)
         vehicle_layer.dataProvider().addAttributes(data_attributes)
@@ -211,6 +218,7 @@ def layer_setup_vehicle():
 
         message = "Vehicle layer added"
         display_message(message, level="Info")
+
 
 def layer_setup_props():
     """
@@ -249,6 +257,7 @@ def layer_setup_props():
         message = "Static objects layer added"
         display_message(message, level="Info")
 
+
 def layer_setup_maneuvers_waypoint():
     """
     Set up waypoint maneuvers layer
@@ -257,7 +266,7 @@ def layer_setup_maneuvers_waypoint():
     osc_layer = root_layer.findGroup("OpenSCENARIO")
     if osc_layer is None:
         osc_layer = root_layer.addGroup("OpenSCENARIO")
-    
+
     if not QgsProject.instance().mapLayersByName("Waypoint Maneuvers"):
         waypoint_layer = QgsVectorLayer("Point", "Waypoint Maneuvers", "memory")
         QgsProject.instance().addMapLayer(waypoint_layer, False)
@@ -289,6 +298,7 @@ def layer_setup_maneuvers_waypoint():
         message = "Using existing waypoint maneuver layer"
         display_message(message, level="Info")
 
+
 def layer_setup_maneuvers_and_triggers():
     """
     Set up maneuvers layer (including start and stop triggers)
@@ -297,7 +307,7 @@ def layer_setup_maneuvers_and_triggers():
     osc_layer = root_layer.findGroup("OpenSCENARIO")
     if osc_layer is None:
         osc_layer = root_layer.addGroup("OpenSCENARIO")
-    
+
     if not QgsProject.instance().mapLayersByName("Maneuvers"):
         maneuver_layer = QgsVectorLayer("None", "Maneuvers", "memory")
         QgsProject.instance().addMapLayer(maneuver_layer, False)
@@ -376,7 +386,8 @@ def layer_setup_maneuvers_and_triggers():
     else:
         message = "Using existing maneuvers layer"
         display_message(message, level="Info")
-    
+
+
 def layer_setup_maneuvers_longitudinal():
     """
     Set up longitudinal maneuvers layer
@@ -385,7 +396,7 @@ def layer_setup_maneuvers_longitudinal():
     osc_layer = root_layer.findGroup("OpenSCENARIO")
     if osc_layer is None:
         osc_layer = root_layer.addGroup("OpenSCENARIO")
-    
+
     if not QgsProject.instance().mapLayersByName("Longitudinal Maneuvers"):
         long_man_layer = QgsVectorLayer("None", "Longitudinal Maneuvers", "memory")
         QgsProject.instance().addMapLayer(long_man_layer, False)
@@ -416,6 +427,7 @@ def layer_setup_maneuvers_longitudinal():
         message = "Using existing longitudinal maneuvers layer"
         display_message(message, level="Info")
 
+
 def layer_setup_maneuvers_lateral():
     """
     Set up lateral maneuvers layer
@@ -424,7 +436,7 @@ def layer_setup_maneuvers_lateral():
     osc_layer = root_layer.findGroup("OpenSCENARIO")
     if osc_layer is None:
         osc_layer = root_layer.addGroup("OpenSCENARIO")
-    
+
     if not QgsProject.instance().mapLayersByName("Lateral Maneuvers"):
         lat_man_layer = QgsVectorLayer("None", "Lateral Maneuvers", "memory")
         QgsProject.instance().addMapLayer(lat_man_layer, False)
@@ -453,6 +465,7 @@ def layer_setup_maneuvers_lateral():
         message = "Using existing lateral maneuvers layer"
         display_message(message, level="Info")
 
+
 def layer_setup_parameters():
     """
     Set up parameter declarations layer
@@ -461,7 +474,7 @@ def layer_setup_parameters():
     osc_layer = root_layer.findGroup("OpenSCENARIO")
     if osc_layer is None:
         osc_layer = root_layer.addGroup("OpenSCENARIO")
-    
+
     if not QgsProject.instance().mapLayersByName("Parameter Declarations"):
         param_layer = QgsVectorLayer("None", "Parameter Declarations", "memory")
         QgsProject.instance().addMapLayer(param_layer, False)
@@ -477,6 +490,7 @@ def layer_setup_parameters():
 
         message = "Parameter declarations layer added"
         display_message(message, level="Info")
+
 
 def verify_parameters(param):
     """
@@ -500,6 +514,7 @@ def verify_parameters(param):
 
     return feature
 
+
 def is_float(value):
     """
     Checks value if it can be converted to float.
@@ -515,6 +530,7 @@ def is_float(value):
         return True
     except ValueError:
         return False
+
 
 def get_entity_heading(geopoint):
     """
@@ -572,3 +588,5 @@ def get_entity_heading(geopoint):
             parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
             lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
             return lane_heading
+
+    return None

@@ -11,16 +11,19 @@ import os
 from subprocess import Popen
 from os import environ
 import pathlib
-from qgis.PyQt import  QtWidgets, uic
+# pylint: disable=no-name-in-module
+from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.utils import iface
 from qgis.core import Qgis
+# pylint: disable=import-error
 from .mapupdate import MapUpdate
 from .export_xosc import Exportxosc
 from .addcam import ImageProcessor
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'carla_connect_dockwidget_base.ui'))
+
 
 class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
     '''
@@ -56,7 +59,10 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             maps_avail.append(maps[17:])
         return maps_avail
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
+        '''
+        close plugin
+        '''
         self.closingPlugin.emit()
         event.accept()
 
@@ -83,7 +89,7 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         iface.messageBar().pushMessage("Info", "Map Changed", level=Qgis.Info)
 
     def _play_scenario(self):
-        ''' 
+        '''
         connect to the senerio runner
         Open py game window for visualization
         '''
@@ -117,7 +123,6 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         '''
         ImageProcessor.destroy_all_window()
         if self._scenario_runner_process.poll() is None:
-          self._scenario_runner_process.communicate()
-          self._scenario_runner_process.kill()
-          self._scenario_runner_process.communicate()
-        
+            self._scenario_runner_process.communicate()
+            self._scenario_runner_process.kill()
+            self._scenario_runner_process.communicate()

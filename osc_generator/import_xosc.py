@@ -7,25 +7,30 @@
 """
 OpenSCENARIO Generator - Import XOSC
 """
+from distutils.util import strtobool
 import os
 import math
-from qgis.PyQt import QtWidgets, uic
+# pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from qgis.PyQt import QtWidgets, uic
 from qgis.core import QgsProject, QgsFeature, QgsPointXY, QgsGeometry
 from defusedxml import ElementTree as etree
-from .helper_functions import (layer_setup_environment, layer_setup_metadata, layer_setup_vehicle,
-    layer_setup_walker, layer_setup_props, layer_setup_end_eval, layer_setup_maneuvers_and_triggers,
-    layer_setup_maneuvers_lateral, layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_waypoint,
-    layer_setup_parameters, is_float, display_message)
 import ad_map_access as ad
+from .helper_functions import (layer_setup_environment, layer_setup_metadata, layer_setup_vehicle,
+                               layer_setup_walker, layer_setup_props, layer_setup_end_eval,
+                               layer_setup_maneuvers_and_triggers, layer_setup_maneuvers_lateral,
+                               layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_waypoint,
+                               layer_setup_parameters, is_float, display_message)
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_xosc_dialog.ui'))
+
 
 class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
     """
     Dialog class for importing OpenSCENARIO XML files.
     """
+
     def __init__(self, parent=None):
         """Initialization of ExportXMLDialog"""
         super(ImportXOSCDialog, self).__init__(parent)
@@ -45,7 +50,7 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def open_file(self):
         """Opens OpenSCENARIO file and start parsing into QGIS layers"""
-        if self.import_path.text() is not "":
+        if self.import_path.text() != "":
             filepath = self.import_path.text()
             read_xosc = ImportXOSC(filepath)
             read_xosc.import_xosc()
@@ -55,13 +60,18 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
 
 
 class ImportXOSC():
+    """
+    Class to import an existing OpenSCENARIO file
+    """
+
     def __init__(self, filepath):
         self._filepath = filepath
         self._invert_y = False
         self._warning_message = []
+        self._root = None
 
         self.setup_qgis_layers()
-    
+
     def setup_qgis_layers(self):
         """
         Initiates layers in QGIS if they are not already created.
@@ -79,6 +89,9 @@ class ImportXOSC():
         layer_setup_parameters()
 
     def import_xosc(self):
+        """
+        Main import method
+        """
         tree = etree.parse(self._filepath)
         self._root = tree.getroot()
 
@@ -90,13 +103,13 @@ class ImportXOSC():
             self.parse_enviroment_actions(env_node)
         else:
             self._warning_message.append("No environment actions found")
-        
+
         if self._root.findall(".//Entities"):
             entity_node = self._root.findall(".//Entities")[0]
             self.parse_entities(entity_node)
         else:
             self._warning_message.append("No entities found")
-        
+
         if self._root.findall(".//Storyboard/StopTrigger/ConditionGroup"):
             end_eval_node = self._root.findall(".//Storyboard/StopTrigger")[0]
             self.parse_end_evals(end_eval_node)
@@ -108,7 +121,7 @@ class ImportXOSC():
             self.parse_maneuvers(story_node)
         else:
             self._warning_message.append("No maneuvers found")
-        
+
         msg = QMessageBox()
         if self._warning_message:
             msg.setIcon(QMessageBox.Warning)
@@ -142,7 +155,7 @@ class ImportXOSC():
 
         if not QgsProject.instance().mapLayersByName("Metadata"):
             layer_setup_metadata()
-        
+
         metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
         current_features = [feat.id() for feat in metadata_layer.getFeatures()]
         metadata_layer.dataProvider().deleteFeatures(current_features)
@@ -157,7 +170,7 @@ class ImportXOSC():
             scene_graph_filepath
         ])
         metadata_layer.dataProvider().addFeature(feature)
-    
+
     def parse_paremeter_declarations(self):
         """
         Parses parameter declarations
@@ -172,7 +185,7 @@ class ImportXOSC():
             param_name = param_node.attrib.get("name")
             param_type = param_node.attrib.get("type")
             param_value = param_node.attrib.get("value")
-            
+
             feature = QgsFeature()
             feature.setAttributes([
                 param_name,
@@ -181,7 +194,7 @@ class ImportXOSC():
             ])
             param_layer.dataProvider().addFeature(feature)
 
-    def parse_enviroment_actions(self, env_node):        
+    def parse_enviroment_actions(self, env_node):
         """
         Parses environment information and saves into QGIS layer
 
@@ -199,7 +212,7 @@ class ImportXOSC():
 
         datetime = time_of_day.attrib.get("dateTime")
         datatime_animation = time_of_day.attrib.get("animation")
-        
+
         cloud = weather.attrib.get("cloudState")
         fog_range = fog.attrib.get("visualRange")
         sun_azimuth = sun.attrib.get("azimuth")
@@ -207,7 +220,7 @@ class ImportXOSC():
         sun_intensity = sun.attrib.get("intensity")
         precip_intensity = precipitation.attrib.get("intensity")
         precip_type = precipitation.attrib.get("precipitationType")
-        friction_scale_factor = road_condition.attrib.get("frictionScaleFactor")
+        friction_scale_factor = road_condition.attrib.get("frictionScaleFactor")    # pylint: disable=unused-variable
 
         env_layer = QgsProject.instance().mapLayersByName("Environment")[0]
         current_features = [feat.id() for feat in env_layer.getFeatures()]
@@ -233,7 +246,7 @@ class ImportXOSC():
                 parent = parent_map[pedestrian]
                 actor_name = parent.attrib.get("name")
                 self.parse_pedestrian(pedestrian, actor_name)
-            
+
             for vehicle in scenario_object.iter("Vehicle"):
                 parent = parent_map[vehicle]
                 actor_name = parent.attrib.get("name")
@@ -243,10 +256,10 @@ class ImportXOSC():
                 parent = parent_map[props]
                 actor_name = parent.attrib.get("name")
                 self.parse_prop(props, actor_name)
-        
+
     def parse_pedestrian(self, pedestrian, actor_name):
         """
-        Extracts information for pedestrian and inserts into QGIS layer 
+        Extracts information for pedestrian and inserts into QGIS layer
 
         Args:
             pedestrian (XML element)
@@ -268,10 +281,10 @@ class ImportXOSC():
             world_pos_heading = world_pos.attrib.get("h")
         else:
             message = (f"Non WorldPosition waypoints are not supported (Entity: {actor_name})"
-                "Defaulting to WorldPos 0, 0, 0")
+                       "Defaulting to WorldPos 0, 0, 0")
             display_message(message, level="Info")
             self._warning_message.append(message)
-        
+
         init_speed_tag = found_init.find(".//AbsoluteTargetSpeed")
         if init_speed_tag is not None:
             init_speed = init_speed_tag.attrib.get("value")
@@ -280,7 +293,7 @@ class ImportXOSC():
                 init_speed = init_speed[1:]
         else:
             init_speed = 0
-        
+
         model = pedestrian.attrib.get("model")
 
         if self._invert_y:
@@ -291,7 +304,7 @@ class ImportXOSC():
 
         walker_layer = QgsProject.instance().mapLayersByName("Pedestrians")[0]
         entity_id = self.get_entity_id(walker_layer)
-        
+
         feature = QgsFeature()
         feature.setAttributes([entity_id,
                                model,
@@ -302,10 +315,10 @@ class ImportXOSC():
                                init_speed])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
         walker_layer.dataProvider().addFeature(feature)
-    
+
     def parse_vehicle(self, vehicle, actor_name):
         """
-        Extracts information for vehicle and inserts into QGIS layer 
+        Extracts information for vehicle and inserts into QGIS layer
 
         Args:
             vehicle (XML element)
@@ -327,10 +340,10 @@ class ImportXOSC():
             world_pos_heading = world_pos.attrib.get("h")
         else:
             message = (f"Non WorldPosition waypoints are not supported (Entity: {actor_name})"
-                "Defaulting to WorldPos 0, 0, 0")
+                       "Defaulting to WorldPos 0, 0, 0")
             display_message(message, level="Info")
             self._warning_message.append(message)
-        
+
         init_speed_tag = found_init.find(".//AbsoluteTargetSpeed")
         if init_speed_tag is not None:
             init_speed = init_speed_tag.attrib.get("value")
@@ -346,14 +359,14 @@ class ImportXOSC():
             agent = agent_tag.attrib.get("value")
             if agent == "simple_vehicle_control":
                 agent_tag = vehicle_controller_tag.find(".//Property[@name='attach_camera']")
-                agent_camera = agent_tag.attrib.get("value")
-                agent_camera = True if agent_camera == "true" else False
+                agent_camera = strtobool(agent_tag.attrib.get("value").lower())
             else:
                 agent_camera = False
         else:
+            agent_camera = False
             agent = "simple_vehicle_control"
             message = (f"No vehicle controller agent defined for {actor_name}, using "
-                "'simple_vehicle_control'")
+                       "'simple_vehicle_control'")
             self._warning_message.append(message)
             display_message(message, level="Warning")
 
@@ -367,7 +380,7 @@ class ImportXOSC():
 
         vehicle_layer = QgsProject.instance().mapLayersByName("Vehicles")[0]
         entity_id = self.get_entity_id(vehicle_layer)
-        
+
         feature = QgsFeature()
         feature.setAttributes([
             entity_id,
@@ -382,10 +395,10 @@ class ImportXOSC():
         ])
         feature.setGeometry(QgsGeometry.fromPolygonXY([polygon_points]))
         vehicle_layer.dataProvider().addFeature(feature)
-    
+
     def parse_prop(self, prop, actor_name):
         """
-        Extracts information for static objects and inserts into QGIS layer 
+        Extracts information for static objects and inserts into QGIS layer
 
         Args:
             prop (XML element)
@@ -407,7 +420,7 @@ class ImportXOSC():
             world_pos_heading = world_pos.attrib.get("h")
         else:
             message = (f"Non WorldPosition waypoints are not supported (Entity: {actor_name})"
-                "Defaulting to WorldPos 0, 0, 0")
+                       "Defaulting to WorldPos 0, 0, 0")
             display_message(message, level="Info")
             self._warning_message.append(message)
 
@@ -420,18 +433,14 @@ class ImportXOSC():
 
         physics = False
         for prop_property in prop.iter("Property"):
-            physics = prop_property.attrib.get("value")
-            if physics == "on":
-                physics = True
-            else:
-                physics = False
+            physics = strtobool(prop_property.attrib.get("value").lower())
 
         polygon_points = self.get_polygon_points(
             world_pos_x, world_pos_y, world_pos_heading, "Prop")
 
         props_layer = QgsProject.instance().mapLayersByName("Static Objects")[0]
         entity_id = self.get_entity_id(props_layer)
-        
+
         feature = QgsFeature()
         feature.setAttributes([
             entity_id,
@@ -464,26 +473,28 @@ class ImportXOSC():
             entity_id = largest_id + 1
         else:
             entity_id = 1
-        
+
         return entity_id
 
     def get_polygon_points(self, pos_x, pos_y, angle, entity_type):
-
+        """
+        Get entity box points
+        """
         angle = float(angle)
         pos_x = float(pos_x)
         pos_y = float(pos_y)
 
-        if entity_type == "Pedestrian" or entity_type == "Vehicle":
+        if entity_type in ["Pedestrian", "Vehicle"]:
             if entity_type == "Pedestrian":
                 poly_edge_center = 0.4
                 poly_edge_hor = 0.3
                 poly_edge_ver = 0.35
-            
+
             if entity_type == "Vehicle":
                 poly_edge_center = 2.5
                 poly_edge_hor = 2
                 poly_edge_ver = 1
-            
+
             bot_left_x = pos_x + (-poly_edge_hor * math.cos(angle) - poly_edge_ver * math.sin(angle))
             bot_left_y = pos_y + (-poly_edge_hor * math.sin(angle) + poly_edge_ver * math.cos(angle))
             bot_right_x = pos_x + (-poly_edge_hor * math.cos(angle) + poly_edge_ver * math.sin(angle))
@@ -517,12 +528,12 @@ class ImportXOSC():
                               QgsPointXY(top_left.longitude, top_left.latitude)]
 
             return polygon_points
-        
+
         elif entity_type == "Prop":
             bot_left_x = pos_x + (-0.5 * math.cos(angle) - 0.5 * math.sin(angle))
             bot_left_y = pos_y + (-0.5 * math.sin(angle) + 0.5 * math.cos(angle))
             bot_right_x = pos_x + (-0.5 * math.cos(angle) + 0.5 * math.sin(angle))
-            bot_right_y =  pos_y + (-0.5 * math.sin(angle) - 0.5 * math.cos(angle))
+            bot_right_y = pos_y + (-0.5 * math.sin(angle) - 0.5 * math.cos(angle))
             top_left_x = pos_x + (0.5 * math.cos(angle) - 0.5 * math.sin(angle))
             top_left_y = pos_y + (0.5 * math.sin(angle) + 0.5 * math.cos(angle))
             top_right_x = pos_x + (0.5 * math.cos(angle) + 0.5 * math.sin(angle))
@@ -548,6 +559,9 @@ class ImportXOSC():
 
             return polygon_points
 
+        else:
+            raise ValueError("Unknown entity_type")
+
     def parse_end_evals(self, end_eval_node):
         """
         Parses end evaluation KPI information and saves into QGIS layers
@@ -570,6 +584,9 @@ class ImportXOSC():
             value = param_condition.attrib.get("value")
             rule = param_condition.attrib.get("rule")
 
+            if value == "":
+                value = 0.
+
             feature = QgsFeature()
             feature.setAttributes([
                 cond_name,
@@ -579,7 +596,7 @@ class ImportXOSC():
                 float(value),
                 rule
             ])
-            
+
             end_eval_layer.dataProvider().addFeature(feature)
 
     def parse_maneuvers(self, story_node):
@@ -601,18 +618,18 @@ class ImportXOSC():
             entity_act_type = "Waypoint"
             global_act_type = "InfrastructureAction"
             infra_traffic_id = 0
-            infra_traffic_state = "green"            
+            infra_traffic_state = "green"
 
             entity_node = maneuver_group.find(".//Actors/EntityRef")
             # For blank maneuvers / no maneuvers set
             if entity_node is None:
                 message = ("Maneuver does not have an entity reference! "
-                    "This maneuver will be skipped.")
+                           "This maneuver will be skipped.")
                 display_message(message, level="Info")
                 self._warning_message.append(message)
                 break
             entity = entity_node.attrib.get("entityRef")
-            
+
             waypoint_act = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction/RoutingAction")
             if waypoint_act is None:
                 private_act_node = maneuver_group.find(".//Maneuver/Event/Action/PrivateAction")
@@ -620,17 +637,17 @@ class ImportXOSC():
                 private_act_type = private_act_type_node.tag
                 if private_act_type == "LongitudinalAction":
                     entity_act_type = "Longitudinal"
-                    self.parse_maneuvers_longitudinal(private_act_type, man_id)
+                    self.parse_maneuvers_longitudinal(private_act_type_node, man_id)
                 elif private_act_type == "LateralAction":
                     entity_act_type = "Lateral"
-                    self.parse_maneuvers_lateral(private_act_type, man_id)
+                    self.parse_maneuvers_lateral(private_act_type_node, man_id)
             else:
                 self.parse_waypoints(waypoint_act, man_id, entity)
-            
+
             infra_act_node = maneuver_group.find(".//Maneuver/Event/Action/GlobalAction/InfrastructureAction")
             if infra_act_node is None:
                 message = ("Infrastructure Action not found! "
-                    "Import only supports infrastructure action currently.")
+                           "Import only supports infrastructure action currently.")
                 display_message(message, level="Info")
                 self._warning_message.append(message)
             else:
@@ -679,31 +696,25 @@ class ImportXOSC():
                     entity_cond_node = condition_node.find(".//EntityCondition")
                     entity_cond_node = list(entity_cond_node.iter())[1]
                     start_entity_cond = entity_cond_node.tag
-                    
+
                     if "duration" in entity_cond_node.attrib:
                         start_entity_duration = entity_cond_node.attrib.get("duration")
-                    
+
                     if "entityRef" in entity_cond_node.attrib:
                         start_entity_ref_entity = entity_cond_node.attrib.get("entityRef")
 
                     if "value" in entity_cond_node.attrib:
                         start_entity_value = entity_cond_node.attrib.get("value")
-                    
+
                     if "freespace" in entity_cond_node.attrib:
-                        if entity_cond_node.attrib.get("freespace") == "true":
-                            start_entity_frespace = True
-                        else:
-                            start_entity_frespace = False
-                    
+                        start_entity_frespace = strtobool(entity_cond_node.attrib.get("freespace").lower())
+
                     if "alongRoute" in entity_cond_node.attrib:
-                        if entity_cond_node.attrib.get("alongRoute") == "true":
-                            start_entity_along_route = True
-                        else:
-                            start_entity_along_route = False
-                    
+                        start_entity_along_route = strtobool(entity_cond_node.attrib.get("alongRoute").lower())
+
                     if "rule" in entity_cond_node.attrib:
                         start_entity_rule = entity_cond_node.attrib.get("rule")
-                    
+
                     if "tolerance" in entity_cond_node.attrib:
                         start_world_pos_tolerance = entity_cond_node.attrib.get("tolerance")
                         world_pos_node = entity_cond_node.find(".//Position/WorldPosition")
@@ -715,7 +726,7 @@ class ImportXOSC():
                             start_world_pos_heading = float(world_pos_node.attrib.get("h"))
                         else:
                             message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
-                                f"{str(man_id)} Entity: {entity}) Defaulting to WorldPos 0, 0, 0")
+                                       f"{str(man_id)} Entity: {entity}) Defaulting to WorldPos 0, 0, 0")
                             display_message(message, level="Info")
                             self._warning_message.append(message)
 
@@ -724,27 +735,27 @@ class ImportXOSC():
                     start_trigger = "by Value"
                     value_cond_node = list(condition_node.iter())[1]
                     start_value_cond = value_cond_node.tag
-                    
+
                     if "parameterRef" in value_cond_node.attrib:
                         start_value_param_ref = value_cond_node.attrib.get("parameterRef")
-                    
+
                     if "name" in value_cond_node.attrib:
                         start_value_name = value_cond_node.attrib.get("name")
 
                     if "value" in value_cond_node.attrib:
                         start_value_value = value_cond_node.attrib.get("value")
-                    
+
                     if "rule" in value_cond_node.attrib:
                         start_value_rule = value_cond_node.attrib.get("rule")
-                    
+
                     if "state" in value_cond_node.attrib:
                         start_value_state = value_cond_node.attrib.get("state")
-                    
+
                     if "storyboardElementType" in value_cond_node.attrib:
                         start_value_storyboard_type = value_cond_node.attrib.get("storyboardElementType")
                         start_value_storyboard_element = value_cond_node.attrib.get("storyboardElementRef")
                         start_value_storyboard_state = value_cond_node.attrib.get("state")
-                    
+
                     if "trafficSignalControllerRef" in value_cond_node.attrib:
                         start_value_traffic_controller_ref = value_cond_node.attrib.get("trafficSignalControllerRef")
                         start_value_traffic_controller_phase = value_cond_node.attrib.get("phase")
@@ -791,31 +802,26 @@ class ImportXOSC():
                     entity_cond_node = condition_node.find(".//EntityCondition")
                     entity_cond_node = list(entity_cond_node.iter())[1]
                     stop_entity_cond = entity_cond_node.tag
-                    
+
                     if "duration" in entity_cond_node.attrib:
                         stop_entity_duration = entity_cond_node.attrib.get("duration")
-                    
+
                     if "entityRef" in entity_cond_node.attrib:
                         stop_entity_ref_entity = entity_cond_node.attrib.get("entityRef")
 
                     if "value" in entity_cond_node.attrib:
                         stop_entity_value = entity_cond_node.attrib.get("value")
-                    
+
                     if "freespace" in entity_cond_node.attrib:
-                        if entity_cond_node.attrib.get("freespace") == "true":
-                            stop_entity_frespace = True
-                        else:
-                            stop_entity_frespace = False
-                    
+                        stop_entity_frespace = strtobool(entity_cond_node.attrib.get(   # pylint: disable=unused-variable
+                            "freespace").lower())
+
                     if "alongRoute" in entity_cond_node.attrib:
-                        if entity_cond_node.attrib.get("alongRoute") == "true":
-                            stop_entity_along_route = True
-                        else:
-                            stop_entity_along_route = False
-                    
+                        stop_entity_along_route = strtobool(entity_cond_node.attrib.get("alongRoute").lower())
+
                     if "rule" in entity_cond_node.attrib:
                         stop_entity_rule = entity_cond_node.attrib.get("rule")
-                    
+
                     if "tolerance" in entity_cond_node.attrib:
                         stop_world_pos_tolerance = entity_cond_node.attrib.get("tolerance")
                         world_pos_node = entity_cond_node.find(".//Position/WorldPosition")
@@ -827,7 +833,7 @@ class ImportXOSC():
                             stop_world_pos_heading = float(world_pos_node.attrib.get("h"))
                         else:
                             message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
-                                f"{str(man_id)} Entity: {entity}) Defaulting to WorldPos 0, 0, 0")
+                                       f"{str(man_id)} Entity: {entity}) Defaulting to WorldPos 0, 0, 0")
                             display_message(message, level="Info")
                             self._warning_message.append(message)
 
@@ -836,31 +842,31 @@ class ImportXOSC():
                     stop_trigger = "by Value"
                     value_cond_node = list(condition_node.iter())[1]
                     stop_value_cond = value_cond_node.tag
-                    
+
                     if "parameterRef" in value_cond_node.attrib:
                         stop_value_param_ref = value_cond_node.attrib.get("parameterRef")
-                    
+
                     if "name" in value_cond_node.attrib:
                         stop_value_name = value_cond_node.attrib.get("name")
 
                     if "value" in value_cond_node.attrib:
                         stop_value_value = value_cond_node.attrib.get("value")
-                    
+
                     if "rule" in value_cond_node.attrib:
                         stop_value_rule = value_cond_node.attrib.get("rule")
-                    
+
                     if "state" in value_cond_node.attrib:
                         stop_value_state = value_cond_node.attrib.get("state")
-                    
+
                     if "storyboardElementType" in value_cond_node.attrib:
                         stop_value_storyboard_type = value_cond_node.attrib.get("storyboardElementType")
                         stop_value_storyboard_element = value_cond_node.attrib.get("storyboardElementRef")
                         stop_value_storyboard_state = value_cond_node.attrib.get("state")
-                    
+
                     if "trafficSignalControllerRef" in value_cond_node.attrib:
                         stop_value_traffic_controller_ref = value_cond_node.attrib.get("trafficSignalControllerRef")
                         stop_value_traffic_controller_phase = value_cond_node.attrib.get("phase")
-        
+
             feature = QgsFeature()
             feature.setAttributes([
                 man_id,
@@ -928,7 +934,7 @@ class ImportXOSC():
 
     def parse_waypoints(self, waypoint_node, man_id, entity):
         """
-        Parses waypoint maneuvers and saves into QGIS layers 
+        Parses waypoint maneuvers and saves into QGIS layers
 
         Args:
             waypoint_node (XML element): Node that contains RoutingAction
@@ -946,7 +952,7 @@ class ImportXOSC():
         for waypoint in waypoint_node.iter("Waypoint"):
             route_strat = waypoint.attrib.get("routeStrategy")
             world_pos_node = waypoint.find(".//Position/WorldPosition")
-            
+
             if world_pos_node is not None:
                 world_pos_x = float(world_pos_node.attrib.get("x"))
                 world_pos_y = float(world_pos_node.attrib.get("y"))
@@ -954,11 +960,11 @@ class ImportXOSC():
                 world_pos_heading = float(world_pos_node.attrib.get("h"))
             else:
                 message = ("Non WorldPosition waypoints are not supported (Maneuver ID: "
-                    f"{str(man_id)} Entity: {entity})")
+                           f"{str(man_id)} Entity: {entity})")
                 display_message(message, level="Info")
                 self._warning_message.append(message)
                 break
-            
+
             feature = QgsFeature()
             feature.setAttributes([
                 man_id,
@@ -970,7 +976,7 @@ class ImportXOSC():
                 world_pos_z,
                 route_strat
             ])
-            
+
             # Create ENU point and convert to GEO for display in QGIS
             enupoint = ad.map.point.createENUPoint(world_pos_x, world_pos_y, world_pos_z)
             geopoint = ad.map.point.toGeo(enupoint)
@@ -985,10 +991,10 @@ class ImportXOSC():
         Parse longitudinal maneuvers and saves into QGIS layers
 
         Args:
-            long_act_node (XML element): XML node that contains LongiduinalAction
+            long_act_node (XML element): XML node that contains LongitudinalAction
             man_id (int): Maneuver ID to differentiate maneuvers
         """
-        long_man_layer =  QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
+        long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
 
         # Default values
         long_type = "SpeedAction"
@@ -1008,40 +1014,31 @@ class ImportXOSC():
         long_type_node = list(long_act_node.iter())[1]
         long_type = long_type_node.tag
         if long_type == "SpeedAction":
-            speed_dynamics_node = long_type_node.find(".//SpeedAction/SpeedActionDynamics")
+            speed_dynamics_node = long_type_node.find(".//SpeedActionDynamics")
             dynamics_shape = speed_dynamics_node.attrib.get("dynamicsShape")
             dynamics_value = speed_dynamics_node.attrib.get("value")
             dynamics_dimension = speed_dynamics_node.attrib.get("dynamicsDimension")
 
-            speed_target_node = long_act_node.find(".//SpeedAction/SpeedActionTarget")
+            speed_target_node = long_act_node.find(".//SpeedActionTarget")
             speed_target_node = list(speed_target_node.iter())[1]
             speed_target = speed_target_node.tag
 
             if speed_target == "RelativeTargetSpeed":
-                rel_target_speed_node = speed_target_node.find(".//RelativeTargetSpeed")
+                rel_target_speed_node = speed_target_node
                 entity_ref = rel_target_speed_node.attrib.get("entityRef")
                 target_speed = rel_target_speed_node.attrib.get("value")
                 target_type = rel_target_speed_node.attrib.get("speedTargetValueType")
-                if rel_target_speed_node.attrib.get("continuous") == "true":
-                    continuous = True
-                else:
-                    continuous = False
+                continuous = strtobool(rel_target_speed_node.attrib.get("continuous").lower())
             elif speed_target == "AbsoluteTargetSpeed":
-                abs_target_speed_node = speed_target_node.find(".//AbsoluteTargetSpeed")
+                abs_target_speed_node = speed_target_node
                 target_speed = abs_target_speed_node.attrib.get("value")
-        
+
         elif long_type == "LongitudinalDistanceAction":
             entity_ref = long_act_node.attrib.get("entityRef")
-            if long_act_node.attrib.get("freespace") == "true":
-                freespace = True
-            else:
-                freespace = False
-            if long_act_node.attrib.get("continuous") == "true":
-                continuous = True
-            else:
-                continuous = False
-            
-            dynamic_constrain_node = long_act_node.find(".//LongitudinalDistanceAction/DynamicConstraints")
+            freespace = strtobool(long_act_node.attrib.get("freespace").lower())
+            continuous = strtobool(long_act_node.attrib.get("continuous").lower())
+
+            dynamic_constrain_node = long_act_node.find(".//DynamicConstraints")
             max_accel = dynamic_constrain_node.attrib.get("maxAcceleration")
             max_decel = dynamic_constrain_node.attrib.get("maxDeceleration")
             max_speed = dynamic_constrain_node.attrib.get("maxSpeed")
@@ -1092,44 +1089,44 @@ class ImportXOSC():
         lat_type = lat_type_node.tag
 
         if lat_type == "LaneChangeAction":
-            dynamics_node = lat_type_node.find(".//LaneChangeAction/LaneChangeActionDynamics")
+            dynamics_node = lat_type_node.find(".//LaneChangeActionDynamics")
             dynamics_shape = dynamics_node.attrib.get("dynamicsShape")
             dynamics_value = dynamics_node.attrib.get("value")
             dynamics_dimension = dynamics_node.attrib.get("dynamicsDimension")
 
-            lane_target_node = lat_type_node.find(".//LaneChangeAction/LaneChangeTarget")
+            lane_target_node = lat_type_node.find(".//LaneChangeTarget")
             lane_target_choice_node = list(lane_target_node.iter())[1]
             lane_target = lane_target_choice_node.tag
             if lane_target == "RelativeTargetLane":
-                rel_target_node = lane_target_choice_node.find(".//RelativeTargetLane")
+                rel_target_node = lane_target_choice_node
                 entity_ref = rel_target_node.attrib.get("entityRef")
                 lane_target_value = rel_target_node.attrib.get("value")
             elif lane_target == "AbsoluteTargetLane":
-                abs_target_node = lane_target_choice_node.find(".//AbsoluteTargetLane")
+                abs_target_node = lane_target_choice_node
                 lane_target_value = abs_target_node.attrib.get("value")
 
         elif lat_type == "LaneOffsetAction":
-            dynamics_node = lat_type_node.find(".//LaneOffsetAction/LaneOffsetActionDynamics")
+            dynamics_node = lat_type_node.find(".//LaneOffsetActionDynamics")
             max_lat_accel = dynamics_node.attrib.get("maxLateralAcc")
             dynamics_shape = dynamics_node.attrib.get("dynamicsShape")
 
-            lane_target_node = lat_act_node.find(".//LaneOffsetAction/LaneOffsetTarget")
+            lane_target_node = lat_act_node.find(".//LaneOffsetTarget")
             lane_target_choice_node = list(lane_target_node.iter())[1]
             lane_target = lane_target_choice_node.tag
             if lane_target == "RelativeTargetLaneOffset":
-                rel_target_node = lane_target_choice_node.find(".//RelativeTargetLaneOffset")
+                rel_target_node = lane_target_choice_node
                 entity_ref = rel_target_node.attrib.get("entityRef")
                 lane_target_value = rel_target_node.attrib.get("value")
             elif lane_target == "AbsoluteTargetLaneOffset":
-                abs_target_node = lane_target_choice_node.find(".//AbsoluteTargetLaneOffset")
+                abs_target_node = lane_target_choice_node
                 lane_target_value = abs_target_node.attrib.get("value")
-        
+
         elif lat_type == "LateralDistanceAction":
-            dynamic_constrain_node = lat_type_node.find(".//LateralDistanceAction/DynamicConstraints")
+            dynamic_constrain_node = lat_type_node.find(".//DynamicConstraints")
             max_accel = dynamic_constrain_node.attrib.get("maxAcceleration")
             max_decel = dynamic_constrain_node.attrib.get("maxDeceleration")
             max_speed = dynamic_constrain_node.attrib.get("maxSpeed")
-            
+
         feature = QgsFeature()
         feature.setAttributes([
             man_id,

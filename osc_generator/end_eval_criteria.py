@@ -10,7 +10,7 @@ OpenSCENARIO Generator - Add End Evaluation KPIs
 import os.path
 
 # pylint: disable=no-name-in-module, no-member
-from qgis.core import Qgis, QgsFeature, QgsProject
+from qgis.core import QgsFeature, QgsProject
 from qgis.PyQt import QtWidgets, uic
 from qgis.utils import iface
 from .helper_functions import layer_setup_end_eval
@@ -19,10 +19,12 @@ from .helper_functions import layer_setup_end_eval
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'end_eval_criteria_dialog.ui'))
 
+
 class EndEvalCriteriaDialog(QtWidgets.QDialog, FORM_CLASS):
     """
     Class for post-scenario evaluation criteria
     """
+
     def __init__(self, parent=None):
         """Initialization of class and Qt UI element connect signals"""
         super(EndEvalCriteriaDialog, self).__init__(parent)

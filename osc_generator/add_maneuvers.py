@@ -14,17 +14,17 @@ from qgis.PyQt import QtWidgets, uic
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.gui import QgsMapTool
 from qgis.utils import iface
-from qgis.core import (QgsProject, Qgis, QgsFeature, QgsGeometry, 
-    QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsTextFormat,
-    QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
+from qgis.core import (QgsProject, QgsFeature, QgsGeometry,
+                       QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsTextFormat,
+                       QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QInputDialog
-from .helper_functions import (layer_setup_maneuvers_waypoint, layer_setup_maneuvers_and_triggers,
-    layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_lateral, verify_parameters, is_float,
-    display_message)
-
 # AD Map plugin
 import ad_map_access as ad
+
+from .helper_functions import (layer_setup_maneuvers_waypoint, layer_setup_maneuvers_and_triggers,
+                               layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_lateral,
+                               verify_parameters, is_float, display_message)
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -49,7 +49,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         self.lateral_type.currentTextChanged.connect(self.change_lateral_type)
         self.long_type.currentTextChanged.connect(self.change_longitudinal_type)
         self.long_speed_target.currentTextChanged.connect(self.change_longitudinal_speed_target)
-    
+
         self.start_condition_type.currentTextChanged.connect(self.update_start_trigger_condition)
         self.start_value_cond.currentTextChanged.connect(self.update_start_value_cond_parameters)
         self.start_entity_cond.currentTextChanged.connect(self.update_start_entity_cond_parameters)
@@ -183,13 +183,13 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             for feature in layer.getFeatures():
                 loaded_traffic_light_ids = str(feature["Id"])
                 traffic_light_ids.append(loaded_traffic_light_ids)
-            
+
             if len(traffic_light_ids) == 0:
                 traffic_light_ids.append("0")
 
         self.traffic_light_id.addItems(traffic_light_ids)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):    # pylint: disable=invalid-name
         """
         Dockwidget closing event
         """
@@ -213,9 +213,9 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                     entity_orientation = math.radians(float(self.waypoint_orientation.text()))
 
                 entity_attributes = {"Maneuver ID": self._man_id,
-                                     "Entity":entity,
-                                     "Orientation":entity_orientation,
-                                     "Route Strat":self.waypoint_strategy.currentText()}
+                                     "Entity": entity,
+                                     "Orientation": entity_orientation,
+                                     "Route Strat": self.waypoint_strategy.currentText()}
                 tool = PointTool(canvas, self._waypoint_layer, entity_attributes, layer_type="Waypoints")
                 canvas.setMapTool(tool)
             elif self.entity_maneuver_type.currentText() == "Longitudinal":
@@ -359,7 +359,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Name
         if (self.start_value_cond.currentText() == "UserDefinedValueCondition"
-            or self.start_value_cond.currentText() == "TrafficSignalCondition"):
+                or self.start_value_cond.currentText() == "TrafficSignalCondition"):
             self.start_value_name.setEnabled(True)
         else:
             self.start_value_name.setDisabled(True)
@@ -373,7 +373,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Value
         if (self.start_value_cond.currentText() == "ParameterCondition"
             or self.start_value_cond.currentText() == "SimulationTimeCondition"
-            or self.start_value_cond.currentText() == "UserDefinedValueCondition"):
+                or self.start_value_cond.currentText() == "UserDefinedValueCondition"):
             self.start_value_value.setEnabled(True)
         else:
             self.start_value_value.setDisabled(True)
@@ -382,7 +382,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if (self.start_value_cond.currentText() == "ParameterCondition"
             or self.start_value_cond.currentText() == "TimeOfDayCondition"
             or self.start_value_cond.currentText() == "SimulationTimeCondition"
-            or self.start_value_cond.currentText() == "UserDefinedValueCondition"):
+                or self.start_value_cond.currentText() == "UserDefinedValueCondition"):
             self.start_value_rule.setEnabled(True)
         else:
             self.start_value_rule.setDisabled(True)
@@ -418,7 +418,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Name
         if (self.stop_value_cond.currentText() == "UserDefinedValueCondition"
-            or self.stop_value_cond.currentText() == "TrafficSignalCondition"):
+                or self.stop_value_cond.currentText() == "TrafficSignalCondition"):
             self.stop_value_name.setEnabled(True)
         else:
             self.stop_value_name.setDisabled(True)
@@ -432,7 +432,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Value
         if (self.stop_value_cond.currentText() == "ParameterCondition"
             or self.stop_value_cond.currentText() == "SimulationTimeCondition"
-            or self.stop_value_cond.currentText() == "UserDefinedValueCondition"):
+                or self.stop_value_cond.currentText() == "UserDefinedValueCondition"):
             self.stop_value_value.setEnabled(True)
         else:
             self.stop_value_value.setDisabled(True)
@@ -441,7 +441,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if (self.stop_value_cond.currentText() == "ParameterCondition"
             or self.stop_value_cond.currentText() == "TimeOfDayCondition"
             or self.stop_value_cond.currentText() == "SimulationTimeCondition"
-            or self.stop_value_cond.currentText() == "UserDefinedValueCondition"):
+                or self.stop_value_cond.currentText() == "UserDefinedValueCondition"):
             self.stop_value_rule.setEnabled(True)
         else:
             self.stop_value_rule.setDisabled(True)
@@ -473,7 +473,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if (self.start_entity_cond.currentText() == "TimeHeadwayCondition"
             or self.start_entity_cond.currentText() == "RelativeSpeedCondition"
             or self.start_entity_cond.currentText() == "RelativeDistanceCondition"
-            or self.start_entity_cond.currentText() == "ReachPositionCondition"):
+                or self.start_entity_cond.currentText() == "ReachPositionCondition"):
             self.start_entity_ref_entity.setEnabled(True)
         else:
             self.start_entity_ref_entity.setDisabled(True)
@@ -481,7 +481,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Duration
         if (self.start_entity_cond.currentText() == "EndOfRoadCondition"
             or self.start_entity_cond.currentText() == "OffroadCondition"
-            or self.start_entity_cond.currentText() == "StandStillCondition"):
+                or self.start_entity_cond.currentText() == "StandStillCondition"):
             self.start_entity_duration.setEnabled(True)
         else:
             self.start_entity_duration.setDisabled(True)
@@ -493,7 +493,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             or self.start_entity_cond.currentText() == "TimeToCollisionCondition"
             or self.start_entity_cond.currentText() == "StandStillCondition"
             or self.start_entity_cond.currentText() == "ReachPositionCondition"
-            or self.start_entity_cond.currentText() == "DistanceCondition"):
+                or self.start_entity_cond.currentText() == "DistanceCondition"):
             self.start_entity_value.setDisabled(True)
         else:
             self.start_entity_value.setEnabled(True)
@@ -503,7 +503,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             or self.start_entity_cond.currentText() == "OffroadCondition"
             or self.start_entity_cond.currentText() == "StandStillCondition"
             or self.start_entity_cond.currentText() == "TraveledDistanceCondition"
-            or self.start_entity_cond.currentText() == "ReachPositionCondition"):
+                or self.start_entity_cond.currentText() == "ReachPositionCondition"):
             self.start_entity_rule.setDisabled(True)
         else:
             self.start_entity_rule.setEnabled(True)
@@ -516,7 +516,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Freespace
         if (self.start_entity_cond.currentText() == "TimeHeadwayCondition"
-            or self.start_entity_cond.currentText() == "RelativeDistanceCondition"):
+                or self.start_entity_cond.currentText() == "RelativeDistanceCondition"):
             self.start_entity_freespace.setEnabled(True)
         else:
             self.start_entity_freespace.setDisabled(True)
@@ -542,7 +542,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         if (self.stop_entity_cond.currentText() == "TimeHeadwayCondition"
             or self.stop_entity_cond.currentText() == "RelativeSpeedCondition"
             or self.stop_entity_cond.currentText() == "RelativeDistanceCondition"
-            or self.stop_entity_cond.currentText() == "ReachPositionCondition"):
+                or self.stop_entity_cond.currentText() == "ReachPositionCondition"):
             self.stop_entity_ref_entity.setEnabled(True)
         else:
             self.stop_entity_ref_entity.setDisabled(True)
@@ -550,7 +550,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         # Duration
         if (self.stop_entity_cond.currentText() == "EndOfRoadCondition"
             or self.stop_entity_cond.currentText() == "OffroadCondition"
-            or self.stop_entity_cond.currentText() == "StandStillCondition"):
+                or self.stop_entity_cond.currentText() == "StandStillCondition"):
             self.stop_entity_duration.setEnabled(True)
         else:
             self.stop_entity_duration.setDisabled(True)
@@ -562,7 +562,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             or self.stop_entity_cond.currentText() == "TimeToCollisionCondition"
             or self.stop_entity_cond.currentText() == "StandStillCondition"
             or self.stop_entity_cond.currentText() == "ReachPositionCondition"
-            or self.stop_entity_cond.currentText() == "DistanceCondition"):
+                or self.stop_entity_cond.currentText() == "DistanceCondition"):
             self.stop_entity_value.setDisabled(True)
         else:
             self.stop_entity_value.setEnabled(True)
@@ -572,7 +572,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             or self.stop_entity_cond.currentText() == "OffroadCondition"
             or self.stop_entity_cond.currentText() == "StandStillCondition"
             or self.stop_entity_cond.currentText() == "TraveledDistanceCondition"
-            or self.stop_entity_cond.currentText() == "ReachPositionCondition"):
+                or self.stop_entity_cond.currentText() == "ReachPositionCondition"):
             self.stop_entity_rule.setDisabled(True)
         else:
             self.stop_entity_rule.setEnabled(True)
@@ -585,7 +585,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
 
         # Freespace
         if (self.stop_entity_cond.currentText() == "TimeHeadwayCondition"
-            or self.stop_entity_cond.currentText() == "RelativeDistanceCondition"):
+                or self.stop_entity_cond.currentText() == "RelativeDistanceCondition"):
             self.stop_entity_freespace.setEnabled(True)
         else:
             self.stop_entity_freespace.setDisabled(True)
@@ -731,7 +731,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
                 display_message(message, level="Critical")
             else:
                 long_target_speed_value = self.long_target_speed_value.text()
-        
+
         if is_float(self.long_max_accel.text()):
             long_max_accel = float(self.long_max_accel.text())
         else:
@@ -874,16 +874,10 @@ class PointTool(QgsMapTool):
             self._use_lane_heading = False
         iface.setActiveLayer(self._layer)
 
-    def canvasPressEvent(self, event):
-        pass
-
-    def canvasMoveEvent(self, event):
-        pass
-
-    def canvasReleaseEvent(self, event):
+    def canvasReleaseEvent(self, event):    # pylint: disable=invalid-name
         # Get the click
-        x = event.pos().x()
-        y = event.pos().y()
+        x = event.pos().x()  # pylint: disable=invalid-name
+        y = event.pos().y()  # pylint: disable=invalid-name
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
 
@@ -895,7 +889,7 @@ class PointTool(QgsMapTool):
 
         while lane_edge_features.nextFeature(spatial_feature):
             spatial_index.addFeature(spatial_feature)
-        
+
         nearest_ids = spatial_index.nearestNeighbor(point, 5)
 
         z_values = set()
@@ -914,7 +908,7 @@ class PointTool(QgsMapTool):
                 tuple(stringified_z_values),
                 current=0,
                 editable=False)
-            
+
             if ok_pressed:
                 altitude = float(z_value_selected)
 
@@ -936,13 +930,13 @@ class PointTool(QgsMapTool):
                 # Set attributes
                 feature = QgsFeature()
                 feature.setAttributes([processed_attrs["Maneuver ID"],
-                                      processed_attrs["Entity"],
-                                      int(processed_attrs["Waypoint No"]),
-                                      float(processed_attrs["Orientation"]),
-                                      float(enupoint.x),
-                                      float(enupoint.y),
-                                      float(enupoint.z),
-                                      processed_attrs["Route Strat"]])
+                                       processed_attrs["Entity"],
+                                       int(processed_attrs["Waypoint No"]),
+                                       float(processed_attrs["Orientation"]),
+                                       float(enupoint.x),
+                                       float(enupoint.y),
+                                       float(enupoint.z),
+                                       processed_attrs["Route Strat"]])
                 feature.setGeometry(QgsGeometry.fromPointXY(point))
                 self._data_input.addFeature(feature)
         elif self._type == "Position":
@@ -960,26 +954,14 @@ class PointTool(QgsMapTool):
         self._layer.updateExtents()
         self._canvas.refreshAllLayers()
 
-    def activate(self):
-        pass
-
-    def deactivate(self):
-        pass
-
-    def isZoomTool(self):
-        return False
-
-    def isTransient(self):
-        return True
-
-    def isEditTool(self):
-        return True
 #pylint: enable=missing-function-docstring
+
 
 class AddManeuverAttributes():
     """
     Handles processing of maneuver attributes.
     """
+
     def get_entity_heading(self, geopoint):
         """
         Acquires heading based on spawn position in map.
@@ -1035,6 +1017,7 @@ class AddManeuverAttributes():
                 parapoint = ad.map.point.createParaPoint(lane_id, para_offset)
                 lane_heading = ad.map.lane.getLaneENUHeading(parapoint)
                 return lane_heading
+        return None
 
     def get_entity_waypoint_attributes(self, layer, attributes):
         """

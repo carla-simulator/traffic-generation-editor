@@ -20,10 +20,12 @@ from defusedxml import minidom
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'export_xosc_dialog.ui'))
 
+
 class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
     """
     Dialog class for exporting OpenSCENARIO XML files.
     """
+
     def __init__(self, parent=None):
         """Initialization of ExportXMLDialog"""
         super(ExportXOSCDialog, self).__init__(parent)
@@ -46,7 +48,7 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def save_file(self):
         """Exports OpenSCENARIO file by reading attibutes from QGIS"""
-        if self.select_path.text() is not "":
+        if self.select_path.text() != "":
             filepath = self.select_path.text()
             road_network = self.map_selection.currentText()
             if self.map_selection.currentText() == "User Defined":
@@ -71,7 +73,7 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
             metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
             for feature in metadata_layer.getFeatures():
                 road_network = feature["Road Network"]
-            
+
             index = self.map_selection.findText(road_network)
             if index == -1:
                 self.map_selection.setCurrentText("User Defined")
@@ -84,6 +86,7 @@ class GenerateXML():
     """
     Class for generating OpenSCENARIO files.
     """
+
     def __init__(self, filepath, road_network):
         self._filepath = filepath
         self._road_network = road_network
@@ -248,7 +251,8 @@ class GenerateXML():
                 prop_obj.set("miscObjectCategory", prop_type)
                 prop_obj.set("mass", mass)
                 prop_obj.set("name", prop)
-                param_declaration = etree.SubElement(prop_obj, "ParameterDeclarations")
+                param_declaration = etree.SubElement(   # pylint: disable=unused-variable
+                    prop_obj, "ParameterDeclarations")
                 bounding_box = etree.SubElement(prop_obj, "BoundingBox")
                 boundbox_center = etree.SubElement(bounding_box, "Center")
                 boundbox_center.set("x", "0.4")
@@ -527,7 +531,7 @@ class GenerateXML():
             sun_elevation = "1.31"
             percip_type = "dry"
             percip_intensity = "0"
-        
+
         global_act = etree.SubElement(init_act, "GlobalAction")
         env_act = etree.SubElement(global_act, "EnvironmentAction")
         environ = etree.SubElement(env_act, "Environment")
@@ -640,7 +644,8 @@ class GenerateXML():
                                 global_action = etree.SubElement(action, "GlobalAction")
                                 infra_action = etree.SubElement(global_action, "InfrastructureAction")
                                 traffic_signal_action = etree.SubElement(infra_action, "TrafficSignalAction")
-                                traffic_signal_state = etree.SubElement(traffic_signal_action, "TrafficSignalStateAction")
+                                traffic_signal_state = etree.SubElement(
+                                    traffic_signal_action, "TrafficSignalStateAction")
                                 traffic_id = "id=" + str(feature["Infra: Traffic Light ID"])
                                 traffic_signal_state.set("name", traffic_id)
                                 traffic_signal_state.set("state", feature["Infra: Traffic Light State"])
@@ -910,12 +915,12 @@ class GenerateXML():
 
             if (feature["Start - Entity: Condition"] == "EndOfRoadCondition"
                 or feature["Start - Entity: Condition"] == "OffroadCondition"
-                or feature["Start - Entity: Condition"] == "StandStillCondition"):
+                    or feature["Start - Entity: Condition"] == "StandStillCondition"):
                 entity_cond_element.set("duration", str(feature["Start - Entity: Duration"]))
 
             if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
                 or feature["Start - Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("entityRef", feature["Start - Entity: Ref Entity"])
 
             if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
@@ -923,11 +928,11 @@ class GenerateXML():
                 or feature["Start - Entity: Condition"] == "SpeedCondition"
                 or feature["Start - Entity: Condition"] == "RelativeSpeedCondition"
                 or feature["Start - Entity: Condition"] == "TraveledDistanceCondition"
-                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("value", str(feature["Start - Entity: Value"]))
 
             if (feature["Start - Entity: Condition"] == "TimeHeadwayCondition"
-                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("freespace", str(feature["Start - Entity: Freespace"]).lower())
 
             if feature["Start - Entity: Condition"] == "TimeHeadwayCondtion":
@@ -937,7 +942,7 @@ class GenerateXML():
                 or feature["Start - Entity: Condition"] == "AccelerationCondition"
                 or feature["Start - Entity: Condition"] == "SpeedCondition"
                 or feature["Start - Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Start - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("rule", feature["Start - Entity: Rule"])
 
             if feature["Start - Entity: Condition"] == "ReachPositionCondition":
@@ -957,18 +962,18 @@ class GenerateXML():
                 value_cond_element.set("parameterRef", feature["Start - Value: Param Ref"])
 
             if (feature["Start - Value: Condition"] == "UserDefinedValueCondition"
-                or feature["Start - Value: Condition"] == "TrafficSignalCondition"):
+                    or feature["Start - Value: Condition"] == "TrafficSignalCondition"):
                 value_cond_element.set("name", feature["Start - Value: Name"])
 
             if (feature["Start - Value: Condition"] == "ParameterCondition"
                 or feature["Start - Value: Condition"] == "SimulationTimeCondition"
-                or feature["Start - Value: Condition"] == "UserDefinedValueCondition"):
+                    or feature["Start - Value: Condition"] == "UserDefinedValueCondition"):
                 value_cond_element.set("value", str(feature["Start - Value: Value"]))
 
             if (feature["Start - Value: Condition"] == "ParameterCondition"
                 or feature["Start - Value: Condition"] == "TimeOfDayCondition"
                 or feature["Start - Value: Condition"] == "SimulationTimeCondition"
-                or feature["Start - Value: Condition"] == "UserDefinedValueCondition"):
+                    or feature["Start - Value: Condition"] == "UserDefinedValueCondition"):
                 value_cond_element.set("rule", feature["Start - Value: Rule"])
 
             if feature["Start - Value: Condition"] == "TrafficSignalCondition":
@@ -1010,12 +1015,12 @@ class GenerateXML():
 
             if (feature["Stop - Entity: Condition"] == "EndOfRoadCondition"
                 or feature["Stop - Entity: Condition"] == "OffroadCondition"
-                or feature["Stop - Entity: Condition"] == "StandStillCondition"):
+                    or feature["Stop - Entity: Condition"] == "StandStillCondition"):
                 entity_cond_element.set("duration", str(feature["Stop - Entity: Duration"]))
 
             if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
                 or feature["Stop - Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("entityRef", feature["Stop - Entity: Ref Entity"])
 
             if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
@@ -1023,11 +1028,11 @@ class GenerateXML():
                 or feature["Stop - Entity: Condition"] == "SpeedCondition"
                 or feature["Stop - Entity: Condition"] == "RelativeSpeedCondition"
                 or feature["Stop - Entity: Condition"] == "TraveledDistanceCondition"
-                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("value", str(feature["Stop - Entity: Value"]))
 
             if (feature["Stop - Entity: Condition"] == "TimeHeadwayCondition"
-                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("freespace", str(feature["Stop - Entity: Freespace"]).lower())
 
             if feature["Stop - Entity: Condition"] == "TimeHeadwayCondtion":
@@ -1037,7 +1042,7 @@ class GenerateXML():
                 or feature["Stop - Entity: Condition"] == "AccelerationCondition"
                 or feature["Stop - Entity: Condition"] == "SpeedCondition"
                 or feature["Stop - Entity: Condition"] == "RelativeSpeedCondition"
-                or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
+                    or feature["Stop - Entity: Condition"] == "RelativeDistanceCondition"):
                 entity_cond_element.set("rule", feature["Stop - Entity: Rule"])
 
             if feature["Stop - Entity: Condition"] == "ReachPositionCondition":
@@ -1057,18 +1062,18 @@ class GenerateXML():
                 value_cond_element.set("parameterRef", feature["Stop - Value: Param Ref"])
 
             if (feature["Stop - Value: Condition"] == "UserDefinedValueCondition"
-                or feature["Stop - Value: Condition"] == "TrafficSignalCondition"):
+                    or feature["Stop - Value: Condition"] == "TrafficSignalCondition"):
                 value_cond_element.set("name", feature["Stop - Value: Name"])
 
             if (feature["Stop - Value: Condition"] == "ParameterCondition"
                 or feature["Stop - Value: Condition"] == "SimulationTimeCondition"
-                or feature["Stop - Value: Condition"] == "UserDefinedValueCondition"):
+                    or feature["Stop - Value: Condition"] == "UserDefinedValueCondition"):
                 value_cond_element.set("value", str(feature["Stop - Value: Value"]))
 
             if (feature["Stop - Value: Condition"] == "ParameterCondition"
                 or feature["Stop - Value: Condition"] == "TimeOfDayCondition"
                 or feature["Stop - Value: Condition"] == "SimulationTimeCondition"
-                or feature["Stop - Value: Condition"] == "UserDefinedValueCondition"):
+                    or feature["Stop - Value: Condition"] == "UserDefinedValueCondition"):
                 value_cond_element.set("rule", feature["Stop - Value: Rule"])
 
             if feature["Stop - Value: Condition"] == "TrafficSignalCondition":
@@ -1094,7 +1099,7 @@ class GenerateXML():
         cond_group = etree.SubElement(act_start, "ConditionGroup")
         time_cond = etree.SubElement(cond_group, "Condition")
         time_cond.set("name", "StartTime")
-        time_cond.set("delay" ,"0")
+        time_cond.set("delay", "0")
         time_cond.set("conditionEdge", "rising")
         time_cond_value = etree.SubElement(time_cond, "ByValueCondition")
         sim_time = etree.SubElement(time_cond_value, "SimulationTimeCondition")
@@ -1112,7 +1117,7 @@ class GenerateXML():
         cond_group = etree.SubElement(stop, "ConditionGroup")
         cond = etree.SubElement(cond_group, "Condition")
         cond.set("name", "EndCondition")
-        cond.set("delay" ,"0")
+        cond.set("delay", "0")
         cond.set("conditionEdge", "rising")
         by_value_cond = etree.SubElement(cond, "ByValueCondition")
         sim_time = etree.SubElement(by_value_cond, "SimulationTimeCondition")

@@ -1,0 +1,5 @@
+[MESSAGES CONTROL]
+max-line-length=120
+disable=no-self-use,too-many-locals,super-with-arguments,too-few-public-methods,too-many-instance-attributes,relative-beyond-top-level,too-many-branches,too-many-statements,too-many-boolean-expressions,too-many-arguments,too-many-public-methods,too-many-lines,no-else-return,R0801,too-many-nested-blocks,useless-object-inheritance
+ignored-modules=carla,ad_map_access,qgis,PyQt5
+extension-pkg-whitelist=pygame,ad_map_access

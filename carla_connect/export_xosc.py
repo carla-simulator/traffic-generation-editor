@@ -7,14 +7,15 @@
 '''
 carla_connect - Export XOSC file
 '''
-import os.path
-from ..osc_generator.export_xosc import GenerateXML
 from pathlib import Path
+from ..osc_generator.export_xosc import GenerateXML
+
 
 class Exportxosc():
     '''
     Class to generate and Export XML file to /tmp
     '''
+
     def __init__(self, road_network):
         '''
         Initialize the variables.
