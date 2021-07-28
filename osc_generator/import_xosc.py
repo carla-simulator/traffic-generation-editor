@@ -363,6 +363,7 @@ class ImportXOSC():
             else:
                 agent_camera = False
         else:
+            agent_camera = False
             agent = "simple_vehicle_control"
             message = (f"No vehicle controller agent defined for {actor_name}, using "
                        "'simple_vehicle_control'")
@@ -583,6 +584,9 @@ class ImportXOSC():
             value = param_condition.attrib.get("value")
             rule = param_condition.attrib.get("rule")
 
+            if value == "":
+                value = 0.
+
             feature = QgsFeature()
             feature.setAttributes([
                 cond_name,
@@ -633,10 +637,10 @@ class ImportXOSC():
                 private_act_type = private_act_type_node.tag
                 if private_act_type == "LongitudinalAction":
                     entity_act_type = "Longitudinal"
-                    self.parse_maneuvers_longitudinal(private_act_type, man_id)
+                    self.parse_maneuvers_longitudinal(private_act_type_node, man_id)
                 elif private_act_type == "LateralAction":
                     entity_act_type = "Lateral"
-                    self.parse_maneuvers_lateral(private_act_type, man_id)
+                    self.parse_maneuvers_lateral(private_act_type_node, man_id)
             else:
                 self.parse_waypoints(waypoint_act, man_id, entity)
 
@@ -987,7 +991,7 @@ class ImportXOSC():
         Parse longitudinal maneuvers and saves into QGIS layers
 
         Args:
-            long_act_node (XML element): XML node that contains LongiduinalAction
+            long_act_node (XML element): XML node that contains LongitudinalAction
             man_id (int): Maneuver ID to differentiate maneuvers
         """
         long_man_layer = QgsProject.instance().mapLayersByName("Longitudinal Maneuvers")[0]
@@ -1010,23 +1014,23 @@ class ImportXOSC():
         long_type_node = list(long_act_node.iter())[1]
         long_type = long_type_node.tag
         if long_type == "SpeedAction":
-            speed_dynamics_node = long_type_node.find(".//SpeedAction/SpeedActionDynamics")
+            speed_dynamics_node = long_type_node.find(".//SpeedActionDynamics")
             dynamics_shape = speed_dynamics_node.attrib.get("dynamicsShape")
             dynamics_value = speed_dynamics_node.attrib.get("value")
             dynamics_dimension = speed_dynamics_node.attrib.get("dynamicsDimension")
 
-            speed_target_node = long_act_node.find(".//SpeedAction/SpeedActionTarget")
+            speed_target_node = long_act_node.find(".//SpeedActionTarget")
             speed_target_node = list(speed_target_node.iter())[1]
             speed_target = speed_target_node.tag
 
             if speed_target == "RelativeTargetSpeed":
-                rel_target_speed_node = speed_target_node.find(".//RelativeTargetSpeed")
+                rel_target_speed_node = speed_target_node
                 entity_ref = rel_target_speed_node.attrib.get("entityRef")
                 target_speed = rel_target_speed_node.attrib.get("value")
                 target_type = rel_target_speed_node.attrib.get("speedTargetValueType")
                 continuous = strtobool(rel_target_speed_node.attrib.get("continuous").lower())
             elif speed_target == "AbsoluteTargetSpeed":
-                abs_target_speed_node = speed_target_node.find(".//AbsoluteTargetSpeed")
+                abs_target_speed_node = speed_target_node
                 target_speed = abs_target_speed_node.attrib.get("value")
 
         elif long_type == "LongitudinalDistanceAction":
@@ -1034,7 +1038,7 @@ class ImportXOSC():
             freespace = strtobool(long_act_node.attrib.get("freespace").lower())
             continuous = strtobool(long_act_node.attrib.get("continuous").lower())
 
-            dynamic_constrain_node = long_act_node.find(".//LongitudinalDistanceAction/DynamicConstraints")
+            dynamic_constrain_node = long_act_node.find(".//DynamicConstraints")
             max_accel = dynamic_constrain_node.attrib.get("maxAcceleration")
             max_decel = dynamic_constrain_node.attrib.get("maxDeceleration")
             max_speed = dynamic_constrain_node.attrib.get("maxSpeed")
@@ -1085,40 +1089,40 @@ class ImportXOSC():
         lat_type = lat_type_node.tag
 
         if lat_type == "LaneChangeAction":
-            dynamics_node = lat_type_node.find(".//LaneChangeAction/LaneChangeActionDynamics")
+            dynamics_node = lat_type_node.find(".//LaneChangeActionDynamics")
             dynamics_shape = dynamics_node.attrib.get("dynamicsShape")
             dynamics_value = dynamics_node.attrib.get("value")
             dynamics_dimension = dynamics_node.attrib.get("dynamicsDimension")
 
-            lane_target_node = lat_type_node.find(".//LaneChangeAction/LaneChangeTarget")
+            lane_target_node = lat_type_node.find(".//LaneChangeTarget")
             lane_target_choice_node = list(lane_target_node.iter())[1]
             lane_target = lane_target_choice_node.tag
             if lane_target == "RelativeTargetLane":
-                rel_target_node = lane_target_choice_node.find(".//RelativeTargetLane")
+                rel_target_node = lane_target_choice_node
                 entity_ref = rel_target_node.attrib.get("entityRef")
                 lane_target_value = rel_target_node.attrib.get("value")
             elif lane_target == "AbsoluteTargetLane":
-                abs_target_node = lane_target_choice_node.find(".//AbsoluteTargetLane")
+                abs_target_node = lane_target_choice_node
                 lane_target_value = abs_target_node.attrib.get("value")
 
         elif lat_type == "LaneOffsetAction":
-            dynamics_node = lat_type_node.find(".//LaneOffsetAction/LaneOffsetActionDynamics")
+            dynamics_node = lat_type_node.find(".//LaneOffsetActionDynamics")
             max_lat_accel = dynamics_node.attrib.get("maxLateralAcc")
             dynamics_shape = dynamics_node.attrib.get("dynamicsShape")
 
-            lane_target_node = lat_act_node.find(".//LaneOffsetAction/LaneOffsetTarget")
+            lane_target_node = lat_act_node.find(".//LaneOffsetTarget")
             lane_target_choice_node = list(lane_target_node.iter())[1]
             lane_target = lane_target_choice_node.tag
             if lane_target == "RelativeTargetLaneOffset":
-                rel_target_node = lane_target_choice_node.find(".//RelativeTargetLaneOffset")
+                rel_target_node = lane_target_choice_node
                 entity_ref = rel_target_node.attrib.get("entityRef")
                 lane_target_value = rel_target_node.attrib.get("value")
             elif lane_target == "AbsoluteTargetLaneOffset":
-                abs_target_node = lane_target_choice_node.find(".//AbsoluteTargetLaneOffset")
+                abs_target_node = lane_target_choice_node
                 lane_target_value = abs_target_node.attrib.get("value")
 
         elif lat_type == "LateralDistanceAction":
-            dynamic_constrain_node = lat_type_node.find(".//LateralDistanceAction/DynamicConstraints")
+            dynamic_constrain_node = lat_type_node.find(".//DynamicConstraints")
             max_accel = dynamic_constrain_node.attrib.get("maxAcceleration")
             max_decel = dynamic_constrain_node.attrib.get("maxDeceleration")
             max_speed = dynamic_constrain_node.attrib.get("maxSpeed")
