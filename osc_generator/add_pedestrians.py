@@ -317,7 +317,7 @@ class AddPedestrianAttribute():
                        "Walker 0015": "walker.pedestrian.0015"}
         if attributes["Walker Type"] is None:
             walker_entries = list(walker_dict.items())
-            random_walker = random.choice(walker_entries)
+            random_walker = random.choice(walker_entries)   # nosec
             walker_type = random_walker[1]
         else:
             walker_type = walker_dict[attributes["Walker Type"]]

@@ -26,8 +26,8 @@ jobs:
         autopep8 osc_generator/*.py --in-place --max-line-length=120
         git diff --quiet HEAD --; if [ ! $? -eq 0 ]; then echo "Code is not autopep8 compliant. Please run code_check_and_formatting.sh"; git diff HEAD --; exit 1; fi
 
-  qualityJob:
-    name: Check Code Quality
+  pylintJob:
+    name: Check Code Quality using Pylint
     runs-on: ubuntu-20.04
 
     steps:
@@ -47,3 +47,21 @@ jobs:
         pylint --rcfile=.pylintrc *.py osc_generator/*.py carla_connect/
         score=`pylint --rcfile=.pylintrc *.py osc_generator/*.py carla_connect/ | grep -i "rated at" | awk '{print $7}'`; if [ "$score" != "10.00/10" ]; then static_code_quality_passed=0; fi
         if [ $static_code_quality_passed -eq 0 ]; then echo "Code is not pylint compliant. Please run code_check_and_formatting.sh"; exit 1; fi
+
+  banditJob:
+    name: Run Bandit Checks
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install python3-pip pep8 python3-autopep8 python3-pep8 python-is-python3 libgeos-dev
+        sudo pip3 install bandit
+        sudo pip3 install -r requirements.txt
+
+    - name: Run Bandit Checks
+      run: |
+        bandit -r .
