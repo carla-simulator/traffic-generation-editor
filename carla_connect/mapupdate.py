@@ -94,7 +94,7 @@ class MapUpdate():
         '''
         Method that reads map from ROOT_DIRECTORY and update on qgis.
         '''
-        xodr_path = '/tmp/tempfile.xodr'
+        xodr_path = '/tmp/tempfile.xodr'    # nosec
         file_name = (xodr_path)
         self.init_map_succeeded = False
         open_drive_content = self.open_drive_map

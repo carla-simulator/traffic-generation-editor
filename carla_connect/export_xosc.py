@@ -21,7 +21,7 @@ class Exportxosc():
         Initialize the variables.
         '''
         self.road_network = road_network
-        self.dirname = '/tmp'
+        self.dirname = '/tmp'   # nosec
         self.filename = 'scenariogenerator1'
         self.suffix = ".xosc"
         self.filepath_posix = Path(self.dirname, self.filename).with_suffix(self.suffix)

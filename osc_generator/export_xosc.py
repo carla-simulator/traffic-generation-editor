@@ -9,7 +9,8 @@ OpenSCENARIO - Export XOSC
 """
 import os.path
 from datetime import datetime
-import xml.etree.ElementTree as etree
+# XML is only written here, not read. Therefore, we can directly use the standard xml.etree library
+import xml.etree.ElementTree as etree   # nosec
 # pylint: disable=no-name-in-module,no-member
 from qgis.core import Qgis, QgsFeatureRequest, QgsMessageLog, QgsProject
 from qgis.PyQt import QtWidgets, uic

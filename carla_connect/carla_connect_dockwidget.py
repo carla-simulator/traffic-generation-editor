@@ -8,7 +8,7 @@
 Carla_connect - Docker_Widget
 '''
 import os
-from subprocess import Popen
+from subprocess import Popen    # nosec
 from os import environ
 import pathlib
 # pylint: disable=no-name-in-module
@@ -104,7 +104,7 @@ class CarlaConnectDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             file = pathlib.Path(scenario_runner_path)
             if file.exists():
                 try:
-                    self._scenario_runner_process = Popen(['python3', scenario_runner_path,
+                    self._scenario_runner_process = Popen(['python3', scenario_runner_path,     # nosec
                                                            '--openscenario', '/tmp/scenariogenerator1.xosc',
                                                            '--host', self.host,
                                                            '--port', str(self.port)])
