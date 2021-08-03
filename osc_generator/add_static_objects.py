@@ -128,7 +128,7 @@ class AddPropsDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
             self.props_orientation.setEnabled(True)
 
 
-#pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):
     """Enables Point Addition"""
 
@@ -218,7 +218,7 @@ class PointTool(QgsMapTool):
 
         self._layer.updateExtents()
         self._canvas.refreshAllLayers()
-#pylint: enable=missing-function-docstring
+# pylint: enable=missing-function-docstring
 
 
 class AddPropAttribute():

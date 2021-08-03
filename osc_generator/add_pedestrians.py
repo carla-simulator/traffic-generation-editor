@@ -143,7 +143,7 @@ class AddPedestriansDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         else:
             self.walker_orientation.setEnabled(True)
 
-#pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring
 
 
 class PointTool(QgsMapTool):
@@ -231,7 +231,7 @@ class PointTool(QgsMapTool):
         self._layer.updateExtents()
         self._canvas.refreshAllLayers()
 
-#pylint: enable=missing-function-docstring
+# pylint: enable=missing-function-docstring
 
 
 class AddPedestrianAttribute():

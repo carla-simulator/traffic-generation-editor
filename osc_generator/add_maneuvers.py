@@ -855,7 +855,7 @@ class AddManeuversDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         display_message(message, level="Info")
 
 
-#pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring
 class PointTool(QgsMapTool):
     """Enables Point Addition"""
 
@@ -954,7 +954,7 @@ class PointTool(QgsMapTool):
         self._layer.updateExtents()
         self._canvas.refreshAllLayers()
 
-#pylint: enable=missing-function-docstring
+# pylint: enable=missing-function-docstring
 
 
 class AddManeuverAttributes():

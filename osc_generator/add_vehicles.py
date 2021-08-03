@@ -208,7 +208,7 @@ class AddVehiclesDockWidget(QtWidgets.QDockWidget, FORM_CLASS):
         except ValueError:
             return False
 
-#pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring
 
 
 class PointTool(QgsMapTool):
@@ -299,7 +299,7 @@ class PointTool(QgsMapTool):
         self._canvas.refreshAllLayers()
         self._canvas.unsetMapTool(self)
 
-#pylint: enable=missing-function-docstring
+# pylint: enable=missing-function-docstring
 
 
 class AddVehicleAttribute():
