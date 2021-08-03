@@ -10,6 +10,7 @@ OpenSCENARIO Generator - Import XOSC
 from distutils.util import strtobool
 import os
 import math
+import xmlschema
 # pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from qgis.PyQt import QtWidgets, uic
@@ -20,7 +21,7 @@ from .helper_functions import (layer_setup_environment, layer_setup_metadata, la
                                layer_setup_walker, layer_setup_props, layer_setup_end_eval,
                                layer_setup_maneuvers_and_triggers, layer_setup_maneuvers_lateral,
                                layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_waypoint,
-                               layer_setup_parameters, is_float, display_message)
+                               layer_setup_parameters, is_float, display_message, resolve)
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_xosc_dialog.ui'))
@@ -52,8 +53,30 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
         """Opens OpenSCENARIO file and start parsing into QGIS layers"""
         if self.import_path.text() != "":
             filepath = self.import_path.text()
-            read_xosc = ImportXOSC(filepath)
-            read_xosc.import_xosc()
+            schema_path = resolve("OpenSCENARIO_1_0_0.xsd")
+            schema = xmlschema.XMLSchema(schema_path)
+            if schema.is_valid(filepath):
+                read_xosc = ImportXOSC(filepath)
+                read_xosc.import_xosc()
+            else:
+                error_iterator = schema.iter_errors(filepath)
+                err = []
+                text = "XML validation failed with errors: \n\n"
+                for idx, validation_error in enumerate(error_iterator, start = 1):
+                    err.append(f"[{idx}] {validation_error.reason} \n"
+                               f"Path: {validation_error.path}"
+                               f"\nMessage: {validation_error.message}")
+
+                text += "\n\n".join(err)
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText(text)
+                msg.setWindowTitle("XML Validation Failed")
+                msg.setStandardButtons(QMessageBox.Ok)
+                msg.exec()
+
+                message = f"File {filepath} did not pass XML validation!"
+                display_message(message, level="Critical")
         else:
             message = "No file path was given for importing"
             display_message(message, level="Critical")

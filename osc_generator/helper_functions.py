@@ -9,6 +9,7 @@ OpenSCENARIO Generator - Helper Functions
 
 A collection of helper functions used throughout the plugin
 """
+import os
 # pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsProject, QgsMessageLog, QgsVectorLayer,
@@ -17,6 +18,11 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import QVariant
 
 import ad_map_access as ad
+
+def resolve(name, basepath=None):
+    if not basepath:
+      basepath = os.path.dirname(os.path.realpath(__file__))
+    return os.path.join(basepath, name)
 
 
 def display_message(message, level):

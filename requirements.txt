@@ -1,3 +1,4 @@
 defusedxml>=0.6.0
 pygame
 numpy
+xmlschema

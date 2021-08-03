@@ -46,6 +46,8 @@
 #### Python Packages
 - [pygame package](https://pypi.org/project/pygame/)
 - [defusedxml package](https://pypi.org/project/defusedxml/)
+- [numpy package](https://pypi.org/project/numpy/)
+- [xmlschema package](https://pypi.org/project/xmlschema/)
 
 Python packages can be installed using the supplied `requirements.txt` by:
 ```bash
