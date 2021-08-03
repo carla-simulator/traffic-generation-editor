@@ -20,8 +20,18 @@ from qgis.PyQt.QtCore import QVariant
 import ad_map_access as ad
 
 def resolve(name, basepath=None):
+    """
+    Resolves file path
+
+    Args:
+        name ([str]): File name to be resolved for path
+        basepath ([str], optional): Specify the basepath for resolving. Defaults to None.
+
+    Returns:
+        [str]: Fully resolved filepath
+    """
     if not basepath:
-      basepath = os.path.dirname(os.path.realpath(__file__))
+        basepath = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(basepath, name)
 
 
