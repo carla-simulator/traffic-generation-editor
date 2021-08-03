@@ -19,6 +19,7 @@ from qgis.PyQt.QtCore import QVariant
 
 import ad_map_access as ad
 
+
 def resolve(name, basepath=None):
     """
     Resolves file path

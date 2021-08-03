@@ -62,7 +62,7 @@ class ImportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
                 error_iterator = schema.iter_errors(filepath)
                 err = []
                 text = "XML validation failed with errors: \n\n"
-                for idx, validation_error in enumerate(error_iterator, start = 1):
+                for idx, validation_error in enumerate(error_iterator, start=1):
                     err.append(f"[{idx}] {validation_error.reason} \n"
                                f"Path: {validation_error.path}"
                                f"\nMessage: {validation_error.message}")
