@@ -505,6 +505,17 @@ class GenerateXML():
         Args:
             init_act: [XML element]
         """
+        # Set initial values for environment variables
+        time_of_day = "2020-10-23T06:00:00"
+        time_animation = "false"
+        cloud_state = "free"
+        fog_range = "100000"
+        sun_intensity = "0.85"
+        sun_azimuth = "0"
+        sun_elevation = "1.31"
+        percip_type = "dry"
+        percip_intensity = "0"
+        
         try:
             env_layer = QgsProject.instance().mapLayersByName("Environment")[0]
             for feature in env_layer.getFeatures():
