@@ -515,7 +515,7 @@ class GenerateXML():
         sun_elevation = "1.31"
         percip_type = "dry"
         percip_intensity = "0"
-        
+
         try:
             env_layer = QgsProject.instance().mapLayersByName("Environment")[0]
             for feature in env_layer.getFeatures():
