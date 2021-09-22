@@ -13,7 +13,8 @@ import os
 # pylint: disable=no-name-in-module, no-member
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsProject, QgsMessageLog, QgsVectorLayer,
-                       QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsFeatureRequest)
+                       QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsFeatureRequest,
+                       QgsSpatialIndex, QgsFeature)
 from qgis.utils import iface
 from qgis.PyQt.QtCore import QVariant
 
@@ -607,3 +608,76 @@ def get_entity_heading(geopoint):
             return lane_heading
 
     return None
+
+
+def get_geo_point(point):
+    """
+    Acquires hight based on position in map.
+    Prompts user to select hight if multiple lanes with significant different heights exist at the position.
+    Throws error if spawn position is not on lane.
+
+    Args:
+        point: [QgsPointXY] point of click event
+
+    Returns:
+        geo_point: [AD Map GEOPoint] geo point including (selected) altitude
+        geo_point: [None] if click point is not valid
+    """
+
+    pt_geo = ad.map.point.createGeoPoint(point.x(), point.y(), ad.map.point.AltitudeUnknown)
+    dist = ad.physics.Distance(1.)
+    mmpts = ad.map.match.AdMapMatching.findLanes(pt_geo, dist)
+    z_values = set()
+    if len(mmpts) == 0:
+        # fallback calculation
+        lane_edge_layer = QgsProject.instance().mapLayersByName("Lane Edge")[0]
+        lane_edge_data_provider = lane_edge_layer.dataProvider()
+        spatial_index = QgsSpatialIndex()
+        spatial_feature = QgsFeature()
+        lane_edge_features = lane_edge_data_provider.getFeatures()
+
+        while lane_edge_features.nextFeature(spatial_feature):
+            spatial_index.addFeature(spatial_feature)
+
+        nearest_ids = spatial_index.nearestNeighbor(point, 5)
+
+        for feat in lane_edge_layer.getFeatures(QgsFeatureRequest().setFilterFids(nearest_ids)):
+            feature_coordinates = feat.geometry().vertexAt(1)
+            z_values.add(round(feature_coordinates.z(), ndigits=4))
+    else:
+        for mmpt in mmpts:
+            if mmpt.type == ad.map.match.MapMatchedPositionType.LANE_IN:
+                geo_matched_point = ad.map.point.toGeo(mmpt.matchedPoint)
+                z_values.add(float(geo_matched_point.altitude))
+        if len(z_values) == 0:
+            # take all matches into account if no in line match found
+            for mmpt in mmpts:
+                geo_matched_point = ad.map.point.toGeo(mmpt.matchedPoint)
+                z_values.add(float(geo_matched_point.altitude))
+
+    if len(z_values) == 0:
+        message = "Click point is too far from valid lane"
+        iface.messageBar().pushMessage("Error", message, level=Qgis.Critical)
+        QgsMessageLog.logMessage(message, level=Qgis.Critical)
+        return None
+
+    # sort the values
+    z_values = sorted(z_values, reverse=True)
+
+    # fallback: use max
+    altitude = max(z_values)
+    if max(z_values) - min(z_values) > 0.1:
+        stringified_z_values = [str(z_value) for z_value in z_values]
+        z_value_selected, ok_pressed = QInputDialog.getItem(
+            QInputDialog(),
+            "Choose Elevation",
+            "Elevation (meters)",
+            tuple(stringified_z_values),
+            current=0,
+            editable=False)
+
+        if ok_pressed:
+            altitude = float(z_value_selected)
+
+    geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
+    return geopoint
