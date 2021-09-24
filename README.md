@@ -34,7 +34,7 @@
       - [Place Camera Automatically:](#place-camera-automatically)
     - [Play Scenario](#play-scenario)
     - [Stop Scenario](#stop-scenario)
- 
+
 
 ### Prerequisites
 - Python 3.6
@@ -58,14 +58,14 @@ pip3 install --user -r /path/to/requirements.txt
 1. Download the repo as a zip file in GitHub (`Code > Download ZIP`).
 2. Run QGIS 3.
 3. Install plugin from plugins menu (`Plugins > Manage and Install Plugins > Install from ZIP`), choose the zip file that was previously downloaded.
-   
+
    _Note: If [CARLA AD Map plugin](https://github.com/carla-simulator/map/releases) has not been installed before, same steps can be used to install the ZIP package._
 
 ![Install from ZIP](Docs/OSCGenerator_InstallZIP.png)
 
 4. Change to `Installed` tab and make sure `OpenSCENARIO Editor Toolkit` is enabled.
 5. Enjoy!
-  
+
 ## Features
 - Place entiites onto loaded OpenDRIVE map (through AD Map plugin)
 - Specity start and stop triggers for maneuvers
@@ -75,9 +75,7 @@ pip3 install --user -r /path/to/requirements.txt
 - Set initial environment variables (cloud state, time of day, precipitation)
 
 ## Known Issues
-- Non CARLA maps are not fully supported
-  - Entity spawn z coordinates need to be manually adjusted
-- When map is unloaded and reloaded with AD Map Access, exporting scenarios might not work 
+- When map is unloaded and reloaded with AD Map Access, exporting scenarios might not work
 
 ## OpenSCENARIO Support List
 
@@ -168,7 +166,7 @@ _For the full support list, visit [OpenSCENARIO Tags Support](Docs/OpenSCENARIO_
 ### Adding Environment Variables
 1. Click on 'Edit environment' button to load dock widget.
 2. Edit parameters in dock widget to desired parameters.
-   
+
   ![Edit Environment Dock Widget](Docs/OSCGenerator_Environment.png)
 
 3. Press on 'Apply'
@@ -179,13 +177,13 @@ _Note: To change environment settings, simply adjust the parameters and press 'A
 1. Click on 'Add vehicles' button to load dock widget.
 2. Choose parameters (vehicle type, use lane heading / manually specify, initial speed)
 3. Agent selection is only enabled for Ego vehicles. You can also specify your own agent.
-   
+
   ![Add Vehicles Dock Widget](Docs/OSCGenerator_Vehicles.png)
 
 4. Press on 'Insert', mouse pointer will change to cross-type pointer.
 5. Click on desired map position to spawn vehicle.
 6. If click point contains multiple lanes and 'Use lane heading' is checked, a dialog box will appear and ask to select lane ID to use for lane heading.
-   
+
    ![Selecting Lane ID](Docs/OSCGenerator_Vehicles_LaneID.png)
 
 7. If click point contains lanes with multiple elevations, a dialog box will appear and ask to select the desired elevation.
@@ -202,13 +200,13 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 1. Click on 'Add pedestrians' button to load dock widget.
 2. Choose parameters (pedestrian type, use lane heading / manually specify, initial speed)
 3. If 'Use random pedestrian' is checked, a random pedestrian type will be selected for every spawned pedestrian.
-   
+
    ![Add Pedestrians Dock Widget](Docs/OSCGenerator_Pedestrians.png)
 
 4. Press on 'Insert', mouse pointer will change to cross-type pointer.
 5. Click on desired map position to spawn pedestrian.
 6. If click point contains multiple lanes and 'Use lane heading' is enabled, a dialog box will appear and ask to select lane ID to use for lane heading.
-   
+
    ![Selecting Lane ID](Docs/OSCGenerator_Vehicles_LaneID.png)
 
 7. If click point contains lanes with multiple elevations, a dialog box will appear and ask to select the desired elevation.
@@ -216,14 +214,14 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
    ![Selection Elevation](Docs/OSCGenerator_Elevation.png)
 
 _Note: Sometimes there will be a "Click point too far from lane" error. Try choosing a different elevation._
-  
+
 _Note: You can insert as many pedestrians as you desire after pressing on 'Insert'_
 
 _Note: You can toggle labels on and off by clicking on the 'Label' button_
 
 ### Removing Vehicles or Pedestrians
 1. In `Layers` right click on layer and select `Open Attribute Table`.
-   
+
   ![Attributes Table](Docs/OSCGenerator_AttributesTable.png)
 
 2. Click on the pencil icon on top left to enable editing.
@@ -234,7 +232,7 @@ _Note: You can toggle labels on and off by clicking on the 'Label' button_
 
 ### Adding Maneuvers
 1. Click on 'Add Maneuvers' button to load dock widget.
-   
+
    ![Maneuvers Dock Widget](Docs/OSCGenerator_Maneuvers_Entity.png)
 
 2. Choose either to add entity maneuvers or global actions under `Maneuver Type`.
@@ -265,7 +263,7 @@ _Note: It is important to set up the start/stop triggers first before inserting 
 
 ### Removing Maneuvers and Waypoints
 1. In `Layers` right click on layer and select `Open Attribute Table`.
-   
+
   ![Attributes Table](Docs/OSCGenerator_AttributesTable_Maneuvers.png)
 
 2. Click on the pencil icon on top left to enable editing.
@@ -279,13 +277,13 @@ After inserting entities or maneuvers, you can edit them using the Attributes ta
 1. In `Layers`, right click on layer and select `Open Attribute Table`.
 2. Click on the pencil icon on top left to enable editing.
 3. Double click on cell to edit.
-   
+
    ![Editing Parameters](Docs/OSCGenerator_EditAttributes.png)
 
 4. Change the cell value.
 5. When desired changes are complete, click on pencil icon to disable editing.
 6. When promted to save changes, choose 'Yes'.
-   
+
 _Note: Changing the positions (X, Y, heading) in the attributes table does not update the positions seen in the map._
 
 ### Adding Own Parameters
@@ -304,7 +302,7 @@ _Note: To edit existing parameters, you can edit them directly using the Attribu
 Parameters can be used when creating scenarios.
 1. In the text field entry, simply input the name of the parameter to be used.
 2. If the parameter does not exist, and error message will appear, as shown below.
-   
+
    ![Parameter Error Message](Docs/OSCGenerator_ParameterNotExist.png)
 
 ## Connecting to CARLA
@@ -324,7 +322,7 @@ export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI
 
    ![Carla_connect Dock Widget](Docs/camera1.PNG)
 
-2. To change the map, Choose a map from drop down menu. 
+2. To change the map, Choose a map from drop down menu.
 
    ![Carla_connect Dock Widget town](Docs/camera2.PNG)
 
@@ -332,15 +330,15 @@ export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI
 
 _Note: To change environment settings, simply select the map and press 'Change Map' again. Previous map will be cleared and replaced with the updated ones._
 
-### Adding Camera 
+### Adding Camera
 
-1. click on 'Add Camera' button to load Add camera dock widget. 
+1. click on 'Add Camera' button to load Add camera dock widget.
 
     ![Add Camera](Docs/camera3.PNG)
 
 #### Place Camera Manually:
 
-* Select the height you want to place the bird eye camera from drop down menu. 
+* Select the height you want to place the bird eye camera from drop down menu.
 
     ![plot](Docs/camera4.PNG)
 
@@ -349,16 +347,16 @@ _Note: To change environment settings, simply select the map and press 'Change M
 
 #### Place Camera Automatically:
 
-* To place camera automatically click on 'Auto Insert Camera'. This will find the centroid of all actors spawned and place a bird eye view camera 30m above the centriod positon. 
+* To place camera automatically click on 'Auto Insert Camera'. This will find the centroid of all actors spawned and place a bird eye view camera 30m above the centriod positon.
 
 _Note: To use Automatic Camera placement, make sure you have added at least 2 actors/vehicles._
 
 
 ### Play Scenario
 
-1. To Run the created scenario, press on 'Play Scenario' button. 
-2. This will pop up a Pygame window, where created scenario can be visulaized. 
+1. To Run the created scenario, press on 'Play Scenario' button.
+2. This will pop up a Pygame window, where created scenario can be visulaized.
 
 ### Stop Scenario
 
-1. To stop the Scenario click on 'Stop scenario button', this will destroy all actors and close py game window. 
+1. To stop the Scenario click on 'Stop scenario button', this will destroy all actors and close py game window.
