@@ -16,7 +16,7 @@ from qgis.gui import QgsMapTool
 from qgis.utils import iface
 from qgis.core import (QgsProject, QgsFeature, QgsGeometry,
                        QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsTextFormat,
-                       QgsTextBackgroundSettings, QgsSpatialIndex, QgsFeatureRequest)
+                       QgsTextBackgroundSettings)
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QInputDialog
 # AD Map plugin
@@ -24,7 +24,7 @@ import ad_map_access as ad
 
 from .helper_functions import (layer_setup_maneuvers_waypoint, layer_setup_maneuvers_and_triggers,
                                layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_lateral,
-                               verify_parameters, is_float, display_message)
+                               verify_parameters, is_float, display_message, get_geo_point)
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -880,41 +880,10 @@ class PointTool(QgsMapTool):
         y = event.pos().y()  # pylint: disable=invalid-name
 
         point = self._canvas.getCoordinateTransform().toMapCoordinates(x, y)
-
-        lane_edge_layer = QgsProject.instance().mapLayersByName("Lane Edge")[0]
-        lane_edge_data_provider = lane_edge_layer.dataProvider()
-        spatial_index = QgsSpatialIndex()
-        spatial_feature = QgsFeature()
-        lane_edge_features = lane_edge_data_provider.getFeatures()
-
-        while lane_edge_features.nextFeature(spatial_feature):
-            spatial_index.addFeature(spatial_feature)
-
-        nearest_ids = spatial_index.nearestNeighbor(point, 5)
-
-        z_values = set()
-        for feat in lane_edge_layer.getFeatures(QgsFeatureRequest().setFilterFids(nearest_ids)):
-            feature_coordinates = feat.geometry().vertexAt(1)
-            z_values.add(round(feature_coordinates.z(), ndigits=4))
-
-        if max(z_values) - min(z_values) < 0.1:
-            altitude = max(z_values)
-        else:
-            stringified_z_values = [str(z_value) for z_value in z_values]
-            z_value_selected, ok_pressed = QInputDialog.getItem(
-                QInputDialog(),
-                "Choose Elevation",
-                "Elevation (meters)",
-                tuple(stringified_z_values),
-                current=0,
-                editable=False)
-
-            if ok_pressed:
-                altitude = float(z_value_selected)
-
+        geopoint = get_geo_point(point)
         # Converting to ENU points
-        geopoint = ad.map.point.createGeoPoint(longitude=point.x(), latitude=point.y(), altitude=altitude)
         enupoint = ad.map.point.toENU(geopoint)
+
         add_entity_attr = AddManeuverAttributes()
 
         # Get lane heading and save attribute (when not manually specified)
