@@ -37,6 +37,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install python3-pip pep8 python3-autopep8 python3-pep8 python-is-python3 libgeos-dev
+        sudo python -m pip3 install --upgrade pip3
         sudo pip3 install pylint==2.7.4
         sudo pip3 install -r requirements.txt
 
