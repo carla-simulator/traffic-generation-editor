@@ -1,4 +1,4 @@
-ad-map-access>=2.6.0
+ad-map-access
 defusedxml>=0.6.0
 pygame
 numpy
