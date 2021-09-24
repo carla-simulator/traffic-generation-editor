@@ -89,12 +89,12 @@ def layer_setup_metadata():
         display_message(message, level="Info")
 
 
-def set_metadata(rev_major = None,
-                 rev_minor = None,
-                 description = None,
-                 author = None,
-                 road_network_filepath = None,
-                 scene_graph_filepath = None):
+def set_metadata(rev_major=None,
+                 rev_minor=None,
+                 description=None,
+                 author=None,
+                 road_network_filepath=None,
+                 scene_graph_filepath=None):
     """
     Set/Replace the metadata
     """

@@ -285,7 +285,8 @@ class ImageProcessor():
                 pygame.font.init()
                 display = pygame.display.set_mode(
                     (ImageProcessor.width, ImageProcessor.height), pygame.HWSURFACE | pygame.DOUBLEBUF)
-                sensor.listen(lambda data: ImageProcessor.render(data, display))    # pylint: disable=cell-var-from-loop
+                sensor.listen(lambda data: ImageProcessor.render(data, display)
+                              )    # pylint: disable=cell-var-from-loop
 
     @staticmethod
     def render(image, display):
