@@ -188,6 +188,31 @@
         <string>Yamaha YZF</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>Firetruck</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mini Cooper 2021</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Nissan Patrol 2021</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ambulance</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mercedes Sprinter</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="2" column="1">
