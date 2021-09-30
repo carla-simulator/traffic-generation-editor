@@ -225,27 +225,27 @@
       </item>
       <item>
        <property name="text">
-        <string>Firetruck</string>
+        <string>Firetruck (CARLA 0.9.12)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Mini Cooper 2021</string>
+        <string>Mini Cooper 2021 (CARLA 0.9.12)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Nissan Patrol 2021</string>
+        <string>Nissan Patrol 2021 (CARLA 0.9.12)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Ambulance</string>
+        <string>Ambulance (CARLA 0.9.12)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Mercedes Sprinter</string>
+        <string>Mercedes Sprinter (CARLA 0.9.12)</string>
        </property>
       </item>
      </widget>
