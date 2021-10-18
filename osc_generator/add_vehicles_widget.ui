@@ -75,7 +75,12 @@
       </item>
       <item>
        <property name="text">
-        <string>BMW iSetta</string>
+        <string>BMW iSetta (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>BMW iSetta (CARLA 0.9.11)</string>
        </property>
       </item>
       <item>
@@ -100,7 +105,12 @@
       </item>
       <item>
        <property name="text">
-        <string>Dodge Charger Police</string>
+        <string>Dodge Charger Police (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Dodge Charger Police (CARLA 0.9.11)</string>
        </property>
       </item>
       <item>
@@ -125,27 +135,52 @@
       </item>
       <item>
        <property name="text">
-        <string>Lincoln MKZ 2017</string>
+        <string>Lincoln MKZ 2017 (CARLA 0.9.12)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Lincoln MKZ 2020</string>
+        <string>Lincoln MKZ 2017 (CARLA 0.9.11)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Mercedes Benz Coupe</string>
+        <string>Lincoln MKZ 2020 (CARLA 0.9.12)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Mini Cooper ST</string>
+        <string>Lincoln MKZ 2020 (CARLA 0.9.11)</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Ford Mustang</string>
+        <string>Mercedes Benz Coupe (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mercedes Benz Coupe (CARLA 0.9.11)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mini Cooper ST (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mini Cooper ST (CARLA 0.9.11)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ford Mustang (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ford Mustang (CARLA 0.9.11)</string>
        </property>
       </item>
       <item>
@@ -186,6 +221,31 @@
       <item>
        <property name="text">
         <string>Yamaha YZF</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Firetruck (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mini Cooper 2021 (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Nissan Patrol 2021 (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ambulance (CARLA 0.9.12)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Mercedes Sprinter (CARLA 0.9.12)</string>
        </property>
       </item>
      </widget>
