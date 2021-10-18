@@ -6,14 +6,14 @@
 name=OpenSCENARIO Editor Toolkit
 qgisMinimumVersion=3.0
 description=This plugin allows users to create OpenSCENARIO scenarios and ability to run scenarios in CARLA.
-version=1.1
+version=1.2
 author=Intel Corp
 email=intel.com
 
 about=Enables faster and easier generation of OpenSCENARIO XOSC files. Also enables connection to CARLA. Icons made by Freepik from Flaticon.
 
-tracker=http://bugs
-repository=http://repo
+tracker=https://github.com/carla-simulator/traffic-generation-editor/issues
+repository=https://github.com/carla-simulator/traffic-generation-editor
 # End of mandatory metadata
 
 # Recommended items:
@@ -25,7 +25,7 @@ hasProcessingProvider=no
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=http://homepage
+homepage=https://github.com/carla-simulator/traffic-generation-editor
 category=Plugins
 icon=icon.png
 # experimental flag
@@ -37,11 +37,10 @@ deprecated=False
 # Since QGIS 3.8, a comma separated list of plugins to be installed
 # (or upgraded) can be specified.
 # Check the documentation for more information.
-# plugin_dependencies=
+plugin_dependencies=CARLA ad_map_access
 
 Category of the plugin: Raster, Vector, Database or Web
 # category=
 
 # If the plugin can run on QGIS Server.
 server=False
-

@@ -21,7 +21,8 @@ from .helper_functions import (layer_setup_environment, layer_setup_metadata, la
                                layer_setup_walker, layer_setup_props, layer_setup_end_eval,
                                layer_setup_maneuvers_and_triggers, layer_setup_maneuvers_lateral,
                                layer_setup_maneuvers_longitudinal, layer_setup_maneuvers_waypoint,
-                               layer_setup_parameters, is_float, display_message, resolve)
+                               layer_setup_parameters, is_float, display_message, resolve,
+                               set_metadata)
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_xosc_dialog.ui'))
@@ -176,23 +177,12 @@ class ImportXOSC():
         scene_graph_file = self._root.findall(".//RoadNetwork/SceneGraphFile")[0]
         scene_graph_filepath = scene_graph_file.attrib.get("filepath")
 
-        if not QgsProject.instance().mapLayersByName("Metadata"):
-            layer_setup_metadata()
-
-        metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
-        current_features = [feat.id() for feat in metadata_layer.getFeatures()]
-        metadata_layer.dataProvider().deleteFeatures(current_features)
-
-        feature = QgsFeature()
-        feature.setAttributes([
-            int(rev_major),
-            int(rev_minor),
-            description,
-            author,
-            road_network_filepath,
-            scene_graph_filepath
-        ])
-        metadata_layer.dataProvider().addFeature(feature)
+        set_metadata(rev_major=rev_major,
+                     rev_minor=rev_minor,
+                     description=description,
+                     author=author,
+                     road_network_filepath=road_network_filepath,
+                     scene_graph_filepath=scene_graph_filepath)
 
     def parse_paremeter_declarations(self):
         """

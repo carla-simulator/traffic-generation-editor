@@ -14,7 +14,7 @@ import os
 from PyQt5.QtWidgets import QInputDialog
 from qgis.core import (Qgis, QgsProject, QgsMessageLog, QgsVectorLayer,
                        QgsField, QgsPalLayerSettings, QgsVectorLayerSimpleLabeling, QgsFeatureRequest,
-                       QgsSpatialIndex, QgsFeature)
+                       QgsSpatialIndex, QgsFeature, edit)
 from qgis.utils import iface
 from qgis.PyQt.QtCore import QVariant
 
@@ -87,6 +87,50 @@ def layer_setup_metadata():
 
         message = "Metadata layer added"
         display_message(message, level="Info")
+
+
+def set_metadata(rev_major=None,
+                 rev_minor=None,
+                 description=None,
+                 author=None,
+                 road_network_filepath=None,
+                 scene_graph_filepath=None):
+    """
+    Set/Replace the metadata
+    """
+    if not QgsProject.instance().mapLayersByName("Metadata"):
+        layer_setup_metadata()
+
+    metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
+
+    if metadata_layer.featureCount() == 0:
+        # initialize feature with default values
+        feature = QgsFeature()
+        feature.setAttributes([
+            1,
+            0,
+            "Generated OpenSCENARIO File",
+            "QGIS OSCGenerator Plugin",
+            "",
+            ""
+        ])
+        metadata_layer.dataProvider().addFeature(feature)
+
+    with edit(metadata_layer):
+        feature = metadata_layer.getFeature(1)
+        if rev_major:
+            feature["Rev Major"] = int(rev_major)
+        if rev_minor:
+            feature["Rev Minor"] = int(rev_minor)
+        if description:
+            feature["Description"] = description
+        if author:
+            feature["Author"] = author
+        if road_network_filepath:
+            feature["Road Network"] = road_network_filepath
+        if scene_graph_filepath:
+            feature["Scene Graph File"] = scene_graph_filepath
+        metadata_layer.updateFeature(feature)
 
 
 def layer_setup_end_eval():

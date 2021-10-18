@@ -18,6 +18,8 @@ from qgis.utils import iface
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from defusedxml import minidom
 
+from .helper_functions import set_metadata
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'export_xosc_dialog.ui'))
 
@@ -56,6 +58,8 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
                 road_network = self.map_selection_user_defined.text()
             gen_xml = GenerateXML(filepath, road_network)
             gen_xml.main()
+            # remember Road Network for future
+            set_metadata(road_network_filepath=road_network)
         else:
             message = "No export path was selected"
             iface.messageBar().pushMessage("Warning", message, level=Qgis.Warning)
@@ -72,6 +76,7 @@ class ExportXOSCDialog(QtWidgets.QDialog, FORM_CLASS):
         """Auto populates road network if available"""
         if QgsProject.instance().mapLayersByName("Metadata"):
             metadata_layer = QgsProject.instance().mapLayersByName("Metadata")[0]
+            road_network = ""
             for feature in metadata_layer.getFeatures():
                 road_network = feature["Road Network"]
 
@@ -791,7 +796,7 @@ class GenerateXML():
             world_position = etree.SubElement(position, "WorldPosition")
             world_position.set("x", str(feature["Pos X"]))
             world_position.set("y", str(feature["Pos Y"]))
-            world_position.set("z", "0.2")
+            world_position.set("z", str(feature["Pos Z"]))
             world_position.set("h", str(feature["Orientation"]))
 
     def get_longitudinal_maneuvers(self, maneuver_id, event):
